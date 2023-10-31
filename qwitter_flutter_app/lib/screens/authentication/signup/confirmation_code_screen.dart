@@ -43,23 +43,28 @@ class ConfirmationCodeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            const Form(
+            Form(
               child: Column(
                 children: [
-                  DecoratedTextField(
+                  const DecoratedTextField(
                     keyboardType: TextInputType.name,
                     placeholder: 'Verification code',
                     padding_value: EdgeInsets.all(0),
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   Row(
                     children: [
-                      Text(
-                        'Didn\'t receive an email?',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.blue,
+                      TextButton(
+                        onPressed: () {
+                          _showOverlay(context);
+                        },
+                        child: const Text(
+                          'Didn\'t receive an email?',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
                     ],
@@ -73,4 +78,152 @@ class ConfirmationCodeScreen extends StatelessWidget {
       bottomNavigationBar: const QwitterNextBar(),
     );
   }
+
+  void _showOverlay(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(18, 15, 25, 2),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 38, 38, 38),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            height: 170,
+            width: 300,
+            child: Column(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                        child: Text(
+                          "Didn't receive an email?",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 222, 222, 222),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextButton(
+                        onPressed: () {
+                          // Add your action here for the first option.
+                          Navigator.of(context).pop(); // Close the overlay
+                        },
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all<TextStyle>(
+                            const TextStyle(
+                              fontSize: 15,
+                              color: Color.fromARGB(255, 222, 222, 222),
+                              fontWeight: FontWeight.w400,
+                            ), // Set an empty TextStyle
+                          ),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                            const Color.fromARGB(255, 222, 222, 222),
+                          ),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors
+                                .transparent, // Set transparent background color
+                          ),
+                        ),
+                        child: const Text(
+                          "Resend Email",
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Add your action here for the second option.
+                          Navigator.of(context).pop(); // Close the overlay
+                        },
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all<TextStyle>(
+                            const TextStyle(
+                              fontSize: 15,
+                              color: Color.fromARGB(255, 222, 222, 222),
+                              fontWeight: FontWeight.w400,
+                            ), // Set an empty TextStyle
+                          ),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                            const Color.fromARGB(255, 222, 222, 222),
+                          ),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors
+                                .transparent, // Set transparent background color
+                          ),
+                        ),
+                        child: const Text(
+                          "Use phone instead",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color.fromARGB(255, 222, 222, 222),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            ]),
+          ),
+        );
+      },
+    );
+  }
 }
+// child: AlertDialog(
+//   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+//   title: const Text(
+//     "Didn't receive an email?",
+//     style: TextStyle(
+//       fontSize: 16,
+//       color: Color.fromARGB(255, 222, 222, 222),
+//       fontWeight: FontWeight.w500,
+//     ),
+//   ),
+//   actions: [
+//     Row(
+//       children: [
+//         Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             TextButton(
+//               onPressed: () {
+//                 // Add your action here for the first option.
+//                 Navigator.of(context).pop(); // Close the overlay
+//               },
+//               child: const Text(
+//                 "Resend Email",
+//                 style: TextStyle(
+//                   fontSize: 16,
+//                   color: Color.fromARGB(255, 222, 222, 222),
+//                   fontWeight: FontWeight.w500,
+//                 ),
+//               ),
+//             ),
+//             TextButton(
+//               onPressed: () {
+//                 // Add your action here for the second option.
+//                 Navigator.of(context).pop(); // Close the overlay
+//               },
+//               child: const Text(
+//                 "Cancel",
+//                 style: TextStyle(
+//                   fontSize: 16,
+//                   color: Color.fromARGB(255, 222, 222, 222),
+//                   fontWeight: FontWeight.w500,
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ],
+//     )
+//   ],
+// ),
