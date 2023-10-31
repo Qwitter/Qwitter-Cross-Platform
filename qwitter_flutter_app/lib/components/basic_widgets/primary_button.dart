@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
 class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({super.key, required this.text});
+  const PrimaryButton(
+      {super.key, required this.text, required this.on_pressed});
 
   final String text;
+  final VoidCallback on_pressed;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        // Add your button click logic here
-        print('Button Clicked');
-      },
+      onPressed: on_pressed,
       style: ElevatedButton.styleFrom(
         backgroundColor:
             const Color.fromARGB(255, 29, 155, 240), // Text color (black)

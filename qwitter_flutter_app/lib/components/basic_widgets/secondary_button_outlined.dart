@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class SecondaryButtonOutlined extends StatelessWidget {
-  const SecondaryButtonOutlined({super.key, required this.text});
+  const SecondaryButtonOutlined(
+      {super.key, required this.text, required this.on_pressed});
 
   final String text;
+  final VoidCallback on_pressed;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        // Add your button click logic here
-      },
+      onPressed: on_pressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.transparent, // Background color (white)
         foregroundColor: Colors.white, // Text color (black)
