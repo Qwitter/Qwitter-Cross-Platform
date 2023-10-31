@@ -42,7 +42,7 @@ class SelectLanguagesScreen extends StatelessWidget {
               LanguageFilter(),
             ]),
       ),
-      bottomNavigationBar: const QwitterNextBar(),
+      bottomNavigationBar: const QwitterNextBar(buttonFunction: null),
     );
   }
 }
