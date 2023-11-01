@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 
 class QwitterNextBar extends StatelessWidget {
-  const QwitterNextBar({super.key});
+  const QwitterNextBar({super.key, required this.buttonFunction});
+  final VoidCallback? buttonFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class QwitterNextBar extends StatelessWidget {
       child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
         Padding(
           padding: EdgeInsets.only(right: 16),
-          child: SecondaryButton(text: 'Next', on_pressed: () {}),
+          child: SecondaryButton(text: 'Next', on_pressed: buttonFunction),
         ),
       ]),
     );

@@ -35,22 +35,27 @@ class CreateAccountScreen extends StatelessWidget {
                   keyboardType: TextInputType.name,
                   placeholder: 'Name',
                   max_length: 50,
+                  controller: null,
                 ),
                 DecoratedTextField(
-                    keyboardType: TextInputType.emailAddress,
-                    placeholder: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                  placeholder: 'Email',
+                  controller: null,
+                ),
                 Padding(
                   padding: EdgeInsets.only(top: 18),
                   child: DecoratedTextField(
-                      keyboardType: TextInputType.name,
-                      placeholder: 'Date of birth'),
+                    keyboardType: TextInputType.name,
+                    placeholder: 'Date of birth',
+                    controller: null,
+                  ),
                 ),
               ],
             ),
           ),
         ]),
       ),
-      bottomNavigationBar: const QwitterNextBar(),
+      bottomNavigationBar: const QwitterNextBar(buttonFunction: null),
     );
   }
 }

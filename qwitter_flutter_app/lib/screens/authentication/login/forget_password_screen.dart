@@ -46,13 +46,14 @@ class ForgetPasswordScreen extends StatelessWidget {
                       keyboardType: TextInputType.name,
                       placeholder: 'Email address, phone number, or username',
                       padding_value: EdgeInsets.all(0),
+                      controller: null,
                     ),
                   ],
                 ),
               ),
             ]),
       ),
-      bottomNavigationBar: const QwitterNextBar(),
+      bottomNavigationBar: const QwitterNextBar(buttonFunction: null),
     );
   }
 }

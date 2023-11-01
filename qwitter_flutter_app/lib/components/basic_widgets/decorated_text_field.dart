@@ -9,11 +9,13 @@ class DecoratedTextField extends StatefulWidget {
       required this.placeholder,
       this.padding_value =
           const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
-      this.max_length = 0});
+      this.max_length = 0,
+      required this.controller});
   final TextInputType keyboardType;
   final String placeholder;
   final int max_length;
   final EdgeInsets padding_value;
+  final TextEditingController? controller;
 
   @override
   State<DecoratedTextField> createState() => _DecoratedTextFieldState();
@@ -22,8 +24,8 @@ class DecoratedTextField extends StatefulWidget {
 class _DecoratedTextFieldState extends State<DecoratedTextField> {
   // bool _isSelected = false;
   late FocusNode _focusNode;
-  TextEditingController myController = TextEditingController();
   bool is_valid = true;
+
   Color border_color = Colors.grey.shade500;
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController myController = widget.controller!;
     return Container(
       padding: widget.padding_value,
       child: TextFormField(

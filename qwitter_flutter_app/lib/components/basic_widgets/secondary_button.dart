@@ -6,15 +6,15 @@ class SecondaryButton extends StatelessWidget {
       {super.key, required this.text, required this.on_pressed});
 
   final String text;
-  final VoidCallback on_pressed;
+  final VoidCallback? on_pressed;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: on_pressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white, // Background color (white)
-        foregroundColor: Colors.black, // Text color (black)
+        foregroundColor: Colors.black,
+        onSurface: Colors.grey, // Text color (black)
         elevation: 0, // No shadow
         padding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding
@@ -22,6 +22,7 @@ class SecondaryButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(24), // Custom shape
         ),
       ),
+      onPressed: on_pressed,
       child: Text(text),
     );
   }
