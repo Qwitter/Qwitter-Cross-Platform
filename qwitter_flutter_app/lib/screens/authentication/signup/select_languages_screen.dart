@@ -18,29 +18,30 @@ class SelectLanguagesScreen extends StatelessWidget {
         width: double.infinity,
         color: Colors.black,
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
-        child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Select your language(s)',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: Color.fromARGB(255, 222, 222, 222),
-                  fontWeight: FontWeight.w600,
-                ),
+        child: const SingleChildScrollView(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(
+              'Select your language(s)',
+              style: TextStyle(
+                fontSize: 28,
+                color: Color.fromARGB(255, 222, 222, 222),
+                fontWeight: FontWeight.w600,
               ),
-              SizedBox(height: 10),
-              Text(
-                'Select the language(s) you want to use to personalize your X experience.',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Color.fromARGB(255, 132, 132, 132),
-                ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Select the language(s) you want to use to personalize your X experience.',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 15,
+                color: Color.fromARGB(255, 132, 132, 132),
               ),
-              SizedBox(height: 5),
-              LanguageFilter(),
-            ]),
+            ),
+            SizedBox(height: 5),
+            LanguageFilter(),
+          ]),
+        ),
       ),
       bottomNavigationBar: const QwitterNextBar(buttonFunction: null),
     );

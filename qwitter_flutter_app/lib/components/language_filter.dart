@@ -120,6 +120,7 @@ class _LanguageFilterState extends State<LanguageFilter> {
               children: [
                 SizedBox(
                   height: 400,
+                  width: 600,
                   child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
                     scrollDirection: Axis.vertical,
