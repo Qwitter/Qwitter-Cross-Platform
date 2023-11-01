@@ -8,6 +8,9 @@ class CreateAccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController birthdayController = TextEditingController();
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -17,43 +20,45 @@ class CreateAccountScreen extends StatelessWidget {
         width: double.infinity,
         color: Colors.black,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Column(children: [
-          Text(
-            'Create your account',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 30,
-              color: Color.fromARGB(255, 222, 222, 222),
-              fontWeight: FontWeight.w600,
+        child: SingleChildScrollView(
+          child: Column(children: [
+            const Text(
+              'Create your account',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 30,
+                color: Color.fromARGB(255, 222, 222, 222),
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          SizedBox(height: 112),
-          Form(
-            child: Column(
-              children: [
-                DecoratedTextField(
-                  keyboardType: TextInputType.name,
-                  placeholder: 'Name',
-                  max_length: 50,
-                  controller: null,
-                ),
-                DecoratedTextField(
-                  keyboardType: TextInputType.emailAddress,
-                  placeholder: 'Email',
-                  controller: null,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 18),
-                  child: DecoratedTextField(
+            const SizedBox(height: 112),
+            Form(
+              child: Column(
+                children: [
+                  DecoratedTextField(
                     keyboardType: TextInputType.name,
-                    placeholder: 'Date of birth',
-                    controller: null,
+                    placeholder: 'Name',
+                    max_length: 50,
+                    controller: usernameController,
                   ),
-                ),
-              ],
+                  DecoratedTextField(
+                    keyboardType: TextInputType.emailAddress,
+                    placeholder: 'Email',
+                    controller: emailController,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 18),
+                    child: DecoratedTextField(
+                      keyboardType: TextInputType.name,
+                      placeholder: 'Date of birth',
+                      controller: birthdayController,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
       bottomNavigationBar: const QwitterNextBar(buttonFunction: null),
     );

@@ -10,6 +10,7 @@ class ChangeEmailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -39,21 +40,23 @@ class ChangeEmailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 15),
-          const SizedBox(height: 15),
-          const Form(
+          Form(
             child: Column(
               children: [
                 DecoratedTextField(
                   keyboardType: TextInputType.emailAddress,
                   placeholder: 'Email address',
-                  padding_value: EdgeInsets.all(0),
+                  padding_value: const EdgeInsets.all(0),
+                  controller: emailController,
                 ),
               ],
             ),
           ),
         ]),
       ),
-      bottomNavigationBar: const QwitterNextBar(),
+      bottomNavigationBar: const QwitterNextBar(
+        buttonFunction: null,
+      ),
     );
   }
 }

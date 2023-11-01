@@ -11,6 +11,7 @@ class ConfirmationCodeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController codeController = TextEditingController();
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -46,10 +47,11 @@ class ConfirmationCodeScreen extends StatelessWidget {
             Form(
               child: Column(
                 children: [
-                  const DecoratedTextField(
+                  DecoratedTextField(
                     keyboardType: TextInputType.name,
                     placeholder: 'Verification code',
-                    padding_value: EdgeInsets.all(0),
+                    padding_value: const EdgeInsets.all(0),
+                    controller: codeController,
                   ),
                   const SizedBox(height: 25),
                   Row(
@@ -75,7 +77,9 @@ class ConfirmationCodeScreen extends StatelessWidget {
           ]),
         ),
       ),
-      bottomNavigationBar: const QwitterNextBar(),
+      bottomNavigationBar: const QwitterNextBar(
+        buttonFunction: null,
+      ),
     );
   }
 
