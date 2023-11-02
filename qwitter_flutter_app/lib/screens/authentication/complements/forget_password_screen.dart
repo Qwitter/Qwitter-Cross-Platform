@@ -10,6 +10,7 @@ class ForgetPasswordScreen extends StatefulWidget {
   State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
 }
 
+
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   bool _checkBoxValue = false;
 
@@ -155,12 +156,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           Container(
             padding:
                 const EdgeInsets.only(top: 10, bottom: 30, right: 30, left: 30),
-            child: const Row(
+            child:  Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SecondaryButtonOutlined(text: 'Cancel'),
-                SecondaryButton(text: 'Next')
+                SecondaryButtonOutlined(text: 'Cancel', on_pressed: (){},),
+                SecondaryButton(text: 'Next', on_pressed: (){},)
               ],
             ),
           ),
