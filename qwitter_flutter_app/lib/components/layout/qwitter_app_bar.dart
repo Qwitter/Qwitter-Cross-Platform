@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class QwitterAppBar extends StatelessWidget {
-  const QwitterAppBar({super.key});
+  const QwitterAppBar(
+      {super.key,
+      this.isButton = false,
+      this.onPressed,
+      this.currentIcon = Icons.close});
+  final bool isButton;
+  final VoidCallback? onPressed;
+  final IconData currentIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -9,11 +16,19 @@ class QwitterAppBar extends StatelessWidget {
       toolbarHeight: 75,
       title: Stack(
         children: [
-          const CircleAvatar(
-            radius: 13,
-            backgroundImage: NetworkImage(
-                'https://ih1.redbubble.net/image.2967438346.0043/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg'),
-          ),
+          !isButton
+              ? const CircleAvatar(
+                  radius: 13,
+                  backgroundImage: NetworkImage(
+                      'https://ih1.redbubble.net/image.2967438346.0043/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg'),
+                )
+              : IconButton(
+                  onPressed: onPressed,
+                  icon: Icon(
+                    currentIcon,
+                    color: Colors.white,
+                  ),
+                ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

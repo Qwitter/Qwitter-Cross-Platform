@@ -43,7 +43,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(),
+        child: QwitterAppBar(isButton: true),
       ),
       body: SingleChildScrollView(
         child: Container(
