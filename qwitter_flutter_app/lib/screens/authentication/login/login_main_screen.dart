@@ -12,11 +12,35 @@ class LoginMainScreen extends StatefulWidget {
 
 class _LoginMainScreenState extends State<LoginMainScreen> {
   final emailController = TextEditingController();
-  final passController = TextEditingController();
+  late TextEditingController passController;
+
+  bool isActive = false;
+  void hello() {
+    setState(() {
+      isActive = false;
+    });
+    passController.clear();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    passController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    passController = TextEditingController();
+    passController.addListener(() {
+      setState(() {
+        isActive = passController.text.isNotEmpty;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double buttonSpacing = screenHeight * 0.3;
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -64,35 +88,41 @@ class _LoginMainScreenState extends State<LoginMainScreen> {
                   ),
                 ),
               ),
-              Container(
-                height: buttonSpacing,
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-                width: double.infinity,
-                child: SecondaryButton(text: "Login", on_pressed: () {}),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-                child: Row(
-                  children: [
-                    const Text(
-                      "Don't have an account",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        "Sign up",
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+            width: double.infinity,
+            child: SecondaryButton(
+              text: "Login",
+              on_pressed: isActive == true ? hello : null,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+            child: Row(
+              children: [
+                const Text(
+                  "Don't have an account",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    "Sign up",
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
