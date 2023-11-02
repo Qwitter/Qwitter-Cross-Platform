@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/update_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/create_account_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:riverpod/riverpod.dart';
 
+import 'screens/authentication/complements/change_email_screen.dart';
 import 'screens/authentication/login/login_main_screen.dart';
 
 void main() {
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      home: const LoginMainScreen(),
+      home: const UpdatePasswordScreen(),
     );
   }
 }

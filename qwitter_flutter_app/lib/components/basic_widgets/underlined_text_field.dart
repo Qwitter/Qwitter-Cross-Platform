@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 
 class UnderlineTextField extends StatefulWidget {
-  const UnderlineTextField(
-      {super.key, required this.keyboardType, required this.placeholder});
+  const UnderlineTextField({
+    super.key,
+    required this.keyboardType,
+    required this.placeholder,
+    required this.controller,
+    this.isObscure = false,
+  });
+
   final TextInputType keyboardType;
   final String placeholder;
-
+  final TextEditingController? controller;
+  final bool isObscure;
+ 
   @override
   State<UnderlineTextField> createState() => _UnderlineTextFieldState();
 }
@@ -39,7 +47,9 @@ class _UnderlineTextFieldState extends State<UnderlineTextField> {
         focusNode: _focusNode,
         maxLength: 50,
         autocorrect: true,
+        obscureText: widget.isObscure,
         keyboardType: widget.keyboardType,
+        controller: widget.controller,
         decoration: InputDecoration(
           focusedBorder: const UnderlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -50,7 +60,6 @@ class _UnderlineTextFieldState extends State<UnderlineTextField> {
             borderRadius: const BorderRadius.all(
               Radius.circular(5),
             ),
-          
           ),
           labelText: _focusNode.hasFocus ? widget.placeholder : null,
           labelStyle: const TextStyle(
