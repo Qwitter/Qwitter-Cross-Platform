@@ -9,6 +9,7 @@ import 'package:riverpod/riverpod.dart';
 
 import 'screens/authentication/complements/change_email_screen.dart';
 import 'screens/authentication/login/login_main_screen.dart';
+import 'screens/authentication/login/login_choose_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      home: const UpdatePasswordScreen(),
+      home: const LoginChooseScreen(),
     );
   }
 }
