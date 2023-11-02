@@ -45,26 +45,28 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
         preferredSize: Size.fromHeight(75),
         child: QwitterAppBar(),
       ),
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-        child: Column(
-          children: [
-            const Text(
-              "To get started,first enter your phone, email address or @username",
-              style: TextStyle(
-                fontSize: 28,
-                color: Color.fromARGB(255, 222, 222, 222),
-                fontWeight: FontWeight.w600,
+      body: SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+          child: Column(
+            children: [
+              const Text(
+                "To get started,first enter your phone, email address or @username",
+                style: TextStyle(
+                  fontSize: 28,
+                  color: Color.fromARGB(255, 222, 222, 222),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            DecoratedTextField(
-              keyboardType: TextInputType.emailAddress,
-              placeholder: "email",
-              controller: emailController,
-            ),
-          ],
+              const SizedBox(height: 10),
+              DecoratedTextField(
+                keyboardType: TextInputType.emailAddress,
+                placeholder: "email",
+                controller: emailController,
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar:

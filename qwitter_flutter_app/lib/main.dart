@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/create_account_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'screens/authentication/login/login_main_screen.dart';
