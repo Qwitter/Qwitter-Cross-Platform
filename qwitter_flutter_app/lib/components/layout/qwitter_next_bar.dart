@@ -20,7 +20,7 @@ class QwitterNextBar extends StatelessWidget {
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
         Padding(
-          padding: EdgeInsets.only(right: 16),
+          padding: const EdgeInsets.only(right: 16),
           child: SecondaryButton(text: 'Next', on_pressed: buttonFunction),
         ),
       ]),
