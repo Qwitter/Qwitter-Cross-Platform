@@ -1,22 +1,28 @@
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/add_username_screen.dart';
 
-class ProfilePictureScreen extends StatefulWidget {
+class ProfilePictureScreen extends ConsumerStatefulWidget {
   const ProfilePictureScreen({super.key, this.email = 'omarmahmoud@gmail.com'});
 
   final String email;
 
   @override
-  State<ProfilePictureScreen> createState() => _ProfilePictureScreenState();
+  ConsumerState<ProfilePictureScreen> createState() =>
+      _ProfilePictureScreenState();
 }
 
-class _ProfilePictureScreenState extends State<ProfilePictureScreen> {
+class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
   File? _selectedImage;
+  void Function()? buttonFunction;
+
   Widget content = Container(
     height: 200,
     width: 180,
@@ -42,8 +48,20 @@ class _ProfilePictureScreenState extends State<ProfilePictureScreen> {
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
 
-    if (pickedFile == null) return;
-
+    if (pickedFile == null) {
+      buttonFunction = null;
+      ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+      return;
+    }
+    buttonFunction = () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AddUsernameScreen(),
+        ),
+      );
+    };
+    ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
     setState(() {
       _selectedImage = File(pickedFile.path);
     });
@@ -59,6 +77,7 @@ class _ProfilePictureScreenState extends State<ProfilePictureScreen> {
         fit: BoxFit.cover,
       );
     }
+
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -118,8 +137,9 @@ class _ProfilePictureScreenState extends State<ProfilePictureScreen> {
           ]),
         ),
       ),
-      bottomNavigationBar: const QwitterNextBar(
-        buttonFunction: null,
+      bottomNavigationBar: QwitterNextBar(
+        buttonFunction: buttonFunction,
+        useProvider: true,
       ),
     );
   }
