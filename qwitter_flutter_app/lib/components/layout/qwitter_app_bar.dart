@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
 class QwitterAppBar extends StatelessWidget {
-  const QwitterAppBar(
-      {super.key,
-      this.isButton = false,
-      this.onPressed,
-      this.currentIcon = Icons.close});
+  const QwitterAppBar({
+    super.key,
+    this.isButton = false,
+    this.onPressed,
+    this.currentIcon = Icons.close,
+    this.showLogoOnly = false,
+  });
   final bool isButton;
   final VoidCallback? onPressed;
   final IconData currentIcon;
+  final bool showLogoOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -16,19 +19,23 @@ class QwitterAppBar extends StatelessWidget {
       toolbarHeight: 75,
       title: Stack(
         children: [
-          !isButton
-              ? const CircleAvatar(
-                  radius: 13,
-                  backgroundImage: NetworkImage(
-                      'https://ih1.redbubble.net/image.2967438346.0043/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg'),
+          showLogoOnly
+              ? const SizedBox(
+                  width: 1,
                 )
-              : IconButton(
-                  onPressed: onPressed,
-                  icon: Icon(
-                    currentIcon,
-                    color: Colors.white,
-                  ),
-                ),
+              : !isButton
+                  ? const CircleAvatar(
+                      radius: 13,
+                      backgroundImage: NetworkImage(
+                          'https://ih1.redbubble.net/image.2967438346.0043/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg'),
+                    )
+                  : IconButton(
+                      onPressed: onPressed,
+                      icon: Icon(
+                        currentIcon,
+                        color: Colors.white,
+                      ),
+                    ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
