@@ -1,16 +1,55 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
-class CreateAccountScreen extends StatelessWidget {
+class CreateAccountScreen extends ConsumerStatefulWidget {
   const CreateAccountScreen({super.key});
 
+  @override
+  ConsumerState<CreateAccountScreen> createState() =>
+      _CreateAccountScreenState();
+}
+
+class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController birthdayController = TextEditingController();
+    void Function()? buttonFunction;
+
+    for (final controller in [
+      usernameController,
+      emailController,
+      birthdayController
+    ]) {
+      controller.addListener(() {
+        if (usernameController.text.isNotEmpty &&
+            emailController.text.isNotEmpty &&
+            birthdayController.text.isNotEmpty) {
+          buttonFunction = () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SuggestedFollowsScreen(),
+              ),
+            );
+          };
+          ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+        } else {
+          buttonFunction = null;
+          ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+        }
+      });
+    }
+
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -60,7 +99,10 @@ class CreateAccountScreen extends StatelessWidget {
           ]),
         ),
       ),
-      bottomNavigationBar: const QwitterNextBar(buttonFunction: null),
+      bottomNavigationBar: QwitterNextBar(
+        buttonFunction: buttonFunction,
+        useProvider: true,
+      ),
     );
   }
 }
