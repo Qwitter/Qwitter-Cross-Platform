@@ -11,6 +11,15 @@ class ConfirmationCodeScreen extends ConsumerWidget {
       {super.key, this.email = 'omarmahmoud@gmail.com'});
 
   final String email;
+  String? codeValidations(String? code) {
+    if (code == null || code.isEmpty) return null;
+
+    if (code.length != 6) {
+      return 'Invalid confirmation code.';
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,8 +82,10 @@ class ConfirmationCodeScreen extends ConsumerWidget {
                     placeholder: 'Verification code',
                     padding_value: const EdgeInsets.all(0),
                     controller: codeController,
+                    max_length: 6,
+                    validator: codeValidations,
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       TextButton(

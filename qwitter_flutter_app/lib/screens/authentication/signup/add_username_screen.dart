@@ -8,6 +8,18 @@ import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_foll
 
 class AddUsernameScreen extends ConsumerWidget {
   const AddUsernameScreen({super.key});
+  String? usernameValidations(String? username) {
+    if (username == null || username.isEmpty) {
+      return null;
+    }
+
+    if (!RegExp(r'^[a-zA-Z0-9](?!.*__)(?!.*_$)[a-zA-Z0-9_]{0,14}$')
+        .hasMatch(username)) {
+      return 'Invalid Twitter username. Please check the format.';
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,6 +82,7 @@ class AddUsernameScreen extends ConsumerWidget {
                     placeholder: 'Username',
                     padding_value: const EdgeInsets.all(0),
                     controller: usernameController,
+                    validator: usernameValidations,
                   ),
                 ],
               ),
