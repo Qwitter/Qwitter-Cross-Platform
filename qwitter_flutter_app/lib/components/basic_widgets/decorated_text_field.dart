@@ -13,6 +13,7 @@ class DecoratedTextField extends StatefulWidget {
     required this.controller,
     this.enabled = true,
     this.isPassword = false,
+    this.validator,
   });
   final TextInputType keyboardType;
   final String placeholder;
@@ -21,6 +22,7 @@ class DecoratedTextField extends StatefulWidget {
   final TextEditingController? controller;
   final bool enabled;
   final bool isPassword;
+  final String? Function(String?)? validator;
 
   @override
   State<DecoratedTextField> createState() => _DecoratedTextFieldState();
@@ -50,6 +52,8 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
   @override
   Widget build(BuildContext context) {
     TextEditingController myController = widget.controller!;
+    String? errorMessage =
+        widget.validator != null ? widget.validator!(myController.text) : null;
     return Container(
       padding: widget.padding_value,
       child: TextFormField(
@@ -60,7 +64,9 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
         },
         // The state is valid when the input text contains number 1 for testing purpose
         onChanged: (value) => setState(() {
-          if (value.contains('1')) {
+          if (widget.validator != null &&
+              widget.validator!(myController.text) != null) {
+            errorMessage = widget.validator!(myController.text);
             is_valid = false;
           } else {
             is_valid = true;
@@ -139,6 +145,31 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
               Radius.circular(5),
             ),
           ),
+          errorText: errorMessage,
+          errorStyle: const TextStyle(
+            color: Color.fromARGB(255, 243, 33, 47),
+            fontSize: 13,
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: !is_valid && myController.text.isNotEmpty
+                  ? const Color.fromARGB(255, 243, 33, 47)
+                  : const Color.fromARGB(255, 107, 125, 139),
+            ),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(5),
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: !is_valid && myController.text.isNotEmpty
+                  ? const Color.fromARGB(255, 243, 33, 47)
+                  : const Color.fromARGB(255, 107, 125, 139),
+            ),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(5),
+            ),
+          ),
           labelText: _focusNode.hasFocus || myController.text.isNotEmpty
               ? widget.placeholder
               : null,
@@ -174,6 +205,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
               ? Colors.white
               : const Color.fromARGB(255, 107, 125, 139),
         ),
+        validator: widget.validator,
       ),
     );
   }

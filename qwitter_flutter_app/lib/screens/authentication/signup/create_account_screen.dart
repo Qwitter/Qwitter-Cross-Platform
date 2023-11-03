@@ -49,6 +49,33 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
         }
       });
     }
+    String? usernameValidations(String? username) {
+      if (username == null || username.isEmpty) return null;
+      if (username.length < 3 || username.length > 30) {
+        return 'Username must be between 3 and 30 characters.';
+      }
+      if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(username)) {
+        return 'Username must contain only letters and numbers.';
+      }
+      if (RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(username)) {
+        return 'Username must not contain special characters.';
+      }
+      if (username.trim() != username) {
+        return 'Username cannot start or end with whitespace.';
+      }
+
+      return null;
+    }
+
+    String? emailValidations(String? email) {
+      if (email == null || email.isEmpty) return null;
+
+      if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(email)) {
+        return 'Invalid email format.';
+      }
+
+      return null;
+    }
 
     return Scaffold(
       appBar: const PreferredSize(
@@ -79,11 +106,13 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     placeholder: 'Name',
                     max_length: 50,
                     controller: usernameController,
+                    validator: usernameValidations,
                   ),
                   DecoratedTextField(
                     keyboardType: TextInputType.emailAddress,
                     placeholder: 'Email',
                     controller: emailController,
+                    validator: emailValidations,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 18),
