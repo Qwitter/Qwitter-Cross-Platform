@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/language_filter.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/providers/selected_languages_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/create_account_screen.dart';
 
-class SelectLanguagesScreen extends StatelessWidget {
+class SelectLanguagesScreen extends ConsumerWidget {
   const SelectLanguagesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedLanguages = ref.watch(languagesProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: const PreferredSize(
@@ -43,7 +47,16 @@ class SelectLanguagesScreen extends StatelessWidget {
           ]),
         ),
       ),
-      bottomNavigationBar: const QwitterNextBar(buttonFunction: null),
+      bottomNavigationBar: QwitterNextBar(
+          buttonFunction: selectedLanguages.isEmpty
+              ? null
+              : () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CreateAccountScreen(),
+                    ),
+                  );
+                }),
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/providers/selected_languages_provider.dart';
 
-class LanguageFilter extends StatefulWidget {
+class LanguageFilter extends ConsumerStatefulWidget {
   const LanguageFilter({super.key});
 
   // List of languages
@@ -37,7 +39,7 @@ class LanguageFilter extends StatefulWidget {
   _LanguageFilterState createState() => _LanguageFilterState();
 }
 
-class _LanguageFilterState extends State<LanguageFilter> {
+class _LanguageFilterState extends ConsumerState<LanguageFilter> {
   // Filtered languages based on search query
   List<String> filtered_languages = [];
 
@@ -114,42 +116,40 @@ class _LanguageFilterState extends State<LanguageFilter> {
             ),
             style: const TextStyle(color: Colors.white),
           ),
-          SingleChildScrollView(
-            physics: const ScrollPhysics(),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 400,
-                  width: 600,
-                  child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: filtered_languages.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(filtered_languages[index],
-                            style: const TextStyle(
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 222, 222, 222),
-                                fontWeight: FontWeight.w600)),
-                        trailing: Checkbox(
-                          value: selected_languages[index],
-                          onChanged: (value) {
-                            setState(() {
-                              selected_languages[index] = value!;
-                            });
-                          },
-                          activeColor: Colors.blue,
-                          checkColor: Colors.white,
-                          side: const BorderSide(color: Colors.white),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+          Column(
+            children: [
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: filtered_languages.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(filtered_languages[index],
+                        style: const TextStyle(
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 222, 222, 222),
+                            fontWeight: FontWeight.w600)),
+                    trailing: Checkbox(
+                      value: selected_languages[
+                          widget.languages.indexOf(filtered_languages[index])],
+                      onChanged: (value) {
+                        setState(() {
+                          selected_languages[widget.languages
+                              .indexOf(filtered_languages[index])] = value!;
+                        });
+                        ref
+                            .read(languagesProvider.notifier)
+                            .toggleLanguage(filtered_languages[index]);
+                      },
+                      activeColor: Colors.blue,
+                      checkColor: Colors.white,
+                      side: const BorderSide(color: Colors.white),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
