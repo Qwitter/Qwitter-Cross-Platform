@@ -1,16 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/profile_picture_screen.dart';
 
-class AddPasswordScreen extends StatelessWidget {
+class AddPasswordScreen extends ConsumerWidget {
   const AddPasswordScreen({super.key, this.email = 'omarmahmoud@gmail.com'});
 
   final String email;
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController codeController = TextEditingController();
+  Widget build(BuildContext context, WidgetRef ref) {
+    void Function()? buttonFunction;
+    final TextEditingController passwordController = TextEditingController();
+
+    passwordController.addListener(() {
+      if (passwordController.text.isNotEmpty) {
+        buttonFunction = () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ProfilePictureScreen(),
+            ),
+          );
+        };
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+      } else {
+        buttonFunction = null;
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+      }
+    });
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -50,7 +71,7 @@ class AddPasswordScreen extends StatelessWidget {
                     keyboardType: TextInputType.visiblePassword,
                     placeholder: 'Password',
                     padding_value: const EdgeInsets.all(0),
-                    controller: codeController,
+                    controller: passwordController,
                     isPassword: true,
                   ),
                 ],
@@ -59,8 +80,9 @@ class AddPasswordScreen extends StatelessWidget {
           ]),
         ),
       ),
-      bottomNavigationBar: const QwitterNextBar(
-        buttonFunction: null,
+      bottomNavigationBar: QwitterNextBar(
+        buttonFunction: buttonFunction,
+        useProvider: true,
       ),
     );
   }
