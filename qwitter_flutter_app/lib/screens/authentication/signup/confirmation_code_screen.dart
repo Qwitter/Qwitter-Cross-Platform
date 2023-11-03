@@ -1,17 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/add_password_screen.dart';
 
-class ConfirmationCodeScreen extends StatelessWidget {
+class ConfirmationCodeScreen extends ConsumerWidget {
   const ConfirmationCodeScreen(
       {super.key, this.email = 'omarmahmoud@gmail.com'});
 
   final String email;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    void Function()? buttonFunction;
     final TextEditingController codeController = TextEditingController();
+
+    codeController.addListener(() {
+      if (codeController.text.isNotEmpty) {
+        buttonFunction = () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddPasswordScreen(),
+            ),
+          );
+        };
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+      } else {
+        buttonFunction = null;
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+      }
+    });
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -77,8 +98,9 @@ class ConfirmationCodeScreen extends StatelessWidget {
           ]),
         ),
       ),
-      bottomNavigationBar: const QwitterNextBar(
-        buttonFunction: null,
+      bottomNavigationBar: QwitterNextBar(
+        buttonFunction: buttonFunction,
+        useProvider: true,
       ),
     );
   }

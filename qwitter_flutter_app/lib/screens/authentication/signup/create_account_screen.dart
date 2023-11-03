@@ -38,7 +38,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const SuggestedFollowsScreen(),
+                builder: (context) => const ConfirmationCodeScreen(),
               ),
             );
           };
