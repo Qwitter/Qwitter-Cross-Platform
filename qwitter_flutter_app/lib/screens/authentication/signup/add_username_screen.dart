@@ -65,7 +65,9 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(),
+        child: QwitterAppBar(
+          showLogoOnly: true,
+        ),
       ),
       body: Container(
         width: double.infinity,

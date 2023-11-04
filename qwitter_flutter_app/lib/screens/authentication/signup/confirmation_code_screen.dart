@@ -64,7 +64,9 @@ class _ConfirmationCodeScreenState
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(),
+        child: QwitterAppBar(
+          showLogoOnly: true,
+        ),
       ),
       body: Container(
         width: double.infinity,

@@ -16,7 +16,9 @@ class SelectLanguagesScreen extends ConsumerWidget {
       resizeToAvoidBottomInset: false,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(),
+        child: QwitterAppBar(
+          showLogoOnly: true,
+        ),
       ),
       body: Container(
         width: double.infinity,

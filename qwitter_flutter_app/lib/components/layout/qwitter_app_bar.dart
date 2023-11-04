@@ -17,6 +17,7 @@ class QwitterAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 75,
+      centerTitle: true,
       title: Stack(
         children: [
           showLogoOnly
@@ -38,6 +39,7 @@ class QwitterAppBar extends StatelessWidget {
                     ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Image.network(
                   'https://freelogopng.com/images/all_img/1690643777twitter-x%20logo-png-white.png',
