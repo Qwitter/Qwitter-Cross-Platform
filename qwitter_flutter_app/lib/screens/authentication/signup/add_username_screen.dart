@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/profile_picture_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
 class AddUsernameScreen extends ConsumerStatefulWidget {
@@ -40,12 +42,18 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    void Function()? buttonFunction;
+    void Function(BuildContext)? buttonFunction;
     final TextEditingController usernameController = TextEditingController();
 
     usernameController.addListener(() {
-      if (usernameController.text.isNotEmpty) {
-        buttonFunction = () {
+      if (usernameController.text.isNotEmpty &&
+          usernameValidations(usernameController.text) == null) {
+        buttonFunction = (context) {
+          widget.user!.setUsername(usernameController.text);
+          // Perform Sign Up Logic
+          AppUser appUser = AppUser();
+          appUser.copyUserData(widget.user!);
+          appUser.saveUserData();
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -53,8 +61,6 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
             ),
           );
         };
-        widget.user!.setUsername(usernameController.text);
-        // Perform Sign Up Logic
 
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {
@@ -62,59 +68,76 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       }
     });
-    return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(
-          showLogoOnly: true,
+    return WillPopScope(
+      onWillPop: () {
+        buttonFunction = (context) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddUsernameScreen(
+                user: widget.user,
+              ),
+            ),
+          );
+        };
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(75),
+          child: QwitterAppBar(
+            showLogoOnly: true,
+          ),
         ),
-      ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-        child: SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text(
-              'What should we call you?',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 28,
-                color: Color.fromARGB(255, 222, 222, 222),
-                fontWeight: FontWeight.w600,
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+          child: SingleChildScrollView(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text(
+                'What should we call you?',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 28,
+                  color: Color.fromARGB(255, 222, 222, 222),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Your @username is your unique identifier on X. You can always change it later.',
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                fontSize: 15,
-                color: Color.fromARGB(255, 132, 132, 132),
+              const SizedBox(height: 10),
+              const Text(
+                'Your @username is your unique identifier on X. You can always change it later.',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Color.fromARGB(255, 132, 132, 132),
+                ),
               ),
-            ),
-            const SizedBox(height: 15),
-            Form(
-              child: Column(
-                children: [
-                  DecoratedTextField(
-                    keyboardType: TextInputType.name,
-                    placeholder: 'Username',
-                    padding_value: const EdgeInsets.all(0),
-                    controller: usernameController,
-                    validator: usernameValidations,
-                  ),
-                ],
+              const SizedBox(height: 15),
+              Form(
+                child: Column(
+                  children: [
+                    DecoratedTextField(
+                      keyboardType: TextInputType.name,
+                      placeholder: 'Username',
+                      padding_value: const EdgeInsets.all(0),
+                      controller: usernameController,
+                      validator: usernameValidations,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ]),
+            ]),
+          ),
         ),
-      ),
-      bottomNavigationBar: QwitterNextBar(
-        buttonFunction: buttonFunction,
-        useProvider: true,
+        bottomNavigationBar: QwitterNextBar(
+          buttonFunction: () {
+            buttonFunction!(context);
+          },
+          useProvider: true,
+        ),
       ),
     );
   }

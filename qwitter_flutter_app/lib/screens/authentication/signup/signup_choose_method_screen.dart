@@ -5,6 +5,7 @@ import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 
 class SignupChooseMethodScreen extends StatefulWidget {
   const SignupChooseMethodScreen({super.key});
@@ -33,12 +34,24 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
 
   void forgotPassword() {}
 
-  void signupApple() {}
+  void signupApple() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const SelectLanguagesScreen()),
+    );
+  }
 
-  void signupGoogle() {}
+  void signupGoogle() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const SelectLanguagesScreen()),
+    );
+  }
 
-  void createAccont() {}
-  
+  void createAccont() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const SelectLanguagesScreen()),
+    );
+  }
+
   void signIn() {}
 
   @override

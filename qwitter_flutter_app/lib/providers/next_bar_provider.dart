@@ -1,16 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:riverpod/riverpod.dart';
 
-class NextBarNotifier extends StateNotifier<void Function()?> {
+class NextBarNotifier extends StateNotifier<void Function(BuildContext)?> {
   NextBarNotifier() : super(null);
 
-  void Function()? get nextBarFunction => state;
+  void Function(BuildContext)? get nextBarFunction => state;
 
-  void setNextBarFunction(void Function()? function) {
+  void setNextBarFunction(void Function(BuildContext)? function) {
     state = function;
   }
 }
 
 final nextBarProvider =
-    StateNotifierProvider<NextBarNotifier, void Function()?>((ref) {
+    StateNotifierProvider<NextBarNotifier, void Function(BuildContext)?>((ref) {
   return NextBarNotifier();
 });

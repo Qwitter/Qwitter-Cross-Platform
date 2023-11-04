@@ -19,12 +19,40 @@ class CreateAccountScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
+  String? usernameValidations(String? username) {
+    if (username == null || username.isEmpty) return null;
+    if (username.length < 3 || username.length > 30) {
+      return 'Username must be between 3 and 30 characters.';
+    }
+    if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(username)) {
+      return 'Username must contain only letters and numbers.';
+    }
+    if (RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(username)) {
+      return 'Username must not contain special characters.';
+    }
+    if (username.trim() != username) {
+      return 'Username cannot start or end with whitespace.';
+    }
+
+    return null;
+  }
+
+  String? emailValidations(String? email) {
+    if (email == null || email.isEmpty) return null;
+
+    if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(email)) {
+      return 'Invalid email format.';
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController birthdayController = TextEditingController();
-    void Function()? buttonFunction;
+    void Function(BuildContext)? buttonFunction;
     User user = User();
 
     for (final controller in [
@@ -35,8 +63,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       controller.addListener(() {
         if (usernameController.text.isNotEmpty &&
             emailController.text.isNotEmpty &&
-            birthdayController.text.isNotEmpty) {
-          buttonFunction = () {
+            birthdayController.text.isNotEmpty &&
+            usernameValidations(usernameController.text) == null &&
+            emailValidations(emailController.text) == null) {
+          buttonFunction = (context) {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -100,34 +130,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       }
     }
 
-    String? usernameValidations(String? username) {
-      if (username == null || username.isEmpty) return null;
-      if (username.length < 3 || username.length > 30) {
-        return 'Username must be between 3 and 30 characters.';
-      }
-      if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(username)) {
-        return 'Username must contain only letters and numbers.';
-      }
-      if (RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(username)) {
-        return 'Username must not contain special characters.';
-      }
-      if (username.trim() != username) {
-        return 'Username cannot start or end with whitespace.';
-      }
-
-      return null;
-    }
-
-    String? emailValidations(String? email) {
-      if (email == null || email.isEmpty) return null;
-
-      if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(email)) {
-        return 'Invalid email format.';
-      }
-
-      return null;
-    }
-
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -187,10 +189,16 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
           ]),
         ),
       ),
-      bottomNavigationBar: QwitterNextBar(
-        buttonFunction: buttonFunction,
-        useProvider: true,
-      ),
+      bottomNavigationBar: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        buttonFunction = ref.watch(nextBarProvider);
+        return QwitterNextBar(
+          buttonFunction: () {
+            buttonFunction!(context);
+          },
+          useProvider: true,
+        );
+      }),
     );
   }
 }

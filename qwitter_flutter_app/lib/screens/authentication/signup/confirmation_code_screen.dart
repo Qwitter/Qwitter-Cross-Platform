@@ -39,13 +39,13 @@ class _ConfirmationCodeScreenState
 
   @override
   Widget build(BuildContext context) {
-    void Function()? buttonFunction;
+    void Function(BuildContext)? buttonFunction;
     final TextEditingController codeController = TextEditingController();
 
     codeController.addListener(() {
       if (codeController.text.isNotEmpty &&
           codeValidations(codeController.text) == null) {
-        buttonFunction = () {
+        buttonFunction = (context) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -61,78 +61,95 @@ class _ConfirmationCodeScreenState
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       }
     });
-    return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(
-          showLogoOnly: true,
+    return WillPopScope(
+      onWillPop: () {
+        buttonFunction = (context) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ConfirmationCodeScreen(
+                user: widget.user,
+              ),
+            ),
+          );
+        };
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(75),
+          child: QwitterAppBar(
+            showLogoOnly: true,
+          ),
         ),
-      ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-        child: SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text(
-              'We sent you a code',
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 28,
-                color: Color.fromARGB(255, 222, 222, 222),
-                fontWeight: FontWeight.w600,
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+          child: SingleChildScrollView(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text(
+                'We sent you a code',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 28,
+                  color: Color.fromARGB(255, 222, 222, 222),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Enter it below to verify ${widget.user!.getEmail}.',
-              textAlign: TextAlign.start,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Color.fromARGB(255, 132, 132, 132),
+              const SizedBox(height: 10),
+              Text(
+                'Enter it below to verify ${widget.user!.getEmail}.',
+                textAlign: TextAlign.start,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color.fromARGB(255, 132, 132, 132),
+                ),
               ),
-            ),
-            const SizedBox(height: 15),
-            Form(
-              child: Column(
-                children: [
-                  DecoratedTextField(
-                    keyboardType: TextInputType.name,
-                    placeholder: 'Verification code',
-                    padding_value: const EdgeInsets.all(0),
-                    controller: codeController,
-                    max_length: 6,
-                    validator: codeValidations,
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          _showOverlay(context);
-                        },
-                        child: const Text(
-                          'Didn\'t receive an email?',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.blue,
+              const SizedBox(height: 15),
+              Form(
+                child: Column(
+                  children: [
+                    DecoratedTextField(
+                      keyboardType: TextInputType.name,
+                      placeholder: 'Verification code',
+                      padding_value: const EdgeInsets.all(0),
+                      controller: codeController,
+                      max_length: 6,
+                      validator: codeValidations,
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            _showOverlay(context);
+                          },
+                          child: const Text(
+                            'Didn\'t receive an email?',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.blue,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ]),
+            ]),
+          ),
         ),
-      ),
-      bottomNavigationBar: QwitterNextBar(
-        buttonFunction: buttonFunction,
-        useProvider: true,
+        bottomNavigationBar: QwitterNextBar(
+          buttonFunction: () {
+            buttonFunction!(context);
+          },
+          useProvider: true,
+        ),
       ),
     );
   }
