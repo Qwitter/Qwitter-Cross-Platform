@@ -39,6 +39,7 @@ dependencies:
   bootstrap_icons: ^1.11.1
   intl: ^0.18.1
   video_player: ^2.7.2
+  flutter_riverpod: ^2.4.5
 
 dev_dependencies:
   flutter_test:

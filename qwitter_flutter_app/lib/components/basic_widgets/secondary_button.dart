@@ -29,7 +29,7 @@ class SecondaryButton extends StatelessWidget {
           elevation: 0, // No shadow
           padding: paddingValue, // Padding
           minimumSize: const Size(30, 30),
-          maximumSize: const Size(120, 35),
+          maximumSize: const Size(170, 35),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24), // Custom shape
           ),

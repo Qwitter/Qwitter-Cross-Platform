@@ -5,9 +5,14 @@ import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 
 class QwitterNextBar extends ConsumerWidget {
   const QwitterNextBar(
-      {super.key, required this.buttonFunction, this.useProvider = false});
+      {super.key,
+      required this.buttonFunction,
+      this.useProvider = false,
+      this.buttonText = "Next"});
   final VoidCallback? buttonFunction;
   final bool useProvider;
+
+  final String buttonText;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +32,7 @@ class QwitterNextBar extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.only(right: 16),
           child: SecondaryButton(
-              text: 'Next',
+              text: buttonText,
               on_pressed: useProvider
                   ? () {
                       buttonFunctionProvider!(context);
