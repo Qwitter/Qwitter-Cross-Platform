@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
@@ -57,6 +57,49 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
         }
       });
     }
+
+    Future<void> _showDatePicker(BuildContext context) async {
+      final DateTime? selectedDate = await showCupertinoModalPopup<DateTime>(
+        context: context,
+        builder: (BuildContext context) {
+          return Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: 220,
+              width: double.infinity,
+              child: CupertinoTheme(
+                data: const CupertinoThemeData(
+                  textTheme: CupertinoTextThemeData(
+                    dateTimePickerTextStyle: TextStyle(
+                      color: Color.fromARGB(255, 222, 222, 222),
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: DateTime.now(),
+                  onDateTimeChanged: (DateTime newDateTime) {
+                    // Update the text field with the selected date
+                    birthdayController.text =
+                        "${newDateTime.year}-${newDateTime.month}-${newDateTime.day}";
+                  },
+                  backgroundColor: Colors.black,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      if (selectedDate != null) {
+        // Handle the selected date
+        // You can format the date as needed and update your controller
+      }
+    }
+
     String? usernameValidations(String? username) {
       if (username == null || username.isEmpty) return null;
       if (username.length < 3 || username.length > 30) {
@@ -126,10 +169,16 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 18),
-                    child: DecoratedTextField(
-                      keyboardType: TextInputType.name,
-                      placeholder: 'Date of birth',
-                      controller: birthdayController,
+                    child: GestureDetector(
+                      onTap: () {
+                        _showDatePicker(context);
+                      },
+                      child: DecoratedTextField(
+                        keyboardType: TextInputType.none,
+                        placeholder: 'Date of birth',
+                        controller: birthdayController,
+                        enabled: false,
+                      ),
                     ),
                   ),
                 ],

@@ -60,7 +60,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
         controller: myController,
         obscureText: isVisiable,
         onTapOutside: (event) {
-          Focus.of(context).unfocus();
+          // Focus.of(context).unfocus();
         },
         // The state is valid when the input text contains number 1 for testing purpose
         onChanged: (value) => setState(() {
@@ -136,6 +136,16 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
             ),
           ),
           enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: !is_valid && myController.text.isNotEmpty
+                  ? const Color.fromARGB(255, 243, 33, 47)
+                  : const Color.fromARGB(255, 107, 125, 139),
+            ),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(5),
+            ),
+          ),
+          disabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: !is_valid && myController.text.isNotEmpty
                   ? const Color.fromARGB(255, 243, 33, 47)
