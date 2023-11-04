@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
@@ -24,6 +25,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController birthdayController = TextEditingController();
     void Function()? buttonFunction;
+    User user = User();
 
     for (final controller in [
       usernameController,
@@ -38,10 +40,16 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ConfirmationCodeScreen(),
+                builder: (context) => ConfirmationCodeScreen(
+                  user: user,
+                ),
               ),
             );
           };
+          user
+              .setFullName(usernameController.text)
+              .setEmail(emailController.text)
+              .setBirthDate(birthdayController.text);
           ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
         } else {
           buttonFunction = null;

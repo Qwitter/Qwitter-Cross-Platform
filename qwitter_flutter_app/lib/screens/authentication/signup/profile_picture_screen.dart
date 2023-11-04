@@ -6,13 +6,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_username_screen.dart';
 
 class ProfilePictureScreen extends ConsumerStatefulWidget {
-  const ProfilePictureScreen({super.key, this.email = 'omarmahmoud@gmail.com'});
+  const ProfilePictureScreen({super.key, required this.user});
 
-  final String email;
+  final User? user;
 
   @override
   ConsumerState<ProfilePictureScreen> createState() =>
@@ -57,13 +58,24 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const AddUsernameScreen(),
+          builder: (context) => AddUsernameScreen(
+            user: widget.user,
+          ),
         ),
       );
     };
+    widget.user!.setProfilePicture(File(pickedFile.path));
     ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
     setState(() {
       _selectedImage = File(pickedFile.path);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
   }
 

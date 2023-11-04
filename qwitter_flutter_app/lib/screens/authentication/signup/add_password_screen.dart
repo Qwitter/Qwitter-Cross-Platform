@@ -3,14 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/profile_picture_screen.dart';
 
-class AddPasswordScreen extends ConsumerWidget {
-  const AddPasswordScreen({super.key, this.email = 'omarmahmoud@gmail.com'});
+class AddPasswordScreen extends ConsumerStatefulWidget {
+  const AddPasswordScreen({super.key, required this.user});
 
-  final String email;
+  final User? user;
 
+  @override
+  ConsumerState<AddPasswordScreen> createState() => _AddPasswordScreenState();
+}
+
+class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   String? passwordValidations(String? password) {
     if (password == null || password.isEmpty) return null;
 
@@ -26,20 +32,32 @@ class AddPasswordScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(nextBarProvider.notifier).setNextBarFunction(null);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     void Function()? buttonFunction;
     final TextEditingController passwordController = TextEditingController();
 
     passwordController.addListener(() {
-      if (passwordController.text.isNotEmpty) {
+      if (passwordController.text.isNotEmpty &&
+          passwordValidations(passwordController.text) == null) {
         buttonFunction = () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ProfilePictureScreen(),
+              builder: (context) => ProfilePictureScreen(
+                user: widget.user,
+              ),
             ),
           );
         };
+        widget.user!.setPassword(passwordController.text);
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {
         buttonFunction = null;

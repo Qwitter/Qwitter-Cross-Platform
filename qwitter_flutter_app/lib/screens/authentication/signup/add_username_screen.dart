@@ -3,11 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
-class AddUsernameScreen extends ConsumerWidget {
-  const AddUsernameScreen({super.key});
+class AddUsernameScreen extends ConsumerStatefulWidget {
+  const AddUsernameScreen({super.key, this.user});
+
+  final User? user;
+
+  @override
+  ConsumerState<AddUsernameScreen> createState() => _AddUsernameScreenState();
+}
+
+class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
   String? usernameValidations(String? username) {
     if (username == null || username.isEmpty) {
       return null;
@@ -22,7 +31,15 @@ class AddUsernameScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(nextBarProvider.notifier).setNextBarFunction(null);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     void Function()? buttonFunction;
     final TextEditingController usernameController = TextEditingController();
 
@@ -36,6 +53,9 @@ class AddUsernameScreen extends ConsumerWidget {
             ),
           );
         };
+        widget.user!.setUsername(usernameController.text);
+        // Perform Sign Up Logic
+
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {
         buttonFunction = null;

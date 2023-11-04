@@ -3,14 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_password_screen.dart';
 
-class ConfirmationCodeScreen extends ConsumerWidget {
-  const ConfirmationCodeScreen(
-      {super.key, this.email = 'omarmahmoud@gmail.com'});
+class ConfirmationCodeScreen extends ConsumerStatefulWidget {
+  const ConfirmationCodeScreen({super.key, this.user});
 
-  final String email;
+  final User? user;
+
+  @override
+  ConsumerState<ConfirmationCodeScreen> createState() =>
+      _ConfirmationCodeScreenState();
+}
+
+class _ConfirmationCodeScreenState
+    extends ConsumerState<ConfirmationCodeScreen> {
   String? codeValidations(String? code) {
     if (code == null || code.isEmpty) return null;
 
@@ -22,17 +30,28 @@ class ConfirmationCodeScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(nextBarProvider.notifier).setNextBarFunction(null);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     void Function()? buttonFunction;
     final TextEditingController codeController = TextEditingController();
 
     codeController.addListener(() {
-      if (codeController.text.isNotEmpty) {
+      if (codeController.text.isNotEmpty &&
+          codeValidations(codeController.text) == null) {
         buttonFunction = () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddPasswordScreen(),
+              builder: (context) => AddPasswordScreen(
+                user: widget.user,
+              ),
             ),
           );
         };
@@ -66,7 +85,7 @@ class ConfirmationCodeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Enter it below to verify $email.',
+              'Enter it below to verify ${widget.user!.getEmail}.',
               textAlign: TextAlign.start,
               style: const TextStyle(
                 fontSize: 15,
@@ -214,53 +233,3 @@ class ConfirmationCodeScreen extends ConsumerWidget {
     );
   }
 }
-// child: AlertDialog(
-//   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-//   title: const Text(
-//     "Didn't receive an email?",
-//     style: TextStyle(
-//       fontSize: 16,
-//       color: Color.fromARGB(255, 222, 222, 222),
-//       fontWeight: FontWeight.w500,
-//     ),
-//   ),
-//   actions: [
-//     Row(
-//       children: [
-//         Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             TextButton(
-//               onPressed: () {
-//                 // Add your action here for the first option.
-//                 Navigator.of(context).pop(); // Close the overlay
-//               },
-//               child: const Text(
-//                 "Resend Email",
-//                 style: TextStyle(
-//                   fontSize: 16,
-//                   color: Color.fromARGB(255, 222, 222, 222),
-//                   fontWeight: FontWeight.w500,
-//                 ),
-//               ),
-//             ),
-//             TextButton(
-//               onPressed: () {
-//                 // Add your action here for the second option.
-//                 Navigator.of(context).pop(); // Close the overlay
-//               },
-//               child: const Text(
-//                 "Cancel",
-//                 style: TextStyle(
-//                   fontSize: 16,
-//                   color: Color.fromARGB(255, 222, 222, 222),
-//                   fontWeight: FontWeight.w500,
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ],
-//     )
-//   ],
-// ),
