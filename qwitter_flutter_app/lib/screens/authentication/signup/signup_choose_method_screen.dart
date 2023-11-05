@@ -6,6 +6,9 @@ import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
+
+import '../../../api/google_signin_api.dart';
 
 class SignupChooseMethodScreen extends StatefulWidget {
   const SignupChooseMethodScreen({super.key});
@@ -40,10 +43,23 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     );
   }
 
-  void signupGoogle() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const SelectLanguagesScreen()),
-    );
+  Future signupGoogle() async {
+    final user = await GoogleSignInApi.login();
+    if (user == null) {
+      // ignore: use_build_context_synchronously
+      print('failed');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sign in failed'),
+        ),
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      print('Working');
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const SuggestedFollowsScreen()),
+      );
+    }
   }
 
   void createAccont() {
