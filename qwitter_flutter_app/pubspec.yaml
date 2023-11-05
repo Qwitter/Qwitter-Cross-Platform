@@ -40,6 +40,12 @@ dependencies:
   intl: ^0.18.1
   video_player: ^2.7.2
   flutter_riverpod: ^2.4.5
+  dotted_border: ^2.1.0
+  image_picker: ^1.0.4
+  shared_preferences: ^2.2.2
+  fluttertoast: ^8.2.2
+  toast: ^0.3.0
+  
 
 dev_dependencies:
   flutter_test:

@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: ForgetNewPasswordScreen(),
+      home: LoginEmailScreen(),
     );
   }
 }

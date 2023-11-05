@@ -4,7 +4,8 @@ import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.da
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 
 class LoginMainScreen extends StatefulWidget {
-  const LoginMainScreen({super.key});
+  const LoginMainScreen({super.key, required this.passedInput});
+  final String passedInput;
 
   @override
   State<LoginMainScreen> createState() => _LoginMainScreenState();
@@ -67,7 +68,7 @@ class _LoginMainScreenState extends State<LoginMainScreen> {
               const SizedBox(height: 30),
               DecoratedTextField(
                 keyboardType: TextInputType.visiblePassword,
-                placeholder: "passed email",
+                placeholder: widget.passedInput,
                 controller: emailController,
                 enabled: false,
               ),
