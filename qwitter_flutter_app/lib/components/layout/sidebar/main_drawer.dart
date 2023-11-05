@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:qwitter_flutter_app/components/layout/sidebar/accounts_widget.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/profile_picture.dart';
-import 'package:qwitter_flutter_app/components/layout/theme_changing_widget.dart';
+import 'package:qwitter_flutter_app/components/layout/sidebar/theme_changing_widget.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
+  final bool isSignedIn = false;
   void _openChangeThemeOverLay(BuildContext context) {
     Navigator.of(context).pop();
     showModalBottomSheet(
         context: context, builder: (context) => const ThemeChangingWidget());
+  }
+
+  void _openChangingAccountsModal(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return AccountsWidget();
+        });
   }
 
   @override
@@ -19,26 +29,113 @@ class MainDrawer extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 60, left: 40, bottom: 15),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const ProfilePicture(
-                      imageURL:
-                          'https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/13/1490989105-twitter1.jpg?resize=480:*',
-                      name: 'Amr Magdy',
-                      username: 'AmrMagdy551267'),
-                  IconButton(
+          if (isSignedIn)
+            Container(
+              margin: const EdgeInsets.only(top: 60, left: 40, bottom: 15),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const ProfilePicture(
+                        imageURL:
+                            'https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/13/1490989105-twitter1.jpg?resize=480:*',
+                        name: 'Amr Magdy',
+                        username: 'AmrMagdy551267'),
+                    IconButton(
+                        onPressed: () {
+                          _openChangingAccountsModal(context);
+                        },
+                        icon: const Icon(
+                          Icons.more_vert_outlined,
+                          color: Colors.black,
+                        ),
+                        padding: const EdgeInsets.only(right: 20)),
+                  ]),
+            )
+          else
+            SafeArea(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Join X Now',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text('Create an offical X account to get the full experience',style: TextStyle(fontSize: 17,color: Colors.grey.shade700),),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton(
                       onPressed: () {},
-                      icon: const Icon(
-                        Icons.more_vert_outlined,
-                        color: Colors.black,
+                      style: ButtonStyle(
+                        splashFactory: NoSplash.splashFactory,
+                        padding: const MaterialStatePropertyAll(
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 65)),
+                        elevation: const MaterialStatePropertyAll(0),
+                        backgroundColor:
+                            const MaterialStatePropertyAll(Colors.blue),
+                        foregroundColor:
+                            const MaterialStatePropertyAll(Colors.white),
+                        shape: MaterialStatePropertyAll(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(35),
+                              side: const BorderSide(
+                                  color: Color.fromARGB(255, 84, 121, 137),
+                                  width: 0.6)),
+                        ),
+                        fixedSize: const MaterialStatePropertyAll(
+                            Size(double.maxFinite, 50)),
                       ),
-                      padding: const EdgeInsets.only(right: 20)),
-                ]),
-          ),
+                      child: const Text(
+                        'Create account',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ButtonStyle(
+                        splashFactory: NoSplash.splashFactory,
+                        padding: const MaterialStatePropertyAll(
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 65)),
+                        elevation: const MaterialStatePropertyAll(0),
+                        backgroundColor:
+                            const MaterialStatePropertyAll(Colors.transparent),
+                        foregroundColor:
+                            const MaterialStatePropertyAll(Colors.white),
+                        shape: MaterialStatePropertyAll(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(35),
+                              side: const BorderSide(
+                                  color: Color.fromARGB(255, 84, 121, 137),
+                                  width: 0.6)),
+                        ),
+                        fixedSize: const MaterialStatePropertyAll(
+                            Size(double.maxFinite, 50)),
+                      ),
+                      child: const Text(
+                        'Log in',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           Divider(
             color: Colors.grey.shade300,
             indent: 30,
@@ -60,6 +157,7 @@ class MainDrawer extends StatelessWidget {
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                   ),
                 ),
+                if(isSignedIn)
                 Container(
                   padding: const EdgeInsets.only(top: 10),
                   child: ListTile(
@@ -99,6 +197,7 @@ class MainDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
+                if(isSignedIn)
                 Container(
                   padding: const EdgeInsets.only(top: 10),
                   child: ListTile(
@@ -112,6 +211,7 @@ class MainDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
+                if(isSignedIn)
                 Container(
                   padding: const EdgeInsets.only(top: 10, bottom: 20),
                   child: ListTile(
@@ -133,7 +233,8 @@ class MainDrawer extends StatelessWidget {
                 Theme(
                   data: ThemeData().copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
-                    tilePadding: const EdgeInsets.only(top: 20, right: 30, left: 30),
+                    tilePadding:
+                        const EdgeInsets.only(top: 20, right: 30, left: 30),
                     childrenPadding: const EdgeInsets.only(left: 20),
                     iconColor: Colors.black,
                     title: const Text(
