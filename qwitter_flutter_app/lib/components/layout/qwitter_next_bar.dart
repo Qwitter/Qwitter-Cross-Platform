@@ -29,9 +29,11 @@ class QwitterNextBar extends ConsumerWidget {
           child: SecondaryButton(
               text: 'Next',
               on_pressed: useProvider
-                  ? () {
-                      buttonFunctionProvider!(context);
-                    }!
+                  ? buttonFunction == null
+                      ? null
+                      : () {
+                          buttonFunctionProvider!(context);
+                        }
                   : buttonFunction),
         ),
       ]),

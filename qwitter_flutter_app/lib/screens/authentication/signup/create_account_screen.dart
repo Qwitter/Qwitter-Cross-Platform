@@ -193,9 +193,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
         buttonFunction = ref.watch(nextBarProvider);
         return QwitterNextBar(
-          buttonFunction: () {
-            buttonFunction!(context);
-          },
+          buttonFunction: buttonFunction == null
+              ? null
+              : () {
+                  buttonFunction!(context);
+                },
           useProvider: true,
         );
       }),

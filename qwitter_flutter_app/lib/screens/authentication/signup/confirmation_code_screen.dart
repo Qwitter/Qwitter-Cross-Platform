@@ -144,12 +144,18 @@ class _ConfirmationCodeScreenState
             ]),
           ),
         ),
-        bottomNavigationBar: QwitterNextBar(
-          buttonFunction: () {
-            buttonFunction!(context);
-          },
-          useProvider: true,
-        ),
+        bottomNavigationBar: Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          buttonFunction = ref.watch(nextBarProvider);
+          return QwitterNextBar(
+            buttonFunction: buttonFunction == null
+                ? null
+                : () {
+                    buttonFunction!(context);
+                  },
+            useProvider: true,
+          );
+        }),
       ),
     );
   }

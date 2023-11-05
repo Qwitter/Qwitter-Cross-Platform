@@ -171,9 +171,11 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
           buttonFunction = ref.watch(nextBarProvider);
           return QwitterNextBar(
-            buttonFunction: () {
-              buttonFunction!(context);
-            },
+            buttonFunction: buttonFunction == null
+                ? null
+                : () {
+                    buttonFunction!(context);
+                  },
             useProvider: true,
           );
         }),
