@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
-import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
