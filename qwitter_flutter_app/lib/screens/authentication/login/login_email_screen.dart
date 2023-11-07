@@ -16,6 +16,7 @@ class LoginEmailScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
+  final TextEditingController emailController = TextEditingController();
   String? inputValidation(String? email) {
     if (email == null || email.isEmpty) return null;
     // email validation api call
@@ -34,9 +35,13 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     void Function(BuildContext)? buttonFunction;
 
     emailController.addListener(() {
@@ -106,6 +111,10 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
                   buttonFunction!(context);
                 },
           useProvider: true,
+          secondaryButtonText: "Fogot password?",
+          secondaryButtonFunction: (){
+            
+          },
         );
       }),
     );

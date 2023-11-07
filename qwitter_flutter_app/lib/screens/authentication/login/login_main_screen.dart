@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
+import 'package:qwitter_flutter_app/providers/login_button_provider.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 
-class LoginMainScreen extends StatefulWidget {
+class LoginMainScreen extends ConsumerStatefulWidget {
   const LoginMainScreen({super.key, required this.passedInput});
   final String passedInput;
 
   @override
-  State<LoginMainScreen> createState() => _LoginMainScreenState();
+  ConsumerState<LoginMainScreen> createState() => _LoginMainScreenState();
 }
 
-class _LoginMainScreenState extends State<LoginMainScreen> {
-  final emailController = TextEditingController();
-  late TextEditingController passController;
-
-  bool isActive = false;
-  void hello() {
-    setState(() {
-      isActive = false;
+class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
+  final TextEditingController passController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
-    passController.clear();
   }
 
   @override
@@ -29,19 +32,45 @@ class _LoginMainScreenState extends State<LoginMainScreen> {
     passController.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    passController = TextEditingController();
-    passController.addListener(() {
-      setState(() {
-        isActive = passController.text.isNotEmpty;
-      });
-    });
+  String? inputValidation(String? email) {
+    if (email == null || email.isEmpty) return null;
+    // email validation api call
+    if (email == "13245678") {
+      return 'email right.';
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    void Function(BuildContext)? buttonFunction;
+
+    passController.addListener(() {
+      if (passController.text.isNotEmpty) {
+        buttonFunction = (context) {
+          if (inputValidation(passController.text) != null) {
+            // go to the feed screen
+          } else {
+            // show toast image with error
+            Fluttertoast.showToast(
+              msg: "Password is wrong",
+              toastLength: Toast.LENGTH_SHORT,
+              backgroundColor: Colors.grey[700],
+              textColor: Colors.white,
+            );
+          }
+        };
+        ref
+            .read(loginButtonProvider.notifier)
+            .setLoginButtonFunction(buttonFunction);
+      } else {
+        buttonFunction = null;
+        ref
+            .read(loginButtonProvider.notifier)
+            .setLoginButtonFunction(buttonFunction);
+      }
+    });
+
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -100,10 +129,19 @@ class _LoginMainScreenState extends State<LoginMainScreen> {
           Container(
             padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
             width: double.infinity,
-            child: SecondaryButton(
-              text: "Login",
-              on_pressed: isActive == true ? hello : null,
-            ),
+            child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              buttonFunction = ref.watch(loginButtonProvider);
+              return SecondaryButton(
+                text: "Login",
+                on_pressed: buttonFunction == null
+                    ? null
+                    : () {
+                        buttonFunction!(context);
+                      },
+                useProvider: true,
+              );
+            }),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
