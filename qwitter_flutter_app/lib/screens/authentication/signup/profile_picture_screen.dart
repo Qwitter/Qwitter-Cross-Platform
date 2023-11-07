@@ -178,6 +178,18 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
                     buttonFunction!(context);
                   },
             useProvider: true,
+            secondaryButtonText: 'Skip for now',
+            secondaryButtonFunction: () {
+              widget.user!.profilePicture = null;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddUsernameScreen(
+                    user: widget.user,
+                  ),
+                ),
+              );
+            },
           );
         }),
       ),

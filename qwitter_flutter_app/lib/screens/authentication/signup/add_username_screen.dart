@@ -21,31 +21,6 @@ class AddUsernameScreen extends ConsumerStatefulWidget {
 class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
   final TextEditingController usernameController = TextEditingController();
 
-  Future<void> sendData() async {
-    final url = Uri.parse('https://api.example.com/send_data');
-
-    // Define the data you want to send as a map
-    final Map<String, String> data = {
-      'email': widget.user!.email!,
-      'name': widget.user!.email!,
-      'password': widget.user!.password!,
-      'birthDate': widget.user!.birthDate!.toString(),
-    };
-
-    final response = await http.post(
-      url,
-      body: data,
-    );
-
-    if (response.statusCode == 200) {
-      // Successfully sent the data
-      print('Data sent successfully');
-    } else {
-      // Handle errors
-      print('Failed to send data. Status code: ${response.statusCode}');
-    }
-  }
-
   String? usernameValidations(String? username) {
     if (username == null || username.isEmpty) {
       return null;
@@ -174,6 +149,16 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
                     buttonFunction!(context);
                   },
             useProvider: true,
+            secondaryButtonText: 'Skip for now',
+            secondaryButtonFunction: () {
+              widget.user!.profilePicture = null;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SuggestedFollowsScreen(),
+                ),
+              );
+            },
           );
         }),
       ),
