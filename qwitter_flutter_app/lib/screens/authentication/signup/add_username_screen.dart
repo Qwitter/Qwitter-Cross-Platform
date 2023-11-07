@@ -6,8 +6,8 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/profile_picture_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
+import 'package:http/http.dart' as http;
 
 class AddUsernameScreen extends ConsumerStatefulWidget {
   const AddUsernameScreen({super.key, this.user});
@@ -19,6 +19,33 @@ class AddUsernameScreen extends ConsumerStatefulWidget {
 }
 
 class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
+  final TextEditingController usernameController = TextEditingController();
+
+  Future<void> sendData() async {
+    final url = Uri.parse('https://api.example.com/send_data');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': widget.user!.email!,
+      'name': widget.user!.email!,
+      'password': widget.user!.password!,
+      'birthDate': widget.user!.birthDate!.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      // Successfully sent the data
+      print('Data sent successfully');
+    } else {
+      // Handle errors
+      print('Failed to send data. Status code: ${response.statusCode}');
+    }
+  }
+
   String? usernameValidations(String? username) {
     if (username == null || username.isEmpty) {
       return null;
@@ -41,9 +68,14 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    usernameController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void Function(BuildContext)? buttonFunction;
-    final TextEditingController usernameController = TextEditingController();
 
     usernameController.addListener(() {
       if (usernameController.text.isNotEmpty &&

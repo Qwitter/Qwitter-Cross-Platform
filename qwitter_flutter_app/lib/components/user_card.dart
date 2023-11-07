@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 
 class UserCard extends StatelessWidget {

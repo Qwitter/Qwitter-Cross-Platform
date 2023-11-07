@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
-import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
@@ -47,15 +46,21 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     final user = await GoogleSignInApi.login();
     if (user == null) {
       // ignore: use_build_context_synchronously
-      print('failed');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Sign in failed'),
         ),
       );
     } else {
+      final username = user.displayName;
+      final email = user.email;
       // ignore: use_build_context_synchronously
-      print('Working');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign in successful $username with email $email'),
+        ),
+      );
+      // ignore: use_build_context_synchronously
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const SuggestedFollowsScreen()),
       );
@@ -104,7 +109,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
                     width: 24,
                     height: 24),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               const Padding(

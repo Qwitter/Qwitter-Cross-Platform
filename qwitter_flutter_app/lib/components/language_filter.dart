@@ -116,40 +116,45 @@ class _LanguageFilterState extends ConsumerState<LanguageFilter> {
             ),
             style: const TextStyle(color: Colors.white),
           ),
-          Column(
-            children: [
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: filtered_languages.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(filtered_languages[index],
-                        style: const TextStyle(
-                            fontSize: 18,
-                            color: Color.fromARGB(255, 222, 222, 222),
-                            fontWeight: FontWeight.w600)),
-                    trailing: Checkbox(
-                      value: selected_languages[
-                          widget.languages.indexOf(filtered_languages[index])],
-                      onChanged: (value) {
-                        setState(() {
-                          selected_languages[widget.languages
-                              .indexOf(filtered_languages[index])] = value!;
-                        });
-                        ref
-                            .read(languagesProvider.notifier)
-                            .toggleLanguage(filtered_languages[index]);
-                      },
-                      activeColor: Colors.blue,
-                      checkColor: Colors.white,
-                      side: const BorderSide(color: Colors.white),
-                    ),
-                  );
+          ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: filtered_languages.length,
+            itemBuilder: (context, index) {
+              return CheckboxListTile(
+                title: Text(
+                  filtered_languages[index],
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Color.fromARGB(255, 222, 222, 222),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                value: selected_languages[
+                    widget.languages.indexOf(filtered_languages[index])],
+                onChanged: (value) {
+                  setState(() {
+                    selected_languages[widget.languages
+                        .indexOf(filtered_languages[index])] = value!;
+                  });
+                  ref
+                      .read(languagesProvider.notifier)
+                      .toggleLanguage(filtered_languages[index]);
                 },
-              ),
-            ],
+                side: MaterialStateBorderSide.resolveWith(
+                  (states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return const BorderSide(width: 0, color: Colors.blue);
+                    }
+                    return const BorderSide(width: 1.5, color: Colors.white);
+                  },
+                ),
+                activeColor: Colors.blue,
+                checkColor: Colors.white,
+                controlAffinity: ListTileControlAffinity.trailing,
+              );
+            },
           ),
         ],
       ),

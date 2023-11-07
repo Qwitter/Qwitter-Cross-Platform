@@ -17,6 +17,8 @@ class AddPasswordScreen extends ConsumerStatefulWidget {
 }
 
 class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
+  final TextEditingController passwordController = TextEditingController();
+
   String? passwordValidations(String? password) {
     if (password == null || password.isEmpty) return null;
 
@@ -40,9 +42,14 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    passwordController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void Function(BuildContext)? buttonFunction;
-    final TextEditingController passwordController = TextEditingController();
     passwordController.addListener(() {
       if (passwordController.text.isNotEmpty &&
           passwordValidations(passwordController.text) == null) {

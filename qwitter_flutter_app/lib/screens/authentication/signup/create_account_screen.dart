@@ -8,7 +8,6 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
 class CreateAccountScreen extends ConsumerStatefulWidget {
   const CreateAccountScreen({super.key});
@@ -19,6 +18,9 @@ class CreateAccountScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController birthdayController = TextEditingController();
   String? usernameValidations(String? username) {
     if (username == null || username.isEmpty) return null;
     if (username.length < 3 || username.length > 30) {
@@ -48,10 +50,23 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(nextBarProvider.notifier).setNextBarFunction(null);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    usernameController.dispose();
+    emailController.dispose();
+    birthdayController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController birthdayController = TextEditingController();
     void Function(BuildContext)? buttonFunction;
     User user = User();
 
@@ -89,6 +104,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     }
 
     Future<void> _showDatePicker(BuildContext context) async {
+      // ignore: unused_local_variable
       final DateTime? selectedDate = await showCupertinoModalPopup<DateTime>(
         context: context,
         builder: (BuildContext context) {
@@ -110,7 +126,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 ),
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
-                  initialDateTime: DateTime.now(),
+                  initialDateTime: DateTime.now().subtract(
+                    const Duration(days: 365 * 21),
+                  ),
+                  maximumDate: DateTime.now(),
+                  maximumYear: DateTime.now().year,
                   onDateTimeChanged: (DateTime newDateTime) {
                     // Update the text field with the selected date
                     birthdayController.text =
@@ -123,11 +143,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
           );
         },
       );
-
-      if (selectedDate != null) {
-        // Handle the selected date
-        // You can format the date as needed and update your controller
-      }
     }
 
     return Scaffold(

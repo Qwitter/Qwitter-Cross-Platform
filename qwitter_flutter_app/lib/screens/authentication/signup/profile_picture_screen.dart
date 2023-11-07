@@ -3,7 +3,6 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
@@ -46,14 +45,15 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     ),
   );
 
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
+  Future<void> _pickImage(ImageSource source, selectedImage) async {
+    var pickedFile = await ImagePicker().pickImage(source: source);
 
-    if (pickedFile == null) {
+    if (pickedFile == null && selectedImage == null) {
       buttonFunction = null;
       ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       return;
     }
+    pickedFile = pickedFile ?? selectedImage;
     buttonFunction = (context) {
       Navigator.push(
         context,
@@ -64,10 +64,10 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
         ),
       );
     };
-    widget.user!.setProfilePicture(File(pickedFile.path));
+    widget.user!.setProfilePicture(File(pickedFile!.path));
     ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
     setState(() {
-      _selectedImage = File(pickedFile.path);
+      _selectedImage = File(pickedFile!.path);
     });
   }
 
@@ -152,7 +152,8 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
-                          _pickImage(ImageSource.gallery); // Open the gallery
+                          _pickImage(ImageSource.gallery,
+                              _selectedImage); // Open the gallery
                         },
                         child: ClipRRect(
                           borderRadius:

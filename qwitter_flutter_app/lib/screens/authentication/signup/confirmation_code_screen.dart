@@ -19,6 +19,8 @@ class ConfirmationCodeScreen extends ConsumerStatefulWidget {
 
 class _ConfirmationCodeScreenState
     extends ConsumerState<ConfirmationCodeScreen> {
+  final TextEditingController codeController = TextEditingController();
+
   String? codeValidations(String? code) {
     if (code == null || code.isEmpty) return null;
 
@@ -38,9 +40,14 @@ class _ConfirmationCodeScreenState
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    codeController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void Function(BuildContext)? buttonFunction;
-    final TextEditingController codeController = TextEditingController();
 
     codeController.addListener(() {
       if (codeController.text.isNotEmpty &&
