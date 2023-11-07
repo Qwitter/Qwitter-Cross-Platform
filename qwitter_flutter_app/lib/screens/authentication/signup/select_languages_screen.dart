@@ -77,131 +77,138 @@ class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
   @override
   Widget build(BuildContext context) {
     final selectedLanguages = ref.watch(languagesProvider);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(
-          showLogoOnly: true,
+    return WillPopScope(
+      onWillPop: () async {
+        ref.read(languagesProvider.notifier).clearLanguages();
+        return true;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(75),
+          child: QwitterAppBar(
+            showLogoOnly: true,
+          ),
         ),
-      ),
-      body: Container(
-        width: double.infinity,
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
-        child: CustomScrollView(
-          slivers: [
-            const SliverToBoxAdapter(
-              child: Text(
-                'Select your language(s)',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: Color.fromARGB(255, 222, 222, 222),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 10)),
-            const SliverToBoxAdapter(
-              child: Text(
-                'Select the language(s) you want to use to personalize your X experience.',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Color.fromARGB(255, 132, 132, 132),
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 5)),
-            SliverToBoxAdapter(
-              child: TextField(
-                controller: search_controller,
-                cursorColor: Colors.blue,
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  prefixIconColor: Colors.grey,
-                  hintText: 'Search languages',
-                  hintStyle:
-                      const TextStyle(color: Color.fromARGB(255, 93, 99, 106)),
-                  prefixIcon: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Icon(
-                      Icons.search,
-                      size: 32,
-                    ),
+        body: Container(
+          width: double.infinity,
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
+          child: CustomScrollView(
+            slivers: [
+              const SliverToBoxAdapter(
+                child: Text(
+                  'Select your language(s)',
+                  style: TextStyle(
+                    fontSize: 28,
+                    color: Color.fromARGB(255, 222, 222, 222),
+                    fontWeight: FontWeight.w600,
                   ),
-                  suffixIcon: search_controller.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(
-                            BootstrapIcons.x_circle,
-                            size: 20,
-                            color: Color.fromARGB(255, 93, 99, 106),
-                          ),
-                          onPressed: () {
-                            search_controller.clear();
-                          },
-                        )
-                      : null,
-                  border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                      borderSide: BorderSide.none),
-                  fillColor: const Color.fromARGB(255, 32, 35, 40),
-                  filled: true,
                 ),
-                style: const TextStyle(color: Colors.white),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => CheckboxListTile(
-                  title: Text(
-                    filtered_languages[index],
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: Color.fromARGB(255, 222, 222, 222),
-                      fontWeight: FontWeight.w600,
-                    ),
+              const SliverToBoxAdapter(child: SizedBox(height: 10)),
+              const SliverToBoxAdapter(
+                child: Text(
+                  'Select the language(s) you want to use to personalize your X experience.',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Color.fromARGB(255, 132, 132, 132),
                   ),
-                  value: selected_languages[
-                      widget.languages.indexOf(filtered_languages[index])],
-                  onChanged: (value) {
-                    setState(() {
-                      selected_languages[widget.languages
-                          .indexOf(filtered_languages[index])] = value!;
-                    });
-                    ref
-                        .read(languagesProvider.notifier)
-                        .toggleLanguage(filtered_languages[index]);
-                  },
-                  side: MaterialStateBorderSide.resolveWith(
-                    (states) {
-                      if (states.contains(MaterialState.selected)) {
-                        return const BorderSide(width: 0, color: Colors.blue);
-                      }
-                      return const BorderSide(width: 1.5, color: Colors.white);
+                ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 5)),
+              SliverToBoxAdapter(
+                child: TextField(
+                  controller: search_controller,
+                  cursorColor: Colors.blue,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
+                    prefixIconColor: Colors.grey,
+                    hintText: 'Search languages',
+                    hintStyle: const TextStyle(
+                        color: Color.fromARGB(255, 93, 99, 106)),
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Icon(
+                        Icons.search,
+                        size: 32,
+                      ),
+                    ),
+                    suffixIcon: search_controller.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(
+                              BootstrapIcons.x_circle,
+                              size: 20,
+                              color: Color.fromARGB(255, 93, 99, 106),
+                            ),
+                            onPressed: () {
+                              search_controller.clear();
+                            },
+                          )
+                        : null,
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        borderSide: BorderSide.none),
+                    fillColor: const Color.fromARGB(255, 32, 35, 40),
+                    filled: true,
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => CheckboxListTile(
+                    title: Text(
+                      filtered_languages[index],
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Color.fromARGB(255, 222, 222, 222),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    value: selected_languages[
+                        widget.languages.indexOf(filtered_languages[index])],
+                    onChanged: (value) {
+                      setState(() {
+                        selected_languages[widget.languages
+                            .indexOf(filtered_languages[index])] = value!;
+                      });
+                      ref
+                          .read(languagesProvider.notifier)
+                          .toggleLanguage(filtered_languages[index]);
                     },
-                  ),
-                  activeColor: Colors.blue,
-                  checkColor: Colors.white,
-                  controlAffinity: ListTileControlAffinity.trailing,
-                ),
-                childCount: widget.languages.length,
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: QwitterNextBar(
-          buttonFunction: selectedLanguages.isEmpty
-              ? null
-              : () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const CreateAccountScreen(),
+                    side: MaterialStateBorderSide.resolveWith(
+                      (states) {
+                        if (states.contains(MaterialState.selected)) {
+                          return const BorderSide(width: 0, color: Colors.blue);
+                        }
+                        return const BorderSide(
+                            width: 1.5, color: Colors.white);
+                      },
                     ),
-                  );
-                }),
+                    activeColor: Colors.blue,
+                    checkColor: Colors.white,
+                    controlAffinity: ListTileControlAffinity.trailing,
+                  ),
+                  childCount: widget.languages.length,
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: QwitterNextBar(
+            buttonFunction: selectedLanguages.isEmpty
+                ? null
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const CreateAccountScreen(),
+                      ),
+                    );
+                  }),
+      ),
     );
   }
 }
