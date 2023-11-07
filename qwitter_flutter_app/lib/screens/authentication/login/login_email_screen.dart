@@ -5,6 +5,7 @@ import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_fiel
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_main_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -112,8 +113,11 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
                 },
           useProvider: true,
           secondaryButtonText: "Fogot password?",
-          secondaryButtonFunction: (){
-            
+          secondaryButtonFunction: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ForgetPasswordScreen()));
           },
         );
       }),

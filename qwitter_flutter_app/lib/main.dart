@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/account_information_screen.dart';
 import 'package:qwitter_flutter_app/components/account_settings_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_new_password_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 // import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
