@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qwitter_flutter_app/providers/login_button_provider.dart';
+import 'package:qwitter_flutter_app/providers/secondary_button_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 
 class SecondaryButton extends ConsumerWidget {
@@ -23,7 +23,7 @@ class SecondaryButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final buttonFunctionProvider = ref.watch(loginButtonProvider);
+    final buttonFunctionProvider = ref.watch(secondaryButtonProvider);
     return ButtonTheme(
       height: 50,
       child: ElevatedButton(

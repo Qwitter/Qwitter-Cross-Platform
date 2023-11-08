@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/underlined_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_back_app_bar.dart';
+import 'package:qwitter_flutter_app/providers/primary_button_provider.dart';
 
-class UpdatePasswordScreen extends StatefulWidget {
+class UpdatePasswordScreen extends ConsumerStatefulWidget {
   const UpdatePasswordScreen({super.key});
 
   @override
-  State<UpdatePasswordScreen> createState() => _UpdatePasswordScreenState();
+  ConsumerState<UpdatePasswordScreen> createState() =>
+      _UpdatePasswordScreenState();
 }
 
-class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
-  late TextEditingController currentPassController;
-  late TextEditingController firstNewPassController;
-  late TextEditingController secondNewPassController;
-
-  bool isActive = false;
-  void hello() {
-    setState(() {
-      isActive = false;
-    });
-    currentPassController.clear();
-    firstNewPassController.clear();
-    secondNewPassController.clear();
-  }
+class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
+  final TextEditingController currentPassController = TextEditingController();
+  final TextEditingController firstNewPassController = TextEditingController();
+  final TextEditingController secondNewPassController = TextEditingController();
 
   @override
   void dispose() {
@@ -36,24 +30,78 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   @override
   void initState() {
     super.initState();
-    currentPassController = TextEditingController();
-    firstNewPassController = TextEditingController();
-    secondNewPassController = TextEditingController();
-    currentPassController.addListener(updateIsState);
-    firstNewPassController.addListener(updateIsState);
-    secondNewPassController.addListener(updateIsState);
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(primaryButtonProvider.notifier).setPrimaryButtonFunction(null);
+    });
   }
 
-  void updateIsState() {
-    setState(() {
-      isActive = currentPassController.text.isNotEmpty &&
-          firstNewPassController.text.isNotEmpty &&
-          secondNewPassController.text.isNotEmpty;
-    });
+  String? passwordValidations(String? password) {
+    if (password == null || password.isEmpty) return null;
+
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+
+    if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d).+$').hasMatch(password)) {
+      return 'Password must contain at least one letter and one number.';
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    void Function(BuildContext)? buttonFunction;
+
+    for (final controller in [
+      currentPassController,
+      firstNewPassController,
+      secondNewPassController,
+    ]) {
+      controller.addListener(() {
+        if (currentPassController.text.isNotEmpty &&
+            firstNewPassController.text.isNotEmpty &&
+            secondNewPassController.text.isNotEmpty) {
+          if (passwordValidations(firstNewPassController.text) == null &&
+              passwordValidations(secondNewPassController.text) == null &&
+              firstNewPassController.text == secondNewPassController.text) {
+            //! you should add function to check that the input password is the same as the current password
+            buttonFunction = (context) {
+              // navigate to next screen
+            };
+          } else {
+            buttonFunction = (context) {
+              String msg = "";
+
+              if (firstNewPassController.text != secondNewPassController.text) {
+                msg = "Passwords do not match";
+              } else if (passwordValidations(firstNewPassController.text) !=
+                  null) {
+                msg = passwordValidations(firstNewPassController.text)!;
+                if (passwordValidations(secondNewPassController.text) != null) {
+                  msg = passwordValidations(secondNewPassController.text)!;
+                }
+              }
+              Fluttertoast.showToast(
+                msg: msg,
+                toastLength: Toast.LENGTH_SHORT,
+                backgroundColor: Colors.grey[700],
+                textColor: Colors.white,
+              );
+            };
+          }
+          ref
+              .read(primaryButtonProvider.notifier)
+              .setPrimaryButtonFunction(buttonFunction);
+        } else {
+          buttonFunction = null;
+          ref
+              .read(primaryButtonProvider.notifier)
+              .setPrimaryButtonFunction(buttonFunction);
+        }
+      });
+    }
+
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -83,8 +131,19 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                 placeholder: "",
                 controller: secondNewPassController,
               ),
-              PrimaryButton(
-                  text: "Update password", on_pressed: isActive ? hello : null),
+              Consumer(builder:
+                  (BuildContext context, WidgetRef ref, Widget? child) {
+                buttonFunction = ref.watch(primaryButtonProvider);
+                return PrimaryButton(
+                  text: "Update password",
+                  useProvider: true,
+                  on_pressed: buttonFunction == null
+                      ? null
+                      : () {
+                          buttonFunction!(context);
+                        },
+                );
+              }),
               TextButton(
                 onPressed: () {},
                 child: Text("Forgotten your password?",
