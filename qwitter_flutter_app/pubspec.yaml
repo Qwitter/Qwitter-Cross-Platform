@@ -46,6 +46,7 @@ dependencies:
   fluttertoast: ^8.2.2
   toast: ^0.3.0
   google_sign_in: ^6.1.5
+  http: ^1.1.0
   
 
 dev_dependencies:
@@ -74,6 +75,8 @@ flutter:
   assets:
     - assets/images/google.png
     - assets/images/apple.png
+    - assets/images/pfp.jpg
+    - assets/images/x_logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

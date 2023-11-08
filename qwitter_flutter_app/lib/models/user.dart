@@ -7,6 +7,7 @@ class User {
   String? fullName;
   String? birthDate;
   String? password;
+  List? usernameSuggestions;
   File? profilePicture;
 
   User({
@@ -16,6 +17,7 @@ class User {
     this.fullName,
     this.birthDate,
     this.password,
+    this.usernameSuggestions,
     this.profilePicture,
   });
 
@@ -56,6 +58,11 @@ class User {
     return this;
   }
 
+  User setUsernameSuggestions(List? usernameSuggestions) {
+    this.usernameSuggestions = usernameSuggestions;
+    return this;
+  }
+
   // Add all getters
 
   int? get getId {
@@ -84,6 +91,10 @@ class User {
 
   File? get getProfilePicture {
     return profilePicture;
+  }
+
+  List? get getUsernameSuggestions {
+    return usernameSuggestions;
   }
 
   factory User.fromJson(Map<String, dynamic> json) {

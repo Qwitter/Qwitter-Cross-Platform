@@ -7,7 +7,6 @@ import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
-import 'package:http/http.dart' as http;
 
 class AddUsernameScreen extends ConsumerStatefulWidget {
   const AddUsernameScreen({super.key, this.user});
@@ -26,7 +25,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
       return null;
     }
 
-    if (!RegExp(r'^[a-zA-Z0-9](?!.*__)(?!.*_$)[a-zA-Z0-9_]{0,14}$')
+    if (!RegExp(r'^[a-zA-Z0-9](?!.*__)(?!.*_$)[a-zA-Z0-9_]{0,30}$')
         .hasMatch(username)) {
       return 'Invalid Twitter username. Please check the format.';
     }
@@ -37,6 +36,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
   @override
   void initState() {
     super.initState();
+    usernameController.text = widget.user!.username!;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
@@ -77,15 +77,17 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
     });
     return WillPopScope(
       onWillPop: () {
-        buttonFunction = (context) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AddUsernameScreen(
-                user: widget.user,
-              ),
-            ),
-          );
-        };
+        buttonFunction = widget.user!.getProfilePicture == null
+            ? null
+            : (context) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AddUsernameScreen(
+                      user: widget.user,
+                    ),
+                  ),
+                );
+              };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
         return Future.value(true);
       },
@@ -133,6 +135,28 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
                       controller: usernameController,
                       validator: usernameValidations,
                     ),
+                    const SizedBox(height: 10),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (final suggestion
+                              in widget.user!.usernameSuggestions!)
+                            TextButton(
+                              onPressed: () {
+                                usernameController.text = suggestion;
+                              },
+                              child: Text(
+                                suggestion,
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),

@@ -181,6 +181,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
             secondaryButtonText: 'Skip for now',
             secondaryButtonFunction: () {
               widget.user!.profilePicture = null;
+              print('Username : ${widget.user!.username}');
               Navigator.push(
                 context,
                 MaterialPageRoute(

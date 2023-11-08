@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
@@ -82,6 +83,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             usernameValidations(usernameController.text) == null &&
             emailValidations(emailController.text) == null) {
           buttonFunction = (context) {
+            user.fullName = usernameController.text;
+            user.email = emailController.text;
+            user.birthDate = birthdayController.text;
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -105,38 +109,40 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
 
     Future<void> _showDatePicker(BuildContext context) async {
       // ignore: unused_local_variable
+      FocusScope.of(context).unfocus();
       final DateTime? selectedDate = await showCupertinoModalPopup<DateTime>(
         context: context,
         builder: (BuildContext context) {
-          return Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SizedBox(
-              height: 220,
+          return Expanded(
+            child: Positioned(
+              bottom: 0,
               width: double.infinity,
-              child: CupertinoTheme(
-                data: const CupertinoThemeData(
-                  textTheme: CupertinoTextThemeData(
-                    dateTimePickerTextStyle: TextStyle(
-                      color: Color.fromARGB(255, 222, 222, 222),
-                      fontSize: 20,
+              child: SizedBox(
+                height: 220,
+                width: double.infinity,
+                child: CupertinoTheme(
+                  data: const CupertinoThemeData(
+                    textTheme: CupertinoTextThemeData(
+                      dateTimePickerTextStyle: TextStyle(
+                        color: Color.fromARGB(255, 222, 222, 222),
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                ),
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  initialDateTime: DateTime.now().subtract(
-                    const Duration(days: 365 * 21),
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: DateTime.now().subtract(
+                      const Duration(days: 365 * 21),
+                    ),
+                    maximumDate: DateTime.now(),
+                    maximumYear: DateTime.now().year,
+                    onDateTimeChanged: (DateTime newDateTime) {
+                      // Update the text field with the selected date
+                      birthdayController.text =
+                          "${newDateTime.year}-${newDateTime.month}-${newDateTime.day}";
+                    },
+                    backgroundColor: Colors.black,
                   ),
-                  maximumDate: DateTime.now(),
-                  maximumYear: DateTime.now().year,
-                  onDateTimeChanged: (DateTime newDateTime) {
-                    // Update the text field with the selected date
-                    birthdayController.text =
-                        "${newDateTime.year}-${newDateTime.month}-${newDateTime.day}";
-                  },
-                  backgroundColor: Colors.black,
                 ),
               ),
             ),
@@ -152,56 +158,93 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
           showLogoOnly: true,
         ),
       ),
-      body: Container(
-        width: double.infinity,
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(children: [
-            const Text(
-              'Create your account',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 30,
-                color: Color.fromARGB(255, 222, 222, 222),
-                fontWeight: FontWeight.w600,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Container(
+          width: double.infinity,
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            child: Column(children: [
+              const Text(
+                'Create your account',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Color.fromARGB(255, 222, 222, 222),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox(height: 112),
-            Form(
-              child: Column(
-                children: [
-                  DecoratedTextField(
-                    keyboardType: TextInputType.name,
-                    placeholder: 'Name',
-                    max_length: 50,
-                    controller: usernameController,
-                    validator: usernameValidations,
-                  ),
-                  DecoratedTextField(
-                    keyboardType: TextInputType.emailAddress,
-                    placeholder: 'Email',
-                    controller: emailController,
-                    validator: emailValidations,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 18),
-                    child: GestureDetector(
-                      onTap: () {
-                        _showDatePicker(context);
-                      },
-                      child: DecoratedTextField(
-                        keyboardType: TextInputType.none,
-                        placeholder: 'Date of birth',
-                        controller: birthdayController,
-                        enabled: false,
+              const SizedBox(height: 112),
+              Form(
+                child: Column(
+                  children: [
+                    DecoratedTextField(
+                      keyboardType: TextInputType.name,
+                      placeholder: 'Name',
+                      max_length: 50,
+                      controller: usernameController,
+                      validator: usernameValidations,
+                    ),
+                    DecoratedTextField(
+                      keyboardType: TextInputType.emailAddress,
+                      placeholder: 'Email',
+                      controller: emailController,
+                      validator: emailValidations,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 18),
+                      child: GestureDetector(
+                        onTap: () {
+                          if (defaultTargetPlatform == TargetPlatform.iOS)
+                            _showDatePicker(context);
+                          else {
+                            FocusScope.of(context).unfocus();
+                            showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now().subtract(
+                                const Duration(days: 365 * 21),
+                              ),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime.now(),
+                              builder: (BuildContext context, Widget? child) {
+                                return Theme(
+                                  data: ThemeData(
+                                    primarySwatch: Colors
+                                        .blue, // Customize other theme attributes as needed
+                                    primaryColor: Colors.black,
+                                    colorScheme: const ColorScheme.light(
+                                      primary: Colors.black,
+                                    ),
+                                    buttonTheme: const ButtonThemeData(
+                                        textTheme: ButtonTextTheme.primary),
+                                  ),
+                                  child: child!,
+                                );
+                              },
+                            ).then((value) {
+                              if (value != null) {
+                                birthdayController.text =
+                                    "${value.year}-${value.month}-${value.day}";
+                              }
+                            });
+                          }
+                        },
+                        child: DecoratedTextField(
+                          keyboardType: TextInputType.none,
+                          placeholder: 'Date of birth',
+                          controller: birthdayController,
+                          enabled: false,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ]),
+            ]),
+          ),
         ),
       ),
       bottomNavigationBar: Consumer(

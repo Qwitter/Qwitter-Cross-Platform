@@ -27,8 +27,7 @@ class QwitterAppBar extends StatelessWidget {
               : !isButton
                   ? const CircleAvatar(
                       radius: 13,
-                      backgroundImage: NetworkImage(
-                          'https://ih1.redbubble.net/image.2967438346.0043/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg'),
+                      backgroundImage: AssetImage('assets/images/avatar.png'),
                     )
                   : IconButton(
                       onPressed: onPressed,
@@ -41,10 +40,7 @@ class QwitterAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: showLogoOnly ? MainAxisSize.min : MainAxisSize.max,
             children: [
-              Image.network(
-                  'https://freelogopng.com/images/all_img/1690643777twitter-x%20logo-png-white.png',
-                  width: 24,
-                  height: 24),
+              Image.asset('assets/images/x_logo.png', width: 24, height: 24),
             ],
           ),
         ],

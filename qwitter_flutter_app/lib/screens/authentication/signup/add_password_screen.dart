@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
@@ -6,6 +7,8 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/profile_picture_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
 
 class AddPasswordScreen extends ConsumerStatefulWidget {
   const AddPasswordScreen({super.key, required this.user});
@@ -33,9 +36,39 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     return null;
   }
 
+  Future<bool> sendData() async {
+    final url = Uri.parse('http://192.168.1.218:3001/signup');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': widget.user!.email!,
+      'name': widget.user!.email!,
+      'password': widget.user!.password!,
+      'birthDate': widget.user!.birthDate!.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      // Successfully sent the data
+      final responseBody = json.decode(response.body);
+      widget.user!.setUsername(responseBody['data']['userName']);
+      widget.user!.setUsernameSuggestions(responseBody['suggestions']);
+      return true;
+    } else {
+      // Handle errors
+      return false;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    ToastContext ctx = ToastContext();
+    ctx.init(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
@@ -54,6 +87,12 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       if (passwordController.text.isNotEmpty &&
           passwordValidations(passwordController.text) == null) {
         buttonFunction = (context) {
+          widget.user!.password = passwordController.text;
+          sendData()
+              .then((value) => Toast.show('Data sent successfully'))
+              .onError((error, stackTrace) =>
+                  Toast.show('Error sending data $stackTrace'));
+
           Navigator.push(
             context,
             MaterialPageRoute(
