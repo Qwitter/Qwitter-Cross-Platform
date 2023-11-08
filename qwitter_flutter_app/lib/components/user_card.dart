@@ -13,8 +13,7 @@ class UserCard extends StatelessWidget {
         minVerticalPadding: 0,
         leading: const CircleAvatar(
           radius: 20,
-          backgroundImage: NetworkImage(
-              'https://ih1.redbubble.net/image.2967438346.0043/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg'),
+          backgroundImage: AssetImage('assets/images/pfp.jpg'),
         ),
         title: const Text(
           'Abdallah',

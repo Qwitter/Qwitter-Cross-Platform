@@ -57,7 +57,19 @@ void main() {
     // Submit the form
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
-    // Verify the confirmation screen is displayed
+
     expect(find.text('Create your account'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).at(0), 'test');
+    await tester.enterText(find.byType(TextField).at(1), 'test@example.com');
+
+    await tester.pumpAndSettle();
+
+    // Submit the form
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    // Verify the confirmation screen is displayed
+    expect(find.text('We sent you a code'), findsOneWidget);
+    expect(find.text('Create your account'), findsNothing);
   });
 }
