@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/providers/login_button_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 
-class SecondaryButton extends StatelessWidget {
+class SecondaryButton extends ConsumerWidget {
   const SecondaryButton(
       {super.key,
       required this.text,
+      this.useProvider = false,
       required this.on_pressed,
       this.paddingValue =
           const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -16,9 +19,11 @@ class SecondaryButton extends StatelessWidget {
   final VoidCallback? on_pressed;
   final EdgeInsets? paddingValue;
   final TextStyle? textStyle;
+  final bool useProvider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final buttonFunctionProvider = ref.watch(loginButtonProvider);
     return ButtonTheme(
       height: 50,
       child: ElevatedButton(
@@ -34,7 +39,13 @@ class SecondaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(24), // Custom shape
           ),
         ),
-        onPressed: on_pressed,
+        onPressed: useProvider
+            ? on_pressed == null
+                ? null
+                : () {
+                    buttonFunctionProvider!(context);
+                  }
+            : on_pressed,
         child: Text(
           text,
           style: textStyle,

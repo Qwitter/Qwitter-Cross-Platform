@@ -7,6 +7,7 @@ import 'package:qwitter_flutter_app/components/account_settings_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/complements/change_email_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/complements/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_new_password_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 // import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignupChooseMethodScreen(),
+      home: LoginEmailScreen(),
     );
   }
 }
