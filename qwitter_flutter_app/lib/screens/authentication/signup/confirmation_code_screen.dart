@@ -28,7 +28,8 @@ class _ConfirmationCodeScreenState
   final TextEditingController codeController = TextEditingController();
 
   Future<String> sendVerificationEmail() async {
-    final url = Uri.parse('http://192.168.1.218:3001/sendMail');
+    final url = Uri.parse(
+        'http://192.168.86.7:3000/api/v1/auth/send-verification-email');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
@@ -47,7 +48,7 @@ class _ConfirmationCodeScreenState
 
   Future verifyEmail() async {
     final url = Uri.parse(
-        'http://192.168.1.218:3001/verifyMail/${codeController.text}');
+        'http://192.168.86.7:3000/verify-email/${codeController.text}');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
@@ -59,6 +60,7 @@ class _ConfirmationCodeScreenState
       body: data,
     );
 
+    print(response.body);
     return response;
   }
 
@@ -96,9 +98,9 @@ class _ConfirmationCodeScreenState
           codeValidations(codeController.text) == null) {
         buttonFunction = (context) {
           verifyEmail().then((value) {
-            Toast.show(json.decode(value.body)['message']);
+            // Toast.show(json.decode(value.body)['message']);
             if (value.statusCode == 200) {
-              if (widget.user!.fullName != null) {
+              if (widget.user!.fullName  != null) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(

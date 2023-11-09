@@ -11,7 +11,7 @@ import 'package:qwitter_flutter_app/screens/authentication/login/login_main_scre
 import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
 
 class ForgetPasswordScreenEmail extends ConsumerStatefulWidget {
-  const ForgetPasswordScreenEmail({super.key});
+  const   ForgetPasswordScreenEmail({super.key});
 
   @override
   ConsumerState<ForgetPasswordScreenEmail> createState() =>
@@ -32,7 +32,7 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
   Future<http.Response> sendEmail() async {
     print("first");
     final url =
-        Uri.parse('http://192.168.1.106:3000/api/v1/auth/check-existence');
+        Uri.parse('http://192.168.86.7:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

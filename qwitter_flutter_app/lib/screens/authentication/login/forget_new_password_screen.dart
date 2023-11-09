@@ -97,7 +97,7 @@ class _ForgetNewPasswordScreenState
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(isButton: true),
+        child: QwitterAppBar(showLogoOnly: true),
       ),
       body: SingleChildScrollView(
         child: Container(
