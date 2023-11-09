@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
-import 'package:qwitter_flutter_app/providers/login_button_provider.dart';
+import 'package:qwitter_flutter_app/providers/secondary_button_provider.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 
 class LoginMainScreen extends ConsumerStatefulWidget {
@@ -61,13 +61,13 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
           }
         };
         ref
-            .read(loginButtonProvider.notifier)
-            .setLoginButtonFunction(buttonFunction);
+            .read(secondaryButtonProvider.notifier)
+            .setSecondaryButtonFunction(buttonFunction);
       } else {
         buttonFunction = null;
         ref
-            .read(loginButtonProvider.notifier)
-            .setLoginButtonFunction(buttonFunction);
+            .read(secondaryButtonProvider.notifier)
+            .setSecondaryButtonFunction(buttonFunction);
       }
     });
 
@@ -131,7 +131,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
             width: double.infinity,
             child: Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              buttonFunction = ref.watch(loginButtonProvider);
+              buttonFunction = ref.watch(secondaryButtonProvider);
               return SecondaryButton(
                 text: "Login",
                 on_pressed: buttonFunction == null

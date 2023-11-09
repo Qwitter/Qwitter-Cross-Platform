@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/providers/primary_button_provider.dart';
 
-class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({super.key, required this.text, this.on_pressed});
+class PrimaryButton extends ConsumerWidget {
+  const PrimaryButton({
+    super.key,
+    required this.text,
+    this.on_pressed,
+    this.useProvider = false,
+  });
 
   final String text;
   final VoidCallback? on_pressed;
+  final bool useProvider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final buttonFunctionProvider = ref.watch(primaryButtonProvider);
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor:
@@ -21,7 +30,13 @@ class PrimaryButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(24), // Custom shape
         ),
       ),
-      onPressed: on_pressed,
+      onPressed: useProvider
+          ? on_pressed == null
+              ? null
+              : () {
+                  buttonFunctionProvider!(context);
+                }
+          : on_pressed,
       child: Text(text),
     );
   }
