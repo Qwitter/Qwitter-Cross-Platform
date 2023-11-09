@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
 
 class CreateAccountScreen extends ConsumerStatefulWidget {
   const CreateAccountScreen({super.key});
@@ -22,6 +25,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController birthdayController = TextEditingController();
+  User user = User();
+  String? unavailableEmail;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   String? usernameValidations(String? username) {
     if (username == null || username.isEmpty) return null;
     if (username.length < 3 || username.length > 30) {
@@ -47,12 +54,19 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       return 'Invalid email format.';
     }
 
+    if (unavailableEmail != null &&
+        unavailableEmail!.isNotEmpty &&
+        email == unavailableEmail) {
+      return 'Email already in use';
+    }
     return null;
   }
 
   @override
   void initState() {
     super.initState();
+    ToastContext ctx = ToastContext();
+    ctx.init(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
@@ -66,10 +80,27 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     birthdayController.dispose();
   }
 
+  Future<bool> checkEmailAvailability() async {
+    final url = Uri.parse('http://192.168.1.218:3001/email');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': user.email!,
+    };
+
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
+    // Successfully sent the data
+    final responseBody = json.decode(response.body);
+    return responseBody['available'];
+  }
+
   @override
   Widget build(BuildContext context) {
     void Function(BuildContext)? buttonFunction;
-    User user = User();
 
     for (final controller in [
       usernameController,
@@ -86,19 +117,32 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             user.fullName = usernameController.text;
             user.email = emailController.text;
             user.birthDate = birthdayController.text;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ConfirmationCodeScreen(
-                  user: user,
-                ),
-              ),
-            );
+            checkEmailAvailability().then((value) {
+              if (value) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ConfirmationCodeScreen(
+                      user: user,
+                    ),
+                  ),
+                );
+                user
+                    .setFullName(usernameController.text)
+                    .setEmail(emailController.text)
+                    .setBirthDate(birthdayController.text);
+              } else {
+                Toast.show('Email already in use');
+                unavailableEmail = emailController.text;
+                buttonFunction = null;
+                ref
+                    .read(nextBarProvider.notifier)
+                    .setNextBarFunction(buttonFunction);
+              }
+            }).onError((error, stackTrace) {
+              Toast.show('Error sending data');
+            });
           };
-          user
-              .setFullName(usernameController.text)
-              .setEmail(emailController.text)
-              .setBirthDate(birthdayController.text);
           ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
         } else {
           buttonFunction = null;
@@ -179,6 +223,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               ),
               const SizedBox(height: 112),
               Form(
+                key: _formKey,
                 child: Column(
                   children: [
                     DecoratedTextField(

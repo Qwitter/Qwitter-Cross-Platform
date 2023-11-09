@@ -25,12 +25,13 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   String? passwordValidations(String? password) {
     if (password == null || password.isEmpty) return null;
 
+    if (password.contains(' ')) return 'Password cannot contain spaces.';
     if (password.length < 8) {
       return 'Password must be at least 8 characters long.';
     }
 
-    if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d).+$').hasMatch(password)) {
-      return 'Password must contain at least one letter and one number.';
+    if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)[^\s]+$').hasMatch(password)) {
+      return 'Password must contain at least one letter and one number and no spaces.';
     }
 
     return null;
