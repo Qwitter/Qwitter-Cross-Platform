@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,7 +9,7 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_main_screen.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class LoginEmailScreen extends ConsumerStatefulWidget {
   const LoginEmailScreen({super.key});
@@ -18,13 +20,24 @@ class LoginEmailScreen extends ConsumerStatefulWidget {
 
 class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
   final TextEditingController emailController = TextEditingController();
-  String? inputValidation(String? email) {
-    if (email == null || email.isEmpty) return null;
-    // email validation api call
-    if (email == "aly.mf.2001@gmail.com") {
-      return 'email right.';
-    }
-    return null;
+
+  // 192.168.1.106
+  Future<http.Response> sendEmail() async {
+    print("first");
+    final url =
+        Uri.parse('http://192.168.1.106:3000/api/v1/auth/check-existence');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'userNameOrEmail': emailController.text,
+    };
+    print("second");
+    final response = await http.post(
+      url,
+      body: data,
+    );
+    print(response.body);
+    return response;
   }
 
   @override
@@ -48,23 +61,29 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
     emailController.addListener(() {
       if (emailController.text.isNotEmpty) {
         buttonFunction = (context) {
-          if (inputValidation(emailController.text) != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    LoginMainScreen(passedInput: emailController.text),
-              ),
-            );
-          } else {
-            // show toast image with error
+          print("before sending");
+          sendEmail().then((value) {
+            if (value.statusCode == 200) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginMainScreen(
+                    passedInput: emailController.text,
+                  ),
+                ),
+              );
+            } else {
+              Fluttertoast.showToast(
+                msg: "Email not found",
+                backgroundColor: Colors.grey[700],
+              );
+            }
+          }).onError((error, stackTrace) {
             Fluttertoast.showToast(
-              msg: "Email is not found",
-              toastLength: Toast.LENGTH_SHORT,
+              msg: "Error in sending",
               backgroundColor: Colors.grey[700],
-              textColor: Colors.white,
             );
-          }
+          });
         };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {
@@ -76,7 +95,9 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(isButton: true),
+        child: QwitterAppBar(
+          showLogoOnly: true,
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
