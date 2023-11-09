@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mockito/mockito.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_password_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
 
 class ConfirmationCodeScreen extends ConsumerStatefulWidget {
   const ConfirmationCodeScreen({super.key, this.user});
@@ -21,6 +26,41 @@ class _ConfirmationCodeScreenState
     extends ConsumerState<ConfirmationCodeScreen> {
   final TextEditingController codeController = TextEditingController();
 
+  Future<String> sendVerificationEmail() async {
+    final url = Uri.parse('http://192.168.1.218:3001/sendMail');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': widget.user!.email!,
+    };
+
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
+    // Successfully sent the data
+    final responseBody = json.decode(response.body);
+    return responseBody['message'];
+  }
+
+  Future verifyEmail() async {
+    final url = Uri.parse(
+        'http://192.168.1.218:3001/verifyMail/${codeController.text}');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': widget.user!.email!,
+    };
+
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
+    return response;
+  }
+
   String? codeValidations(String? code) {
     if (code == null || code.isEmpty) return null;
 
@@ -34,6 +74,7 @@ class _ConfirmationCodeScreenState
   @override
   void initState() {
     super.initState();
+    sendVerificationEmail();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
@@ -53,14 +94,24 @@ class _ConfirmationCodeScreenState
       if (codeController.text.isNotEmpty &&
           codeValidations(codeController.text) == null) {
         buttonFunction = (context) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddPasswordScreen(
-                user: widget.user,
-              ),
-            ),
-          );
+          verifyEmail().then((value) {
+            Toast.show(json.decode(value.body)['message']);
+            if (value.statusCode == 200) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddPasswordScreen(
+                    user: widget.user,
+                  ),
+                ),
+              );
+            } else {
+              buttonFunction = null;
+            }
+          }).onError((error, stackTrace) {
+            Toast.show('Error sending data');
+            buttonFunction = null;
+          });
         };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {
