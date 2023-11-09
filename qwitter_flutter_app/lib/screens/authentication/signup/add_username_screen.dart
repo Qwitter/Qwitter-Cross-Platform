@@ -68,7 +68,6 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
             ),
           );
         };
-
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {
         buttonFunction = null;

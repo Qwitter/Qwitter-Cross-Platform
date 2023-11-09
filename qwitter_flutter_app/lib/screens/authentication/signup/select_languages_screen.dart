@@ -192,7 +192,7 @@ class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
                     checkColor: Colors.white,
                     controlAffinity: ListTileControlAffinity.trailing,
                   ),
-                  childCount: widget.languages.length,
+                  childCount: filtered_languages.length,
                 ),
               ),
             ],
