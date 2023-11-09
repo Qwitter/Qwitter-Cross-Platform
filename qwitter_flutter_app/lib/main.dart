@@ -19,6 +19,7 @@ import 'package:qwitter_flutter_app/screens/authentication/signup/create_account
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:riverpod/riverpod.dart';
 
 void main() {
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SignupChooseMethodScreen(),
+      home: ForgetPasswordScreenEmail(),
     );
   }
 }

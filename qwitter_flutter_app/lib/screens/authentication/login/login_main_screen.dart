@@ -97,7 +97,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
-        child: QwitterAppBar(isButton: true),
+        child: QwitterAppBar(showLogoOnly: true),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -138,7 +138,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ForgetPasswordScreen(),
+                        builder: (context) => const ForgetPasswordScreenEmail(),
                       ),
                     );
                   },

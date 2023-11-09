@@ -8,6 +8,7 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_new_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_password_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
@@ -97,14 +98,23 @@ class _ConfirmationCodeScreenState
           verifyEmail().then((value) {
             Toast.show(json.decode(value.body)['message']);
             if (value.statusCode == 200) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddPasswordScreen(
-                    user: widget.user,
+              if (widget.user!.fullName != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddPasswordScreen(
+                      user: widget.user,
+                    ),
                   ),
-                ),
-              );
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ForgetNewPasswordScreen(),
+                  ),
+                );
+              }
             } else {
               buttonFunction = null;
             }

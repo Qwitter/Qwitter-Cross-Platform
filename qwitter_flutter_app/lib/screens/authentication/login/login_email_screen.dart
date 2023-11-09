@@ -138,7 +138,7 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const ForgetPasswordScreen()));
+                    builder: (context) => const ForgetPasswordScreenEmail()));
           },
         );
       }),
