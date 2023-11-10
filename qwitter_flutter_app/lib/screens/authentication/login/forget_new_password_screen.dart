@@ -12,9 +12,9 @@ import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:http/http.dart' as http;
 
 class ForgetNewPasswordScreen extends ConsumerStatefulWidget {
-  const ForgetNewPasswordScreen({super.key, required this.tocken});
+  const ForgetNewPasswordScreen({super.key, required this.token});
 
-  final String? tocken;
+  final String? token;
 
   @override
   ConsumerState<ForgetNewPasswordScreen> createState() =>
@@ -67,6 +67,9 @@ class _ForgetNewPasswordScreenState
     final response = await http.post(
       url,
       body: data,
+      headers: {
+        'Authorization': 'Bearer ${widget.token}',
+      },
     );
 
     return response;

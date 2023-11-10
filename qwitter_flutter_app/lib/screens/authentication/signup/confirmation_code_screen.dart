@@ -138,7 +138,7 @@ class _ConfirmationCodeScreenState
                   context,
                   MaterialPageRoute(
                     builder: (context) => ForgetNewPasswordScreen(
-                        tocken: json.decode(value.body)['token']),
+                        token: json.decode(value.body)['token']),
                   ),
                 );
               } else {
