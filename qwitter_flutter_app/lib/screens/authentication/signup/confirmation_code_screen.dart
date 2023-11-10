@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,7 +61,23 @@ class _ConfirmationCodeScreenState
       body: data,
     );
 
-    print(response.body);
+    return response;
+  }
+
+  Future passwordReset() async {
+    final url = Uri.parse(
+        'http://192.168.86.7:3000/reset-password/${codeController.text}');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': widget.user!.email!,
+    };
+
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
     return response;
   }
 
@@ -97,10 +114,9 @@ class _ConfirmationCodeScreenState
       if (codeController.text.isNotEmpty &&
           codeValidations(codeController.text) == null) {
         buttonFunction = (context) {
-          verifyEmail().then((value) {
-            // Toast.show(json.decode(value.body)['message']);
-            if (value.statusCode == 200) {
-              if (widget.user!.fullName  != null) {
+          if (widget.user!.fullName != null) {
+            verifyEmail().then((value) {
+              if (value.statusCode == 200) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -110,20 +126,28 @@ class _ConfirmationCodeScreenState
                   ),
                 );
               } else {
+                Toast.show(json.decode(value.body)['message']);
+              }
+            }).onError((error, stackTrace) {
+              Toast.show('Error sending data');
+            });
+          } else {
+            passwordReset().then((value) {
+              if (value.statusCode == 200) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ForgetNewPasswordScreen(),
+                    builder: (context) => ForgetNewPasswordScreen(
+                        tocken: json.decode(value.body)['token']),
                   ),
                 );
+              } else {
+                Toast.show(json.decode(value.body)['message']);
               }
-            } else {
-              buttonFunction = null;
-            }
-          }).onError((error, stackTrace) {
-            Toast.show('Error sending data');
-            buttonFunction = null;
-          });
+            }).onError((error, stackTrace) {
+              Toast.show('Error sending data');
+            });
+          }
         };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {

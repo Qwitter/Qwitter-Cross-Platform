@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,9 +9,12 @@ import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.da
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:http/http.dart' as http;
 
 class ForgetNewPasswordScreen extends ConsumerStatefulWidget {
-  const ForgetNewPasswordScreen({super.key});
+  const ForgetNewPasswordScreen({super.key, required this.tocken});
+
+  final String? tocken;
 
   @override
   ConsumerState<ForgetNewPasswordScreen> createState() =>
@@ -49,6 +54,24 @@ class _ForgetNewPasswordScreenState
     return null;
   }
 
+  Future changePassword() async {
+    final url =
+        Uri.parse('http://192.168.86.7:3000/api/v1/auth/change-password');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      "password": passController.text,
+      "passwordConfirmation": confirmPassController.text,
+    };
+
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
+    return response;
+  }
+
   @override
   Widget build(BuildContext context) {
     void Function(BuildContext)? buttonFunction;
@@ -64,7 +87,17 @@ class _ForgetNewPasswordScreenState
               passwordValidations(confirmPassController.text) == null &&
               passController.text == confirmPassController.text) {
             buttonFunction = (context) {
-              // navigate to next screen
+              changePassword().then((value) {
+                if (value.statusCode == 200) {
+                  // navigate to login screen
+                  Fluttertoast.showToast(msg: "password changed successfully!");
+                } else {
+                  Fluttertoast.showToast(
+                      msg: json.decode(value.body)['message']);
+                }
+              }).onError((error, stackTrace) {
+                Fluttertoast.showToast(msg: "error in sending");
+              });
             };
           } else {
             buttonFunction = (context) {

@@ -30,20 +30,17 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
   }
 
   Future<http.Response> sendEmail() async {
-    print("first");
     final url =
-        Uri.parse('http://192.168.86.7:3000/api/v1/auth/check-existence');
+        Uri.parse('http://192.168.86.7:3000/api/v1/auth/forgot-password');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
-      'userNameOrEmail': emailController.text,
+      'email': emailController.text,
     };
-    print("second");
     final response = await http.post(
       url,
       body: data,
     );
-    print(response.body);
     return response;
   }
 
