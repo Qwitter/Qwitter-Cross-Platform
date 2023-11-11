@@ -52,14 +52,14 @@ android {
         multiDexEnabled true
     }
 
-    signingConfigs {
-        debug {
-            keyAlias 'androiddebugkey'
-            keyPassword '3ola3omar'
-            storeFile file('mykey.jks')
-            storePassword '3ola3omar'
-        }
-    }
+//    signingConfigs {
+//        debug {
+//            keyAlias 'androiddebugkey'
+//            keyPassword '3ola3omar'
+//            storeFile file('mykey.jks')
+//            storePassword '3ola3omar'
+//        }
+//    }
 
     buildTypes {
         release {
