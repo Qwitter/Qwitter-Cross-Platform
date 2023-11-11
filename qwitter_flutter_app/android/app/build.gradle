@@ -49,7 +49,17 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
+
+//    signingConfigs {
+//        debug {
+//            keyAlias 'androiddebugkey'
+//            keyPassword '3ola3omar'
+//            storeFile file('mykey.jks')
+//            storePassword '3ola3omar'
+//        }
+//    }
 
     buildTypes {
         release {
@@ -64,4 +74,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation "androidx.multidex:multidex:2.0.1"
+}
