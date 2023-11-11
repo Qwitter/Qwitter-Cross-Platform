@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,22 +25,23 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
   final TextEditingController emailController = TextEditingController();
 
   Future<http.Response> login() async {
-    print("first");
     final url =
-        Uri.parse('http://192.168.1.106:3000/api/v1/auth/check-existence');
+        Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/auth/login');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
-      'email_or_username': emailController.text,
+      'email_or_username': widget.passedInput,
       'password': passController.text,
     };
-    print("second");
 
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
-    print(response.body);
     return response;
   }
 
@@ -59,7 +62,6 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
   @override
   Widget build(BuildContext context) {
     void Function(BuildContext)? buttonFunction;
-
     passController.addListener(() {
       if (passController.text.isNotEmpty) {
         buttonFunction = (context) {
@@ -68,7 +70,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               // navigate to feed
               Fluttertoast.showToast(
                 msg: "Into the feed",
-                backgroundColor: Colors.grey[700],
+                backgroundColor: Colors.green[200],
               );
             } else {
               Fluttertoast.showToast(
@@ -106,15 +108,12 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                child: Text(
-                  "Enter your password",
-                  style: TextStyle(
-                    fontSize: 28,
-                    color: Color.fromARGB(255, 222, 222, 222),
-                    fontWeight: FontWeight.w600,
-                  ),
+              const Text(
+                "Enter your password",
+                style: TextStyle(
+                  fontSize: 28,
+                  color: Color.fromARGB(255, 222, 222, 222),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 30),
@@ -123,6 +122,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 placeholder: widget.passedInput,
                 controller: emailController,
                 enabled: false,
+                padding_value: const EdgeInsets.all(0),
               ),
               const SizedBox(height: 20),
               DecoratedTextField(
@@ -130,6 +130,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 placeholder: "Password",
                 controller: passController,
                 isPassword: true,
+                padding_value: const EdgeInsets.all(0),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
