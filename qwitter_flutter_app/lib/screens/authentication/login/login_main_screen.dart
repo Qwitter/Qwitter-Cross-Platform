@@ -122,7 +122,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 placeholder: widget.passedInput,
                 controller: emailController,
                 enabled: false,
-                padding_value: const EdgeInsets.all(0),
+                paddingValue: const EdgeInsets.all(0),
               ),
               const SizedBox(height: 20),
               DecoratedTextField(
@@ -130,7 +130,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 placeholder: "Password",
                 controller: passController,
                 isPassword: true,
-                padding_value: const EdgeInsets.all(0),
+                paddingValue: const EdgeInsets.all(0),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
@@ -165,7 +165,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               buttonFunction = ref.watch(secondaryButtonProvider);
               return SecondaryButton(
                 text: "Login",
-                on_pressed: buttonFunction == null
+                onPressed: buttonFunction == null
                     ? null
                     : () {
                         buttonFunction!(context);

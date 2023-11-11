@@ -13,12 +13,11 @@ class LoginChooseScreen extends StatefulWidget {
   State<LoginChooseScreen> createState() => _LoginChooseScreenState();
 }
 
-//the text not matching the button size is caused by decorated text widget  
+//the text not matching the button size is caused by decorated text widget
 
 class _LoginChooseScreenState extends State<LoginChooseScreen> {
-  
-  final String googleImagePath='assets/images/google.png';
-  final String appleImagePath='assets/images/apple.png';
+  final String googleImagePath = 'assets/images/google.png';
+  final String appleImagePath = 'assets/images/apple.png';
 
   final emailController = TextEditingController();
   late TextEditingController passController;
@@ -31,12 +30,12 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
     passController.clear();
   }
 
-  void ForgotPassword() {}
+  void forgotPassword() {}
 
-  void SignInApple() {}
+  void signInApple() {}
 
-  void SignInGoogle(){}
-  
+  void signInGoogle() {}
+
   @override
   void dispose() {
     super.dispose();
@@ -85,7 +84,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
                 height: 60,
                 child: CustomIconButton(
                   text: "Sign in with Google",
-                  onPressed: SignInGoogle,
+                  onPressed: signInGoogle,
                   image: googleImagePath,
                 ),
               ),
@@ -95,7 +94,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
                 height: 60,
                 child: CustomIconButton(
                   text: "Sign in with Apple",
-                  onPressed: SignInGoogle,
+                  onPressed: signInGoogle,
                   image: appleImagePath,
                 ),
               ),
@@ -107,7 +106,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
                 endIndent: 5,
               ),
               const SizedBox(height: 15),
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: DecoratedTextField(
                   keyboardType: TextInputType.text,
@@ -120,7 +119,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
                 width: double.infinity,
                 child: SecondaryButton(
                   text: "Next",
-                  on_pressed: isActive == true ? hello : null,
+                  onPressed: isActive == true ? hello : null,
                 ),
               ),
               Container(
@@ -128,11 +127,11 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
                 width: double.infinity,
                 child: SecondaryButtonOutlined(
                   text: "Forgot password ?",
-                  on_pressed: ForgotPassword,
+                  onPressed: forgotPassword,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 20, 0, 0), 
+                padding: const EdgeInsets.fromLTRB(15, 20, 0, 0),
                 child: Row(
                   children: [
                     const Text(

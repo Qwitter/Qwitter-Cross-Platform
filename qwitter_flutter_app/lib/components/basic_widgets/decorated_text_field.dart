@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 class DecoratedTextField extends StatefulWidget {
@@ -7,9 +5,8 @@ class DecoratedTextField extends StatefulWidget {
     super.key,
     required this.keyboardType,
     required this.placeholder,
-    this.padding_value =
-        const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
-    this.max_length = 0,
+    this.paddingValue = const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
+    this.maxLength = 0,
     required this.controller,
     this.enabled = true,
     this.isPassword = false,
@@ -17,8 +14,8 @@ class DecoratedTextField extends StatefulWidget {
   });
   final TextInputType keyboardType;
   final String placeholder;
-  final int max_length;
-  final EdgeInsets padding_value;
+  final int maxLength;
+  final EdgeInsets paddingValue;
   final TextEditingController? controller;
   final bool enabled;
   final bool isPassword;
@@ -31,9 +28,9 @@ class DecoratedTextField extends StatefulWidget {
 class _DecoratedTextFieldState extends State<DecoratedTextField> {
   // bool _isSelected = false;
   late FocusNode _focusNode;
-  bool is_valid = true;
-  bool isVisiable = false;
-  Color border_color = Colors.grey.shade500;
+  bool isValid = true;
+  bool isVisible = false;
+  Color borderColor = Colors.grey.shade500;
   @override
   void initState() {
     super.initState();
@@ -55,10 +52,10 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
     String? errorMessage =
         widget.validator != null ? widget.validator!(myController.text) : null;
     return Container(
-      padding: widget.padding_value,
+      padding: widget.paddingValue,
       child: TextFormField(
         controller: myController,
-        obscureText: isVisiable,
+        obscureText: isVisible,
         onTapOutside: (event) {
           // Focus.of(context).unfocus();
         },
@@ -67,13 +64,13 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
           if (widget.validator != null &&
               widget.validator!(myController.text) != null) {
             errorMessage = widget.validator!(myController.text);
-            is_valid = false;
+            isValid = false;
           } else {
-            is_valid = true;
+            isValid = true;
           }
         }),
         focusNode: _focusNode,
-        maxLength: widget.max_length > 0 ? widget.max_length : null,
+        maxLength: widget.maxLength > 0 ? widget.maxLength : null,
         autocorrect: true,
         keyboardType: widget.keyboardType,
         enabled: widget.enabled,
@@ -89,16 +86,16 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
                     IconButton(
                       onPressed: () {
                         setState(() {
-                          isVisiable = !isVisiable;
+                          isVisible = !isVisible;
                         });
                       },
                       icon: Icon(
-                        isVisiable ? Icons.visibility : Icons.visibility_off,
+                        isVisible ? Icons.visibility : Icons.visibility_off,
                         color: Theme.of(context).primaryColorDark,
                       ),
                     ),
                     if (myController.text.isNotEmpty)
-                      is_valid
+                      isValid
                           ? const Icon(
                               Icons.check_circle,
                               color: Color.fromARGB(255, 0, 185, 123),
@@ -115,7 +112,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
                   ],
                 )
               : myController.text.isNotEmpty
-                  ? is_valid
+                  ? isValid
                       ? const Icon(
                           Icons.check_circle,
                           color: Color.fromARGB(255, 0, 185, 123),
@@ -130,14 +127,14 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
           focusedBorder: OutlineInputBorder(
             borderRadius: const BorderRadius.all(Radius.circular(5)),
             borderSide: BorderSide(
-              color: !is_valid && myController.text.isNotEmpty
+              color: !isValid && myController.text.isNotEmpty
                   ? const Color.fromARGB(255, 243, 33, 47)
                   : Colors.blue,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: !is_valid && myController.text.isNotEmpty
+              color: !isValid && myController.text.isNotEmpty
                   ? const Color.fromARGB(255, 243, 33, 47)
                   : const Color.fromARGB(255, 107, 125, 139),
             ),
@@ -147,7 +144,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
           ),
           disabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: !is_valid && myController.text.isNotEmpty
+              color: !isValid && myController.text.isNotEmpty
                   ? const Color.fromARGB(255, 243, 33, 47)
                   : const Color.fromARGB(255, 107, 125, 139),
             ),
@@ -162,7 +159,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
           ),
           errorBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: !is_valid && myController.text.isNotEmpty
+              color: !isValid && myController.text.isNotEmpty
                   ? const Color.fromARGB(255, 243, 33, 47)
                   : const Color.fromARGB(255, 107, 125, 139),
             ),
@@ -172,7 +169,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: !is_valid && myController.text.isNotEmpty
+              color: !isValid && myController.text.isNotEmpty
                   ? const Color.fromARGB(255, 243, 33, 47)
                   : const Color.fromARGB(255, 107, 125, 139),
             ),
@@ -184,7 +181,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
               ? widget.placeholder
               : null,
           labelStyle: TextStyle(
-            color: !is_valid
+            color: !isValid
                 ? const Color.fromARGB(255, 243, 33, 47)
                 : myController.text.isNotEmpty && !_focusNode.hasFocus
                     ? const Color.fromARGB(255, 107, 125, 139)
@@ -197,7 +194,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 107, 125, 139),
           ),
-          counterText: widget.max_length > 0 ? null : '',
+          counterText: widget.maxLength > 0 ? null : '',
           counterStyle: TextStyle(
             color: Colors.grey.shade500,
             fontSize: 13,

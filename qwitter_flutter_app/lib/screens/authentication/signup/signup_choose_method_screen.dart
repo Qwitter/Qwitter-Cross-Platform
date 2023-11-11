@@ -108,7 +108,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+                padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
                 child: Image.network(
                     'https://freelogopng.com/images/all_img/1690643777twitter-x%20logo-png-white.png',
                     width: 24,
@@ -172,7 +172,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
                 width: double.infinity,
                 child: PrimaryButton(
                   text: "Create account",
-                  on_pressed: createAccont,
+                  onPressed: createAccont,
                 ),
               ),
               const Padding(
@@ -191,7 +191,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
                 width: double.infinity,
                 child: SecondaryButtonOutlined(
                   text: "Sign in",
-                  on_pressed: signIn,
+                  onPressed: signIn,
                 ),
               ),
             ],

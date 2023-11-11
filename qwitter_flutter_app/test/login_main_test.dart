@@ -24,7 +24,6 @@ void main() {
     final signUpText = find.text("Don't have an account");
 
     // Find the email and password text fields
-    final emailField = find.byType(TextField).at(0);
     final passwordField = find.byType(TextField).at(1);
 
     // Verify that the text elements are on the screen

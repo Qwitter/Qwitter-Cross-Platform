@@ -65,8 +65,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       widget.user!.setUsername(responseBody['data']['userName']);
       widget.user!.setUsernameSuggestions(responseBody['suggestions']);
       widget.user!.setToken(responseBody['token']);
-      print(responseBody['data']['userName']);
-      print(responseBody['suggestions'][0]);
+      //printresponseBody['data']['userName']);
+      //printresponseBody['suggestions'][0]);
       return true;
     } else {
       // Handle errors
@@ -111,7 +111,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
             );
           }).onError((error, stackTrace) {
             Toast.show('Error sending data $stackTrace');
-            print('Error sending data $error');
+            //print'Error sending data $error');
           });
         };
         widget.user!.setPassword(passwordController.text);
@@ -175,7 +175,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
                     DecoratedTextField(
                       keyboardType: TextInputType.visiblePassword,
                       placeholder: 'Password',
-                      padding_value: const EdgeInsets.all(0),
+                      paddingValue: const EdgeInsets.all(0),
                       controller: passwordController,
                       isPassword: true,
                       validator: passwordValidations,

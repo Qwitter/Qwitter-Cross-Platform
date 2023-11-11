@@ -1,15 +1,14 @@
 import 'dart:convert';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
-import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 
 class ForgetNewPasswordScreen extends ConsumerStatefulWidget {
   const ForgetNewPasswordScreen({super.key, required this.token});
@@ -55,20 +54,22 @@ class _ForgetNewPasswordScreenState
   }
 
   Future changePassword() async {
-    final url =
-        Uri.parse('http://192.168.86.7:3000/api/v1/auth/change-password');
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/change-password');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
       "password": passController.text,
       "passwordConfirmation": confirmPassController.text,
     };
-
+    //printwidget.token);
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
       headers: {
-        'Authorization': 'Bearer ${widget.token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ${widget.token}',
       },
     );
 
@@ -94,6 +95,10 @@ class _ForgetNewPasswordScreenState
                 if (value.statusCode == 200) {
                   // navigate to login screen
                   Fluttertoast.showToast(msg: "password changed successfully!");
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginEmailScreen()));
                 } else {
                   Fluttertoast.showToast(
                       msg: json.decode(value.body)['message']);
@@ -104,22 +109,10 @@ class _ForgetNewPasswordScreenState
             };
           } else {
             buttonFunction = (context) {
-              String msg = "";
-
-              if (passController.text != confirmPassController.text) {
-                msg = "Passwords do not match";
-              } else if (passwordValidations(passController.text) != null) {
-                msg = passwordValidations(passController.text)!;
-                if (passwordValidations(confirmPassController.text) != null) {
-                  msg = passwordValidations(confirmPassController.text)!;
-                }
-              }
-              Fluttertoast.showToast(
-                msg: msg,
-                toastLength: Toast.LENGTH_SHORT,
-                backgroundColor: Colors.grey[700],
-                textColor: Colors.white,
-              );
+              if (passwordValidations(passController.text) != null) {
+                if (passwordValidations(confirmPassController.text) != null) {}
+              } else if (passController.text != confirmPassController.text) {
+              } else {}
             };
           }
           ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
@@ -176,7 +169,7 @@ class _ForgetNewPasswordScreenState
                         child: InkWell(
                           onTap: () {
                             // Handle the click action for "strong password" here.
-                            print('Strong password clicked');
+                            //print'Strong password clicked');
                           },
                           child: const Text(
                             'strong password',

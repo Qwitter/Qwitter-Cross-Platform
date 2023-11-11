@@ -37,7 +37,7 @@ class UserCard extends StatelessWidget {
           offset: const Offset(0, -5),
           child: SecondaryButton(
               text: 'Follow',
-              on_pressed: () {},
+              onPressed: () {},
               paddingValue:
                   const EdgeInsets.symmetric(vertical: 0, horizontal: 35),
               textStyle: const TextStyle(

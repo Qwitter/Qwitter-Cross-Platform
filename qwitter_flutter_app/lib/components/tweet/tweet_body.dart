@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_compressed.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_media.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
 
 class TweetBody extends StatelessWidget {
   final String tweet_text;

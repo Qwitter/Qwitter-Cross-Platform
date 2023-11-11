@@ -1,6 +1,5 @@
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/components/language_filter.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,29 +43,29 @@ class SelectLanguagesScreen extends ConsumerStatefulWidget {
 }
 
 class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
-  List<String> filtered_languages = [];
+  List<String> filteredLanguages = [];
 
   // Controller for the search input
-  TextEditingController search_controller = TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
-  List<bool> selected_languages = [];
+  List<bool> selectedLanguagesList = [];
 
   @override
   void initState() {
     super.initState();
-    selected_languages = List.filled(widget.languages.length, false);
-    filtered_languages = widget.languages;
-    search_controller.addListener(() {
-      filterLanguages(search_controller.text);
+    selectedLanguagesList = List.filled(widget.languages.length, false);
+    filteredLanguages = widget.languages;
+    searchController.addListener(() {
+      filterLanguages(searchController.text);
     });
   }
 
   void filterLanguages(String query) {
     setState(() {
       if (query.isEmpty) {
-        filtered_languages = widget.languages;
+        filteredLanguages = widget.languages;
       } else {
-        filtered_languages = widget.languages
+        filteredLanguages = widget.languages
             .where((language) =>
                 language.toLowerCase().contains(query.toLowerCase()))
             .toList();
@@ -120,7 +119,7 @@ class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
               const SliverToBoxAdapter(child: SizedBox(height: 5)),
               SliverToBoxAdapter(
                 child: TextField(
-                  controller: search_controller,
+                  controller: searchController,
                   cursorColor: Colors.blue,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(
@@ -136,7 +135,7 @@ class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
                         size: 32,
                       ),
                     ),
-                    suffixIcon: search_controller.text.isNotEmpty
+                    suffixIcon: searchController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(
                               BootstrapIcons.x_circle,
@@ -144,7 +143,7 @@ class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
                               color: Color.fromARGB(255, 93, 99, 106),
                             ),
                             onPressed: () {
-                              search_controller.clear();
+                              searchController.clear();
                             },
                           )
                         : null,
@@ -161,23 +160,23 @@ class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) => CheckboxListTile(
                     title: Text(
-                      filtered_languages[index],
+                      filteredLanguages[index],
                       style: const TextStyle(
                         fontSize: 18,
                         color: Color.fromARGB(255, 222, 222, 222),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    value: selected_languages[
-                        widget.languages.indexOf(filtered_languages[index])],
+                    value: selectedLanguagesList[
+                        widget.languages.indexOf(filteredLanguages[index])],
                     onChanged: (value) {
                       setState(() {
-                        selected_languages[widget.languages
-                            .indexOf(filtered_languages[index])] = value!;
+                        selectedLanguagesList[widget.languages
+                            .indexOf(filteredLanguages[index])] = value!;
                       });
                       ref
                           .read(languagesProvider.notifier)
-                          .toggleLanguage(filtered_languages[index]);
+                          .toggleLanguage(filteredLanguages[index]);
                     },
                     side: MaterialStateBorderSide.resolveWith(
                       (states) {
@@ -192,7 +191,7 @@ class _SelectLanguagesScreenState extends ConsumerState<SelectLanguagesScreen> {
                     checkColor: Colors.white,
                     controlAffinity: ListTileControlAffinity.trailing,
                   ),
-                  childCount: filtered_languages.length,
+                  childCount: filteredLanguages.length,
                 ),
               ),
             ],

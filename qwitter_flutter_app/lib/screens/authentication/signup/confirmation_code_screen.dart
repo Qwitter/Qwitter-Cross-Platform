@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mockito/mockito.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
@@ -72,10 +70,47 @@ class _ConfirmationCodeScreenState
     return response;
   }
 
+  Future resetPassword() async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/reset-password/${codeController.text}');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
+
+    return response;
+  }
+
+  Future<http.Response> sendEmail() async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/forgot-password');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': widget.user!.email!,
+    };
+    final response = await http.post(
+      url,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
+    return response;
+  }
+
   String? codeValidations(String? code) {
     if (code == null || code.isEmpty) return null;
 
     if (code.length != 6) {
+      if (code.length == 8) {
+        return null;
+      }
       return 'Invalid confirmation code.';
     }
 
@@ -85,7 +120,9 @@ class _ConfirmationCodeScreenState
   @override
   void initState() {
     super.initState();
-    sendVerificationEmail();
+    if (widget.user!.fullName != null) {
+      sendVerificationEmail();
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
@@ -105,25 +142,47 @@ class _ConfirmationCodeScreenState
       if (codeController.text.isNotEmpty &&
           codeValidations(codeController.text) == null) {
         buttonFunction = (context) {
-          verifyEmail().then((value) {
-            Toast.show(json.decode(value.body)['message']);
-            if (value.statusCode == 200) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddPasswordScreen(
-                    user: widget.user,
+          if (widget.user!.fullName != null) {
+            verifyEmail().then((value) {
+              Toast.show(json.decode(value.body)['message']);
+              if (value.statusCode == 200) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddPasswordScreen(
+                      user: widget.user,
+                    ),
                   ),
-                ),
-              );
-            } else {
+                );
+              } else {
+                buttonFunction = null;
+              }
+            }).onError((error, stackTrace) {
+              Toast.show('Error sending data $error');
+              //print'Error sending data $error');
               buttonFunction = null;
-            }
-          }).onError((error, stackTrace) {
-            Toast.show('Error sending data $error');
-            print('Error sending data $error');
-            buttonFunction = null;
-          });
+            });
+          } else {
+            resetPassword().then((value) {
+              if (value.statusCode == 200) {
+                //printjson.decode(value.body)['token']);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ForgetNewPasswordScreen(
+                      token: json.decode(value.body)['token'],
+                    ),
+                  ),
+                );
+              } else {
+                buttonFunction = null;
+              }
+            }).onError((error, stackTrace) {
+              Toast.show('Error sending data $error');
+              //print'Error sending data $error');
+              buttonFunction = null;
+            });
+          }
         };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {
@@ -185,9 +244,9 @@ class _ConfirmationCodeScreenState
                     DecoratedTextField(
                       keyboardType: TextInputType.name,
                       placeholder: 'Verification code',
-                      padding_value: const EdgeInsets.all(0),
+                      paddingValue: const EdgeInsets.all(0),
                       controller: codeController,
-                      max_length: 6,
+                      maxLength: widget.user!.fullName != null ? 6 : 8,
                       validator: codeValidations,
                     ),
                     const SizedBox(height: 5),
@@ -266,7 +325,11 @@ class _ConfirmationCodeScreenState
                       TextButton(
                         onPressed: () {
                           // Add your action here for the first option.
-                          sendVerificationEmail();
+                          if (widget.user!.fullName != null) {
+                            sendVerificationEmail();
+                          } else {
+                            sendEmail();
+                          }
                           Navigator.of(context).pop(); // Close the overlay
                         },
                         style: ButtonStyle(

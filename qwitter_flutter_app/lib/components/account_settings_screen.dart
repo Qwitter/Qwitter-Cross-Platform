@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_setting_card.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_back_app_bar.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
   const AccountSettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final User? user;
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),

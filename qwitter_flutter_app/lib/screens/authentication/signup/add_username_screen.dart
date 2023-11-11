@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -103,7 +102,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
             }
           }).onError((error, stackTrace) {
             Toast.show('Error sending data $error');
-            print('Error sending data $error');
+            //print'Error sending data $error');
           });
         };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
@@ -168,7 +167,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
                     DecoratedTextField(
                       keyboardType: TextInputType.name,
                       placeholder: 'Username',
-                      padding_value: const EdgeInsets.all(0),
+                      paddingValue: const EdgeInsets.all(0),
                       controller: usernameController,
                       validator: usernameValidations,
                     ),

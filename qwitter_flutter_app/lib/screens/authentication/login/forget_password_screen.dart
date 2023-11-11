@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,11 +9,10 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/login_main_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
 
 class ForgetPasswordScreenEmail extends ConsumerStatefulWidget {
-  const   ForgetPasswordScreenEmail({super.key});
+  const ForgetPasswordScreenEmail({super.key});
 
   @override
   ConsumerState<ForgetPasswordScreenEmail> createState() =>
@@ -30,8 +31,8 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
   }
 
   Future<http.Response> sendEmail() async {
-    final url =
-        Uri.parse('http://192.168.86.7:3000/api/v1/auth/forgot-password');
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/forgot-password');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
@@ -39,7 +40,11 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
     };
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
     return response;
   }
@@ -57,7 +62,7 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
     emailController.addListener(() {
       if (emailController.text.isNotEmpty) {
         buttonFunction = (context) {
-          print("before sending");
+          //print"before sending");
           sendEmail().then((value) {
             if (value.statusCode == 200) {
               final User u = User(email: emailController.text);
@@ -122,7 +127,7 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
                 DecoratedTextField(
                   keyboardType: TextInputType.name,
                   placeholder: 'Email address, phone number, or username',
-                  padding_value: const EdgeInsets.all(0),
+                  paddingValue: const EdgeInsets.all(0),
                   controller: emailController,
                 ),
               ],

@@ -35,7 +35,7 @@ class AppUser extends User {
     // For saving the profile picture, you can store the file path.
     prefs.setString('profile_picture_path', profilePicture?.path ?? '');
 
-    print('User data saved $username');
+    //print'User data saved $username');
   }
 
   Future<AppUser?> getUserData() async {

@@ -1,17 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_body.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_bottom_action_bar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_media.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_reply.dart';
 
+// ignore: must_be_immutable
 class TweetCard extends StatefulWidget {
   // const TweetCard({super.key});
 

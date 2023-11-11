@@ -8,7 +8,6 @@ class GoogleSignInApi {
       final googleUser = await _googleSignIn.signIn();
       return googleUser;
     } catch (error) {
-      print('Error signing in with Google: $error');
       return null;
     }
   }

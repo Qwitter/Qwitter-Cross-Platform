@@ -36,34 +36,34 @@ class LanguageFilter extends ConsumerStatefulWidget {
   ];
 
   @override
-  _LanguageFilterState createState() => _LanguageFilterState();
+  ConsumerState<LanguageFilter> createState() => _LanguageFilterState();
 }
 
 class _LanguageFilterState extends ConsumerState<LanguageFilter> {
   // Filtered languages based on search query
-  List<String> filtered_languages = [];
+  List<String> filteredLanguages = [];
 
   // Controller for the search input
-  TextEditingController search_controller = TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
-  List<bool> selected_languages = [];
+  List<bool> selectedLanguages = [];
 
   @override
   void initState() {
     super.initState();
-    selected_languages = List.filled(widget.languages.length, false);
-    filtered_languages = widget.languages;
-    search_controller.addListener(() {
-      filterLanguages(search_controller.text);
+    selectedLanguages = List.filled(widget.languages.length, false);
+    filteredLanguages = widget.languages;
+    searchController.addListener(() {
+      filterLanguages(searchController.text);
     });
   }
 
   void filterLanguages(String query) {
     setState(() {
       if (query.isEmpty) {
-        filtered_languages = widget.languages;
+        filteredLanguages = widget.languages;
       } else {
-        filtered_languages = widget.languages
+        filteredLanguages = widget.languages
             .where((language) =>
                 language.toLowerCase().contains(query.toLowerCase()))
             .toList();
@@ -80,7 +80,7 @@ class _LanguageFilterState extends ConsumerState<LanguageFilter> {
       child: Column(
         children: [
           TextField(
-            controller: search_controller,
+            controller: searchController,
             cursorColor: Colors.blue,
             decoration: InputDecoration(
               contentPadding:
@@ -96,7 +96,7 @@ class _LanguageFilterState extends ConsumerState<LanguageFilter> {
                   size: 32,
                 ),
               ),
-              suffixIcon: search_controller.text.isNotEmpty
+              suffixIcon: searchController.text.isNotEmpty
                   ? IconButton(
                       icon: const Icon(
                         BootstrapIcons.x_circle,
@@ -104,7 +104,7 @@ class _LanguageFilterState extends ConsumerState<LanguageFilter> {
                         color: Color.fromARGB(255, 93, 99, 106),
                       ),
                       onPressed: () {
-                        search_controller.clear();
+                        searchController.clear();
                       },
                     )
                   : null,
@@ -120,27 +120,27 @@ class _LanguageFilterState extends ConsumerState<LanguageFilter> {
             physics: const NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
-            itemCount: filtered_languages.length,
+            itemCount: filteredLanguages.length,
             itemBuilder: (context, index) {
               return CheckboxListTile(
                 title: Text(
-                  filtered_languages[index],
+                  filteredLanguages[index],
                   style: const TextStyle(
                     fontSize: 18,
                     color: Color.fromARGB(255, 222, 222, 222),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                value: selected_languages[
-                    widget.languages.indexOf(filtered_languages[index])],
+                value: selectedLanguages[
+                    widget.languages.indexOf(filteredLanguages[index])],
                 onChanged: (value) {
                   setState(() {
-                    selected_languages[widget.languages
-                        .indexOf(filtered_languages[index])] = value!;
+                    selectedLanguages[widget.languages
+                        .indexOf(filteredLanguages[index])] = value!;
                   });
                   ref
                       .read(languagesProvider.notifier)
-                      .toggleLanguage(filtered_languages[index]);
+                      .toggleLanguage(filteredLanguages[index]);
                 },
                 side: MaterialStateBorderSide.resolveWith(
                   (states) {

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 
 class ProfilePictureScreen extends ConsumerStatefulWidget {
@@ -57,7 +57,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
-    print('Token : ${widget.user!.getToken}');
+    //print'Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "Authorization": 'Bearer ${widget.user!.getToken}',
       "Content-Type": "multipart/form-data"
@@ -89,9 +89,6 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     if (response.statusCode == 200) {
       // Successfully sent the data
-      final responseBody = await response.stream.bytesToString();
-      var jsonData = json.decode(responseBody);
-      print(jsonData['user']['profileImageUrl']);
 
       return true;
     } else {
@@ -126,7 +123,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
         }
       }).onError((error, stackTrace) {
         Toast.show('Error sending data $error');
-        print('Error sending data $error');
+        //print'Error sending data $error');
       });
     };
     widget.user!.setProfilePicture(imageFile);
@@ -247,7 +244,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
             secondaryButtonText: 'Skip for now',
             secondaryButtonFunction: () {
               widget.user!.profilePicture = null;
-              print('Username : ${widget.user!.username}');
+              //print'Username : ${widget.user!.username}');
               Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -2,25 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qwitter_flutter_app/components/account_information_screen.dart';
-import 'package:qwitter_flutter_app/components/account_settings_screen.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
-import 'package:qwitter_flutter_app/screens/authentication/complements/change_email_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/complements/forget_password_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/forget_new_password_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
-// import 'package:qwitter_flutter_app/models/app_user.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/login_main_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/update_password_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/create_account_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
-import 'package:riverpod/riverpod.dart';
 
 void main() {
   runApp(ProviderScope(child: const MyApp()));
@@ -33,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // AppUser user = AppUser();
     // user.getUserData();
-    // print('user data : ${user.getUsername}');
+    // //print'user data : ${user.getUsername}');
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 
 class SecondaryButtonOutlined extends StatelessWidget {
   const SecondaryButtonOutlined(
-      {super.key, required this.text, required this.on_pressed});
+      {super.key, required this.text, required this.onPressed});
 
   final String text;
-  final VoidCallback on_pressed;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: on_pressed,
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.transparent, // Background color (white)
-        foregroundColor: Colors.white,
-        onSurface: Colors.grey, // Text color (black)
+        foregroundColor: Colors.white, disabledForegroundColor: Colors.grey.withOpacity(0.38), disabledBackgroundColor: Colors.grey.withOpacity(0.12), // Text color (black)
         elevation: 0, // No shadow
         padding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 5), // Padding

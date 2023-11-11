@@ -62,7 +62,7 @@ class TweetMedia extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            print("Test Image");
+                            //print"Test Image");
                           },
                           child: Container(
                             height: orientation_factor *
@@ -100,7 +100,7 @@ class TweetMedia extends StatelessWidget {
                                   SizedBox(height: 5),
                                   GestureDetector(
                                     onTap: () {
-                                      print("Test Image");
+                                      //print"Test Image");
                                     },
                                     child: isImage(tweet_imgs[3])
                                         ? Container(
@@ -165,7 +165,7 @@ class TweetMedia extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  print("Test Image");
+                                  //print"Test Image");
                                 },
                                 child: Container(
                                   height: orientation_factor *
@@ -224,7 +224,7 @@ class TweetMedia extends StatelessWidget {
           ),
           GestureDetector(
               onTap: () {
-                print("Test Image");
+                //print"Test Image");
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(
