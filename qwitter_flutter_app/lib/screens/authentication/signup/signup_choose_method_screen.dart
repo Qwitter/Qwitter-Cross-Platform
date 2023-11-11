@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
@@ -73,7 +74,11 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     );
   }
 
-  void signIn() {}
+  void signIn() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const LoginEmailScreen()),
+    );
+  }
 
   @override
   void dispose() {

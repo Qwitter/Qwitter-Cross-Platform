@@ -116,8 +116,9 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
               const SizedBox(height: 10),
               DecoratedTextField(
                 keyboardType: TextInputType.emailAddress,
-                placeholder: "email",
+                placeholder: "Email",
                 controller: emailController,
+                padding_value: const EdgeInsets.all(0),
               ),
             ],
           ),
