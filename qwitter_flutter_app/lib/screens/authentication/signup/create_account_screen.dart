@@ -34,12 +34,14 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     if (username.length < 3 || username.length > 30) {
       return 'Username must be between 3 and 30 characters.';
     }
-    if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(username)) {
-      return 'Username must contain only letters and numbers.';
+    if (!RegExp(r'^[a-zA-Z0-9 ]+$').hasMatch(username)) {
+      return 'Username must contain only letters, numbers, or spaces.';
     }
+
     if (RegExp(r'[!@#%^&*(),.?":{}|<>]').hasMatch(username)) {
       return 'Username must not contain special characters.';
     }
+
     if (username.trim() != username) {
       return 'Username cannot start or end with whitespace.';
     }
@@ -80,7 +82,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     birthdayController.dispose();
   }
 
-  Future<bool> checkEmailAvailability() async {
+  Future<http.Response> checkEmailAvailability() async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
 
@@ -99,8 +101,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     );
 
     // Successfully sent the data
-    final responseBody = json.decode(response.body);
-    return responseBody['available'];
+    return response;
   }
 
   @override
@@ -124,7 +125,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             user.birthDate = birthdayController.text;
             //printuserBirthDate);
             checkEmailAvailability().then((value) {
-              if (value) {
+              if (value.statusCode == 200) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(

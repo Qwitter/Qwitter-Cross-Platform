@@ -26,7 +26,7 @@ class _ConfirmationCodeScreenState
     extends ConsumerState<ConfirmationCodeScreen> {
   final TextEditingController codeController = TextEditingController();
 
-  Future<String> sendVerificationEmail() async {
+  Future<http.Response> sendVerificationEmail() async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/auth/send-verification-email');
 
@@ -45,8 +45,7 @@ class _ConfirmationCodeScreenState
     );
 
     // Successfully sent the data
-    final responseBody = json.decode(response.body);
-    return responseBody['message'];
+    return response;
   }
 
   Future verifyEmail() async {
