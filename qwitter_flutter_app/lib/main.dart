@@ -21,6 +21,7 @@ import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:riverpod/riverpod.dart';
 
 void main() {
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home:  ConversationScreen(),
+      home:  MessagingScreen(),
     );
   }
 }
