@@ -20,6 +20,7 @@ import 'package:qwitter_flutter_app/screens/authentication/signup/select_languag
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:riverpod/riverpod.dart';
 
 void main() {
@@ -42,12 +43,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
         appBarTheme: AppBarTheme(
-          iconTheme: IconThemeData(
+          iconTheme: IconThemeData( 
             color: Colors.white, // Change the color of the back icon
           ),
         ),
       ),
-      home: SignupChooseMethodScreen(),
+      home:  ConversationScreen(),
     );
   }
 }
