@@ -23,20 +23,23 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
 
   // 192.168.1.106
   Future<http.Response> sendEmail() async {
-    print("first");
-    final url =
-        Uri.parse('http://192.168.1.106:3000/api/v1/auth/check-existence');
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
       'userNameOrEmail': emailController.text,
     };
-    print("second");
+
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
-    print(response.body);
+
     return response;
   }
 
@@ -61,9 +64,8 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
     emailController.addListener(() {
       if (emailController.text.isNotEmpty) {
         buttonFunction = (context) {
-          print("before sending");
           sendEmail().then((value) {
-            if (value.statusCode == 200) {
+            if (value.statusCode == 404) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -116,7 +118,7 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
               const SizedBox(height: 10),
               DecoratedTextField(
                 keyboardType: TextInputType.emailAddress,
-                placeholder: "Email",
+                placeholder: "Phone,email address or username",
                 controller: emailController,
                 padding_value: const EdgeInsets.all(0),
               ),
