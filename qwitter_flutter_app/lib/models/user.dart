@@ -2,6 +2,7 @@ import 'dart:io';
 
 class User {
   int? id;
+  String? token;
   String? username;
   String? email;
   String? fullName;
@@ -22,6 +23,11 @@ class User {
   });
 
   // Add all setters and return user
+
+  User setToken(String? token) {
+    this.token = token;
+    return this;
+  }
 
   User setId(int? id) {
     this.id = id;
@@ -64,6 +70,10 @@ class User {
   }
 
   // Add all getters
+
+  String? get getToken {
+    return token;
+  }
 
   int? get getId {
     return id;

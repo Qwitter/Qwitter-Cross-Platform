@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,11 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_username_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart';
 
 class ProfilePictureScreen extends ConsumerStatefulWidget {
   const ProfilePictureScreen({super.key, required this.user});
@@ -45,6 +51,55 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     ),
   );
 
+  Future<bool> uploadProfilePicture(File imageFile) async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/user/profile_picture');
+
+    // Create a MultipartRequest
+    final request = http.MultipartRequest('POST', url);
+    print('Token : ${widget.user!.getToken}');
+    Map<String, String> headers = {
+      "Authorization": 'Bearer ${widget.user!.getToken}',
+      "Content-Type": "multipart/form-data"
+    };
+
+    request.headers.addAll(headers);
+
+    // Get the filename
+    final fileName = basename(imageFile.path);
+
+    // Add the image file
+    final stream = http.ByteStream(imageFile.openRead());
+    final length = await imageFile.length();
+    final imgType = lookupMimeType(imageFile.path);
+    final contentType = imgType!.split('/');
+    final multipartFile = http.MultipartFile(
+      'photo',
+      stream,
+      length,
+      filename: fileName,
+      contentType: MediaType(contentType[0], contentType[1]),
+    );
+
+    // Add the image file to the request
+    request.files.add(multipartFile);
+
+    // Send the request
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Successfully sent the data
+      final responseBody = await response.stream.bytesToString();
+      var jsonData = json.decode(responseBody);
+      print(jsonData['user']['profileImageUrl']);
+
+      return true;
+    } else {
+      // Handle errors
+      return false;
+    }
+  }
+
   Future<void> _pickImage(ImageSource source, selectedImage) async {
     var pickedFile = await ImagePicker().pickImage(source: source);
 
@@ -54,17 +109,28 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
       return;
     }
     pickedFile = pickedFile ?? selectedImage;
+    File imageFile = File(pickedFile!.path);
+
     buttonFunction = (context) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddUsernameScreen(
-            user: widget.user,
-          ),
-        ),
-      );
+      uploadProfilePicture(imageFile).then((value) {
+        if (value) {
+          Toast.show('Image Added Successfully!');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddUsernameScreen(
+                user: widget.user,
+              ),
+            ),
+          );
+        }
+      }).onError((error, stackTrace) {
+        Toast.show('Error sending data $error');
+        print('Error sending data $error');
+      });
     };
-    widget.user!.setProfilePicture(File(pickedFile!.path));
+    widget.user!.setProfilePicture(imageFile);
+
     ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
     setState(() {
       _selectedImage = File(pickedFile!.path);

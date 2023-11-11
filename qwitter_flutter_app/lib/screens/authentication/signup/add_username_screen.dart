@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
@@ -7,6 +11,8 @@ import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
 
 class AddUsernameScreen extends ConsumerStatefulWidget {
   const AddUsernameScreen({super.key, this.user});
@@ -33,6 +39,28 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
     return null;
   }
 
+  Future<Response> updateUsername(String username) async {
+    final url =
+        Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/user/username');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'userName': username,
+    };
+
+    final response = await http.patch(
+      url,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${widget.user!.getToken}',
+      },
+    );
+
+    return response;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -56,17 +84,27 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
       if (usernameController.text.isNotEmpty &&
           usernameValidations(usernameController.text) == null) {
         buttonFunction = (context) {
-          widget.user!.setUsername(usernameController.text);
-          // Perform Sign Up Logic
-          AppUser appUser = AppUser();
-          appUser.copyUserData(widget.user!);
-          appUser.saveUserData();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const SuggestedFollowsScreen(),
-            ),
-          );
+          updateUsername(usernameController.text).then((value) {
+            if (value.statusCode == 200) {
+              Toast.show('Username updated successfully.');
+              widget.user!.setUsername(usernameController.text);
+              // Perform Sign Up Logic
+              AppUser appUser = AppUser();
+              appUser.copyUserData(widget.user!);
+              appUser.saveUserData();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SuggestedFollowsScreen(),
+                ),
+              );
+            } else {
+              Toast.show('Error updating username. Please try anotherone.');
+            }
+          }).onError((error, stackTrace) {
+            Toast.show('Error sending data $error');
+            print('Error sending data $error');
+          });
         };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
       } else {

@@ -38,19 +38,25 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   }
 
   Future<bool> sendData() async {
-    final url = Uri.parse('http://192.168.1.218:3001/signup');
+    final url =
+        Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/auth/signup');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
       'email': widget.user!.email!,
-      'name': widget.user!.email!,
+      'name': widget.user!.fullName!,
       'password': widget.user!.password!,
-      'birthDate': widget.user!.birthDate!.toString(),
+      'birthDate': widget.user!.birthDate!,
+      'passwordConfirmation': widget.user!.password!,
     };
 
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
     );
 
     if (response.statusCode == 200) {
@@ -58,6 +64,9 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       final responseBody = json.decode(response.body);
       widget.user!.setUsername(responseBody['data']['userName']);
       widget.user!.setUsernameSuggestions(responseBody['suggestions']);
+      widget.user!.setToken(responseBody['token']);
+      print(responseBody['data']['userName']);
+      print(responseBody['suggestions'][0]);
       return true;
     } else {
       // Handle errors
@@ -89,19 +98,21 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
           passwordValidations(passwordController.text) == null) {
         buttonFunction = (context) {
           widget.user!.password = passwordController.text;
-          sendData()
-              .then((value) => Toast.show('Data sent successfully'))
-              .onError((error, stackTrace) =>
-                  Toast.show('Error sending data $stackTrace'));
+          sendData().then((value) {
+            Toast.show('Account created successfully!');
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProfilePictureScreen(
-                user: widget.user,
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfilePictureScreen(
+                  user: widget.user,
+                ),
               ),
-            ),
-          );
+            );
+          }).onError((error, stackTrace) {
+            Toast.show('Error sending data $stackTrace');
+            print('Error sending data $error');
+          });
         };
         widget.user!.setPassword(passwordController.text);
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);

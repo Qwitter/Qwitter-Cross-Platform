@@ -27,6 +27,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   final TextEditingController birthdayController = TextEditingController();
   User user = User();
   String? unavailableEmail;
+  String? userBirthDate;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? usernameValidations(String? username) {
@@ -81,16 +82,21 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   }
 
   Future<bool> checkEmailAvailability() async {
-    final url = Uri.parse('http://192.168.1.218:3001/email');
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
-      'email': user.email!,
+      'userNameOrEmail': user.email!,
     };
 
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
 
     // Successfully sent the data
@@ -117,6 +123,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             user.fullName = usernameController.text;
             user.email = emailController.text;
             user.birthDate = birthdayController.text;
+            print(userBirthDate);
             checkEmailAvailability().then((value) {
               if (value) {
                 Navigator.push(
@@ -130,7 +137,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 user
                     .setFullName(usernameController.text)
                     .setEmail(emailController.text)
-                    .setBirthDate(birthdayController.text);
+                    .setBirthDate(userBirthDate);
               } else {
                 Toast.show('Email already in use');
                 unavailableEmail = emailController.text;
@@ -140,7 +147,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     .setNextBarFunction(buttonFunction);
               }
             }).onError((error, stackTrace) {
-              Toast.show('Error sending data');
+              Toast.show('Error sending data $stackTrace');
+              print('Error sending data $error');
             });
           };
           ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
@@ -182,6 +190,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     maximumYear: DateTime.now().year,
                     onDateTimeChanged: (DateTime newDateTime) {
                       // Update the text field with the selected date
+                      userBirthDate = '${newDateTime.toIso8601String()}Z';
                       birthdayController.text =
                           "${newDateTime.year}-${newDateTime.month}-${newDateTime.day}";
                     },
@@ -271,6 +280,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                               },
                             ).then((value) {
                               if (value != null) {
+                                // save the date as ISO 8601 string
+                                userBirthDate = '${value.toIso8601String()}Z';
+
                                 birthdayController.text =
                                     "${value.year}-${value.month}-${value.day}";
                               }

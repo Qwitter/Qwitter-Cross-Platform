@@ -27,7 +27,8 @@ class _ConfirmationCodeScreenState
   final TextEditingController codeController = TextEditingController();
 
   Future<String> sendVerificationEmail() async {
-    final url = Uri.parse('http://192.168.1.218:3001/sendMail');
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/send-verification-email');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
@@ -36,7 +37,11 @@ class _ConfirmationCodeScreenState
 
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
 
     // Successfully sent the data
@@ -46,7 +51,7 @@ class _ConfirmationCodeScreenState
 
   Future verifyEmail() async {
     final url = Uri.parse(
-        'http://192.168.1.218:3001/verifyMail/${codeController.text}');
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/verify-email/${codeController.text}');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
@@ -55,7 +60,11 @@ class _ConfirmationCodeScreenState
 
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
 
     return response;
@@ -109,7 +118,8 @@ class _ConfirmationCodeScreenState
               buttonFunction = null;
             }
           }).onError((error, stackTrace) {
-            Toast.show('Error sending data');
+            Toast.show('Error sending data $error');
+            print('Error sending data $error');
             buttonFunction = null;
           });
         };
@@ -254,6 +264,7 @@ class _ConfirmationCodeScreenState
                       TextButton(
                         onPressed: () {
                           // Add your action here for the first option.
+                          sendVerificationEmail();
                           Navigator.of(context).pop(); // Close the overlay
                         },
                         style: ButtonStyle(
