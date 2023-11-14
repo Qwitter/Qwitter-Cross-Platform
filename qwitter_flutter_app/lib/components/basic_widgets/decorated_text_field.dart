@@ -33,6 +33,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
   Color borderColor = Colors.grey.shade500;
   @override
   void initState() {
+    isVisible = widget.isPassword ? true : false;
     super.initState();
     _focusNode = FocusNode();
     _focusNode.addListener(() {

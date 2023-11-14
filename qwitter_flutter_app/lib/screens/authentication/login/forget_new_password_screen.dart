@@ -53,6 +53,15 @@ class _ForgetNewPasswordScreenState
     return null;
   }
 
+  String? passwordEquality(String? password) {
+    if (password == null || password.isEmpty) return null;
+    final message = passwordValidations(password);
+    if (password != passController.text && message == null) {
+      return 'Passwords do not match.';
+    }
+    return message;
+  }
+
   Future changePassword() async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/auth/change-password');
@@ -89,7 +98,7 @@ class _ForgetNewPasswordScreenState
             confirmPassController.text.isNotEmpty) {
           if (passwordValidations(passController.text) == null &&
               passwordValidations(confirmPassController.text) == null &&
-              passController.text == confirmPassController.text) {
+              passwordEquality(confirmPassController.text) == null) {
             buttonFunction = (context) {
               changePassword().then((value) {
                 if (value.statusCode == 200) {
@@ -147,14 +156,6 @@ class _ForgetNewPasswordScreenState
                 ),
               ),
               const SizedBox(height: 15),
-              // const Expanded(
-              //   child: Text(
-              //     "Make sure your new password is 8 characters or more. Try including numbers, letters, and punctuation marks for a ",
-              //     style: TextStyle(color: Colors.grey, fontSize: 14),
-              //   ),
-              // ),
-              // TextButton(
-              //     onPressed: () {}, child: const Text("strong password")),
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
                 child: RichText(
@@ -184,9 +185,7 @@ class _ForgetNewPasswordScreenState
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
                 child: Text(
@@ -194,13 +193,13 @@ class _ForgetNewPasswordScreenState
                   style: TextStyle(color: Colors.grey[700], fontSize: 14),
                 ),
               ),
-
               const SizedBox(height: 30),
               DecoratedTextField(
                 keyboardType: TextInputType.visiblePassword,
                 placeholder: "Enter a new password",
                 controller: passController,
                 isPassword: true,
+                validator: passwordValidations,
               ),
               const SizedBox(height: 20),
               DecoratedTextField(
@@ -208,6 +207,7 @@ class _ForgetNewPasswordScreenState
                 placeholder: "Confirm your password",
                 controller: confirmPassController,
                 isPassword: true,
+                validator: passwordEquality,
               ),
             ],
           ),

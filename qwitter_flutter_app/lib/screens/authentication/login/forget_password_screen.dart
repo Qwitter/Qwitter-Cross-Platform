@@ -62,7 +62,6 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
     emailController.addListener(() {
       if (emailController.text.isNotEmpty) {
         buttonFunction = (context) {
-          //print"before sending");
           sendEmail().then((value) {
             if (value.statusCode == 200) {
               final User u = User(email: emailController.text);
