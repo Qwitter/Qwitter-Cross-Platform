@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
+import 'package:qwitter_flutter_app/screens/tweet_media_viewer_screen.dart';
 
 class TweetMedia extends StatelessWidget {
   final List<String> tweet_imgs;
@@ -34,8 +35,49 @@ class TweetMedia extends StatelessWidget {
     return videoExtensions.contains(fileExtension);
   }
 
+  void pushMediaViewer(BuildContext context, tweet_img, unique_id) {
+    Navigator.push(
+      context,
+      isImage(tweet_img)
+          ? MaterialPageRoute(builder: (context) {
+              return TweetMediaViewerScreen(
+                imageUrl: tweet_img,
+                tag: unique_id,
+                isImage: isImage(tweet_img),
+              );
+            })
+          : PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  TweetMediaViewerScreen(imageUrl: tweet_img,
+                tag: unique_id,
+                isImage: isImage(tweet_img)),
+              transitionDuration:
+                  Duration(milliseconds: 500), // Set the duration here
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.easeInOut;
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                var curvedAnimation =
+                    CurvedAnimation(parent: animation, curve: curve);
+                return SlideTransition(position: offsetAnimation, child: child);
+              },
+            ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<String> unique_ids = [
+      UniqueKey().toString(),
+      UniqueKey().toString(),
+      UniqueKey().toString(),
+      UniqueKey().toString()
+    ];
     int orientation_factor =
         MediaQuery.of(context).orientation == Orientation.portrait
             ? 1
@@ -62,7 +104,9 @@ class TweetMedia extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            //print"Test Image");
+
+                            pushMediaViewer(
+                                context, tweet_imgs[0], unique_ids[0]);
                           },
                           child: Container(
                             height: orientation_factor *
@@ -71,10 +115,13 @@ class TweetMedia extends StatelessWidget {
                                     : MediaQuery.of(context).size.height / 3 +
                                         (5 * (tweet_imgs.length % 2))),
                             child: isImage(tweet_imgs[0])
-                                ? Image.asset(
-                                    tweet_imgs[0],
-                                    fit: BoxFit.cover,
-                                    // width: (MediaQuery.of(context).size.width - 65),
+                                ? Hero(
+                                    tag: unique_ids[0],
+                                    child: Image.asset(
+                                      tweet_imgs[0],
+                                      fit: BoxFit.cover,
+                                      // width: (MediaQuery.of(context).size.width - 65),
+                                    ),
                                   )
                                 : TweetVideo(
                                     video: tweet_imgs[0],
@@ -100,7 +147,8 @@ class TweetMedia extends StatelessWidget {
                                   SizedBox(height: 5),
                                   GestureDetector(
                                     onTap: () {
-                                      //print"Test Image");
+                                      pushMediaViewer(context, tweet_imgs[3],
+                                          unique_ids[3]);
                                     },
                                     child: isImage(tweet_imgs[3])
                                         ? Container(
@@ -119,10 +167,13 @@ class TweetMedia extends StatelessWidget {
                                                         .width -
                                                     65) /
                                                 2,
-                                            child: Image.asset(
-                                              tweet_imgs[3],
-                                              fit: BoxFit.cover,
-                                              // width: (MediaQuery.of(context).size.width - 65),
+                                            child: Hero(
+                                              tag: unique_ids[3],
+                                              child: Image.asset(
+                                                tweet_imgs[3],
+                                                fit: BoxFit.cover,
+                                                // width: (MediaQuery.of(context).size.width - 65),
+                                              ),
                                             ),
                                           )
                                         : TweetVideo(
@@ -164,8 +215,8 @@ class TweetMedia extends StatelessWidget {
                           return Column(
                             children: [
                               GestureDetector(
-                                onTap: () {
-                                  //print"Test Image");
+                                  pushMediaViewer(context, image.value,
+                                      unique_ids[image.key + 1]);
                                 },
                                 child: Container(
                                   height: orientation_factor *
@@ -178,10 +229,13 @@ class TweetMedia extends StatelessWidget {
                                       (MediaQuery.of(context).size.width - 65) /
                                           2,
                                   child: isImage(image.value)
-                                      ? Image.asset(
-                                          image.value,
-                                          fit: BoxFit.cover,
-                                          // width: (MediaQuery.of(context).size.width - 65),
+                                      ? Hero(
+                                          tag: unique_ids[image.key + 1],
+                                          child: Image.asset(
+                                            image.value,
+                                            fit: BoxFit.cover,
+                                            // width: (MediaQuery.of(context).size.width - 65),
+                                          ),
                                         )
                                       : TweetVideo(
                                           video: image.value,
