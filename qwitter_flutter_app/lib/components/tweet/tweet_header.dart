@@ -13,6 +13,7 @@ class TweetHeader extends StatelessWidget {
   bool tweet_edited = false;
   bool followed = false;
   bool stretched = false;
+  bool stretchedMenu = true;
 
   TweetHeader({
     required this.tweet_user_handle,
@@ -26,6 +27,7 @@ class TweetHeader extends StatelessWidget {
     required this.tweet_user_handle,
     required this.tweet_user_name,
     required this.tweet_user_verified,
+    this.stretchedMenu = true,
   }) {
     stretched = true;
   }
@@ -188,17 +190,21 @@ class TweetHeader extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                height: 30,
-                child: FilledButton(
+                height: 35,
+                padding: !stretchedMenu ? EdgeInsets.fromLTRB(0, 0, 15, 0) : EdgeInsets.zero,
+                child: OutlinedButton(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 25)),
+                  ),
                   onPressed: () {},
                   child: const Text(
                     "Follow",
                     style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w700),
+                        color: Colors.white, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
-              Container(
+              stretchedMenu ? Container(
                 alignment: Alignment.centerRight,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -222,7 +228,7 @@ class TweetHeader extends StatelessWidget {
                     ),
                   ],
                 ),
-              )
+              ): Container()
             ],
           ),
         ),
