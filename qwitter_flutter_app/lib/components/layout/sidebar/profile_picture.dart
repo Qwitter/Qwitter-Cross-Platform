@@ -11,7 +11,7 @@ class ProfilePicture extends StatelessWidget {
       required this.name,
       required this.username});
   void onTap() {
-    print("object");
+    //print"object");
   }
 
   @override
@@ -52,8 +52,17 @@ class ProfilePicture extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 20,),
-        Row(children: [Text('2 Following 0 Follwers',style: TextStyle(color: Colors.grey.shade800,fontSize: 17),)],)
+        const SizedBox(
+          height: 20,
+        ),
+        Row(
+          children: [
+            Text(
+              '2 Following 0 Follwers',
+              style: TextStyle(color: Colors.grey.shade800, fontSize: 17),
+            )
+          ],
+        )
       ],
     );
   }

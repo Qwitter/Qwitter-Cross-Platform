@@ -104,6 +104,7 @@ class TweetMedia extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
+
                             pushMediaViewer(
                                 context, tweet_imgs[0], unique_ids[0]);
                           },
@@ -214,7 +215,6 @@ class TweetMedia extends StatelessWidget {
                           return Column(
                             children: [
                               GestureDetector(
-                                onTap: () {
                                   pushMediaViewer(context, image.value,
                                       unique_ids[image.key + 1]);
                                 },
@@ -278,7 +278,7 @@ class TweetMedia extends StatelessWidget {
           ),
           GestureDetector(
               onTap: () {
-                print("Test Image");
+                //print"Test Image");
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(
