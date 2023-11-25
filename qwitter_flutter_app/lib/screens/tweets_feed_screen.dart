@@ -3,6 +3,9 @@ import 'package:qwitter_flutter_app/Components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/Components/tweet_card.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_floating_button.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_scrollup_button.dart';
+import 'package:qwitter_flutter_app/services/tweets_services.dart';
+
+
 
 class TweetFeedScreen extends StatefulWidget {
   const TweetFeedScreen({super.key});
@@ -41,6 +44,7 @@ class _TweetFeedScreenState extends State<TweetFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    TweetsServices.getTimeline();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -54,6 +58,7 @@ class _TweetFeedScreenState extends State<TweetFeedScreen> {
               bottom: TabBar(
                 indicatorColor: Colors.blue,
                 unselectedLabelColor: Colors.grey[600],
+                labelColor: Theme.of(context).secondaryHeaderColor,
                 tabs: [
                   Tab(
                     child: Text(
