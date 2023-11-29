@@ -1,113 +1,62 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_body.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_bottom_action_bar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_reply.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/single_tweet_provider.dart';
+import 'package:qwitter_flutter_app/screens/tweet_details.dart';
+import 'package:qwitter_flutter_app/screens/tweet_media_viewer_screen.dart';
+import 'package:qwitter_flutter_app/services/tweets_services.dart';
 
 // ignore: must_be_immutable
-class TweetCard extends StatefulWidget {
-  // const TweetCard({super.key});
+class TweetCard extends ConsumerStatefulWidget {
+  final Tweet tweet;
 
-  final String tweet_text;
-  final String avatar_image;
-  final String tweet_user_handle;
-  final String tweet_user_name;
-  final bool tweet_user_verified;
-  final String tweet_replied_to;
-  bool tweet_edited;
-  final String tweet_time;
-  List<String> tweet_imgs = [];
-  int comments_count = 0;
-  int reposts_count = 0;
-  int likes_count = 0;
-
-  final bool has_parent_tweet;
-  String sub_tweet_name = '';
-  String sub_tweet_handle = '';
-  String sub_tweet_text = '';
-  String sub_tweet_time = '';
-  bool sub_tweet_verified = false;
-  bool sub_tweet_edited = false;
-  List<String> sub_tweet_imgs = [];
-  String sub_avatar_image = '';
-
-  TweetCard(
-      {required this.tweet_text,
-      required this.avatar_image,
-      required this.tweet_user_handle,
-      required this.tweet_user_name,
-      required this.tweet_user_verified,
-      required this.tweet_time,
-      required this.tweet_edited,
-      this.tweet_replied_to = '',
-      this.has_parent_tweet = false});
-
-  setTweetImages(List<String> imgs_arr) {
-    tweet_imgs = imgs_arr;
-    return this;
-  }
-
-  setTweetStats(int comments, int reposts, int likes) {
-    comments_count = comments;
-    reposts_count = reposts;
-    likes_count = likes;
-    return this;
-  }
-
-  setTweetParent(String name, String handle, String text, bool verified,
-      bool edited, String time, List<String> imgs, String avatar) {
-    sub_tweet_name = name;
-    sub_tweet_handle = handle;
-    sub_tweet_text = text;
-    sub_tweet_time = time;
-    sub_tweet_imgs = imgs;
-    sub_tweet_verified = verified;
-    sub_tweet_edited = edited;
-    sub_avatar_image = avatar;
-    return this;
-  }
+  TweetCard({required this.tweet});
 
   @override
-  State<TweetCard> createState() => _TweetCardState();
+  ConsumerState<TweetCard> createState() => _TweetCardState();
 }
 
-class _TweetCardState extends State<TweetCard> {
-  bool _reposted = false;
-  bool _liked = false;
+class _TweetCardState extends ConsumerState<TweetCard> {
+  // bool _reposted = false;
+  // bool _liked = false;
   bool _followed = false;
 
-  void _makeRepost() {
+  void _makeRepost(tweetProvider) {
     setState(() {
-      _reposted = !_reposted;
-      widget.reposts_count += _reposted ? 1 : -1;
+      // ref.read(tweetProvider.provider.notifier).toggleRetweet();
+      TweetsServices.makeRepost(ref, tweetProvider);
     });
   }
 
-  void _makeLike() {
+  void _makeLike(tweetProvider) {
     setState(() {
-      _liked = !_liked;
-      widget.likes_count += _liked ? 1 : -1;
+      TweetsServices.makeLike(ref, tweetProvider);
     });
   }
 
-  void _makeFollow() {
+  void _makeFollow(tweetProvider) {
     setState(() {
-      _followed = !_followed;
+      TweetsServices.makeFollow(ref, tweetProvider);
     });
   }
 
-  void _openRepostModal() {
+  void _openRepostModal(tweetProvider) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
           decoration: BoxDecoration(
-              color: Colors.black, borderRadius: BorderRadius.vertical(top: Radius.circular(20), bottom: Radius.zero)),
+              color: Colors.black,
+              borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20), bottom: Radius.zero)),
           height: 180, // Set the height of the bottom sheet
           child: Column(
             children: [
@@ -133,7 +82,7 @@ class _TweetCardState extends State<TweetCard> {
                     TextButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
-                        _makeRepost();
+                        _makeRepost(tweetProvider);
                       },
                       icon: Icon(
                         Icons.repeat,
@@ -141,14 +90,14 @@ class _TweetCardState extends State<TweetCard> {
                         color: Colors.white,
                       ),
                       label: Text(
-                        _reposted ? "Undo Repost" : "Repost",
+                        widget.tweet.isRetweeted! ? "Undo Repost" : "Repost",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                     ),
                     TextButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
-                        _makeRepost();
+                        _makeRepost(tweetProvider);
                       },
                       icon: Icon(
                         Icons.mode_edit_outlined,
@@ -171,14 +120,16 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  void _opentweetMenuModal() {
+  void _opentweetMenuModal(tweetProvider) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
           decoration: BoxDecoration(
               color: Colors.black,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20), bottom: Radius.zero)), // Set the height of the bottom sheet
+              borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                  bottom: Radius.zero)), // Set the height of the bottom sheet
           height: 900,
           width: double.infinity,
           child: Column(
@@ -203,7 +154,7 @@ class _TweetCardState extends State<TweetCard> {
                     child: TextButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
-                        _makeFollow();
+                        _makeFollow(tweetProvider);
                       },
                       icon: Icon(
                         Icons.person_add_alt_outlined,
@@ -389,77 +340,188 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
+  bool isImage(String filePath) {
+    final imageExtensions = [
+      'jpg',
+      'jpeg',
+      'png',
+      'gif',
+      'bmp',
+      'webp'
+    ]; // Add more image formats if needed
+    final fileExtension = filePath.split('.').last.toLowerCase();
+    return imageExtensions.contains(fileExtension);
+  }
+
+  bool isVideo(String filePath) {
+    final videoExtensions = [
+      'mp4',
+      'mov',
+      'avi',
+      'mkv',
+      'wmv'
+    ]; // Add more video formats if needed
+    final fileExtension = filePath.split('.').last.toLowerCase();
+    return videoExtensions.contains(fileExtension);
+  }
+
+  void pushMediaViewer(BuildContext context, tweetImg, uniqueid, Tweet tweet) {
+    Navigator.push(
+      context,
+      isImage(tweetImg)
+          ? MaterialPageRoute(builder: (context) {
+              return TweetMediaViewerScreen(
+                imageUrl: tweetImg,
+                tag: uniqueid,
+                isImage: isImage(tweetImg),
+                tweet: tweet,
+              );
+            })
+          : PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  TweetMediaViewerScreen(
+                imageUrl: tweetImg,
+                tag: uniqueid,
+                isImage: isImage(tweetImg),
+                tweet: tweet,
+              ),
+              transitionDuration:
+                  Duration(milliseconds: 500), // Set the duration here
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.easeInOut;
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                var curvedAnimation =
+                    CurvedAnimation(parent: animation, curve: curve);
+                return SlideTransition(position: offsetAnimation, child: child);
+              },
+            ),
+    ).then((t) {
+      setState(() {
+        ref.read(tweet.provider.notifier).setTweet(t as Tweet);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Color.fromRGBO(30, 30, 30, 1), // Set the border color
-            width: 1.0, // Set the border width
+    final tweetProvider = ref.watch(widget.tweet.provider);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return TweetDetailsScreen(tweet: tweetProvider, pushMediaViewerFunc: pushMediaViewer);
+          }),
+        ).then((t) {
+          if (t == null) return;
+          setState(() {
+            ref.read(tweetProvider.provider.notifier).setTweet(t as Tweet);
+          });
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Color.fromRGBO(30, 30, 30, 1), // Set the border color
+              width: 1.0, // Set the border width
+            ),
           ),
         ),
-      ),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TweetAvatar(avatar: widget.avatar_image),
-            const SizedBox(
-              width: 3,
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  height: 23,
-                  width: MediaQuery.of(context).size.width - 65,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TweetHeader(
-                        tweet_user_handle: widget.tweet_user_handle,
-                        tweet_user_name: widget.tweet_user_name,
-                        tweet_user_verified: widget.tweet_user_verified,
-                        tweet_time: widget.tweet_time,
-                        tweet_edited: widget.tweet_edited,
-                      ),
-                      TweetMenu(opentweetMenuModal: _opentweetMenuModal)
-                    ],
+            tweetProvider.repostToId.toString() != "null"
+                ? Container(
+                    padding: EdgeInsets.fromLTRB(40, 10, 10, 0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.repeat,
+                          color: Colors.grey[700],
+                          size: 15,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          tweetProvider.retweetUserName.toString() +
+                              " reposted",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TweetAvatar(avatar: tweetProvider.user!.profilePicture!.path),
+                  const SizedBox(
+                    width: 3,
                   ),
-                ),
-                TweetReply(tweet_reply_to: widget.tweet_replied_to),
-                TweetBody(
-                  sub_tweet_text: widget.sub_tweet_text,
-                  sub_tweet_imgs: widget.sub_tweet_imgs,
-                  tweet_text: widget.tweet_text,
-                  tweet_imgs: widget.tweet_imgs,
-                  sub_tweet_user_handle: widget.sub_tweet_handle,
-                  sub_tweet_user_name: widget.sub_tweet_name,
-                  sub_tweet_user_verified: widget.sub_tweet_verified,
-                  sub_tweet_time: widget.sub_tweet_time,
-                  sub_tweet_edited: widget.sub_tweet_edited,
-                  has_parent_tweet: widget.has_parent_tweet,
-                  sub_tweet_avatar: widget.sub_avatar_image,
-                ),
-                TweetBottomActionBar(
-                    comments_count: widget.comments_count,
-                    reposts_count: widget.reposts_count,
-                    likes_count: widget.likes_count,
-                    makeFollow: _makeFollow,
-                    openRepostModal: _openRepostModal,
-                    makeLike: _makeLike,
-                    reposted: _reposted,
-                    liked: _liked),
-              ],
-            )
-          ]),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 23,
+                        width: MediaQuery.of(context).size.width - 65,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TweetHeader(
+                              tweet_user_handle: tweetProvider.user!.username!,
+                              tweet_user_name: tweetProvider.user!.fullName!,
+                              tweet_user_verified: true,
+                              tweet_time: tweetProvider.createdAt!,
+                              // tweet_edited: tweetProvider_edited,
+                            ),
+                            TweetMenu(
+                                opentweetMenuModal: () =>
+                                    _opentweetMenuModal(tweetProvider))
+                          ],
+                        ),
+                      ),
+                      tweetProvider.replyToId! != Null
+                          ? Container()
+                          : TweetReply(
+                              tweet_reply_to: tweetProvider.replyToId!),
+                      TweetBody(
+                        tweet: tweetProvider,
+                        pushMediaViewerFunc: pushMediaViewer,
+                      ),
+                      TweetBottomActionBar(
+                        comments_count: tweetProvider.repliesCount!,
+                        reposts_count: tweetProvider.retweetsCount!,
+                        likes_count: tweetProvider.likesCount!,
+                        makeFollow: () => _makeFollow(tweetProvider),
+                        openRepostModal: () => _openRepostModal(tweetProvider),
+                        makeLike: () => _makeLike(tweetProvider),
+                        reposted: tweetProvider.isRetweeted!,
+                        makeComment: () =>
+                            TweetsServices.makeComment(context, tweetProvider),
+                        liked: tweetProvider.isLiked!,
+                      ),
+                    ],
+                  )
+                ]),
+          ],
+        ),
+      ),
     );
   }
 }

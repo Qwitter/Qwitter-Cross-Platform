@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwitter_flutter_app/screens/tweet_details.dart';
 
 class TweetBottomActionBar extends StatelessWidget {
   int comments_count;
@@ -9,6 +10,7 @@ class TweetBottomActionBar extends StatelessWidget {
   final bool liked;
 
   final makeFollow;
+  final makeComment;
   final openRepostModal;
   final makeLike;
 
@@ -17,6 +19,7 @@ class TweetBottomActionBar extends StatelessWidget {
     required this.reposts_count,
     required this.likes_count,
     required this.makeFollow,
+    required this.makeComment,
     required this.openRepostModal,
     required this.makeLike,
     required this.reposted,
@@ -36,7 +39,7 @@ class TweetBottomActionBar extends StatelessWidget {
               style: ButtonStyle(
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                   alignment: Alignment.centerLeft),
-              onPressed: () {},
+              onPressed: makeComment,
               icon: Icon(
                 Icons.chat_bubble_outline,
                 color: Colors.grey[600],

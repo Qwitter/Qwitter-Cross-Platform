@@ -3,10 +3,11 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_media.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
 
 class TweetCompressed extends StatelessWidget {
   final String tweet_text;
-  final List<String> tweet_imgs;
+  final List<Media> tweet_imgs;
   final String tweet_user_handle;
   final String tweet_user_name;
   final bool tweet_user_verified;
@@ -54,13 +55,13 @@ class TweetCompressed extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
                       child: TweetHeader(
-                          tweet_user_handle: tweet_user_handle,
-                          tweet_user_name: tweet_user_name,
-                          tweet_user_verified: tweet_user_verified,
-                          tweet_time: tweet_time,
-                          tweet_edited: tweet_edited),
+                        tweet_user_handle: tweet_user_handle,
+                        tweet_user_name: tweet_user_name,
+                        tweet_user_verified: tweet_user_verified,
+                        tweet_time: tweet_time,
+                        // tweet_edited: tweet_edited,
+                      ),
                     ),
-              
                   ],
                 ),
               ),
@@ -86,7 +87,10 @@ class TweetCompressed extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              TweetMedia(tweet_imgs: tweet_imgs, radius: 0),
+              // TweetMedia(
+              //   tweet_imgs: tweet_imgs,
+              //   radius: 0,
+              // ),
             ]),
           ),
         ],

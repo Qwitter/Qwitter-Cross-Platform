@@ -31,7 +31,7 @@ class TweetFloatingButton extends StatelessWidget {
                       duration: Duration(milliseconds: 200),
                       child: Text("Spaces",
                           style: TextStyle(
-                              fontWeight: FontWeight.w300, fontSize: 18)),
+                              fontWeight: FontWeight.w300, fontSize: 18, color: Colors.white)),
                     ),
                     SizedBox(
                       width: 15,
@@ -70,7 +70,7 @@ class TweetFloatingButton extends StatelessWidget {
                       duration: Duration(milliseconds: 200),
                       child: Text("GIF",
                           style: TextStyle(
-                              fontWeight: FontWeight.w300, fontSize: 18)),
+                              fontWeight: FontWeight.w300, fontSize: 18, color: Colors.white)),
                     ),
                     SizedBox(
                       width: 15,
@@ -109,7 +109,7 @@ class TweetFloatingButton extends StatelessWidget {
                       duration: Duration(milliseconds: 200),
                       child: Text("Photos",
                           style: TextStyle(
-                              fontWeight: FontWeight.w300, fontSize: 18)),
+                              fontWeight: FontWeight.w300, fontSize: 18, color: Colors.white)),
                     ),
                     SizedBox(
                       width: 15,
@@ -148,7 +148,7 @@ class TweetFloatingButton extends StatelessWidget {
                       duration: Duration(milliseconds: 200),
                       child: Text("Post",
                           style: TextStyle(
-                              fontWeight: FontWeight.w300, fontSize: 18)),
+                              fontWeight: FontWeight.w300, fontSize: 18, color: Colors.white)),
                     ),
                     SizedBox(
                       width: 15,

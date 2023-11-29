@@ -4,13 +4,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
+import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
 class TweetHeader extends StatelessWidget {
   final String tweet_user_handle;
   final String tweet_user_name;
   final bool tweet_user_verified;
   String tweet_time = "";
-  bool tweet_edited = false;
+  // bool tweet_edited = false;
   bool followed = false;
   bool stretched = false;
   bool stretchedMenu = true;
@@ -20,7 +21,7 @@ class TweetHeader extends StatelessWidget {
     required this.tweet_user_name,
     required this.tweet_user_verified,
     required this.tweet_time,
-    required this.tweet_edited,
+    // required this.tweet_edited,
   });
 
   TweetHeader.stretched({
@@ -45,7 +46,7 @@ class TweetHeader extends StatelessWidget {
     ];
   }
 
-  List<Widget> headerRowWidgets() {
+  List<Widget> headerRowWidgets(width) {
     return [
       TextButton(
         onPressed: () {},
@@ -62,7 +63,7 @@ class TweetHeader extends StatelessWidget {
                   ? '${tweet_user_name.substring(0, 15)}'
                   : tweet_user_name,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -73,13 +74,14 @@ class TweetHeader extends StatelessWidget {
       ...tweet_user_verified ? tweetVerifiedIcon() : [Container()],
       Padding(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-        child: FittedBox(
+        child: Container(
+          width: width*0.15,
           child: Text(
-            tweet_user_handle.length > 15
-                ? '${tweet_user_handle.substring(0, 15)}...'
-                : tweet_user_handle,
+            tweet_user_handle,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
             style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w400),
           ),
@@ -95,12 +97,14 @@ class TweetHeader extends StatelessWidget {
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-        child: Text(
-          tweet_time,
-          style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w400),
+        child: FittedBox(
+          child: Text(
+            DateHelper.formatDateString(tweet_time),
+            style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w400),
+          ),
         ),
       ),
       Container(
@@ -111,25 +115,25 @@ class TweetHeader extends StatelessWidget {
           color: Colors.grey[600],
         ),
       ),
-      tweet_edited
-          ? Container(
-              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-              width: 18,
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.edit,
-                  color: Colors.grey[800],
-                  size: 16,
-                ),
-                style: ButtonStyle(
-                    // overlayColor: MaterialStateColor.resolveWith(
-                    //     (states) => Colors.transparent),
-                    padding: MaterialStateProperty.all(EdgeInsets.zero),
-                    alignment: Alignment.centerRight),
-              ),
-            )
-          : Container()
+      // tweet_edited
+      //     ? Container(
+      //         padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+      //         width: 18,
+      //         child: IconButton(
+      //           onPressed: () {},
+      //           icon: Icon(
+      //             Icons.edit,
+      //             color: Colors.grey[800],
+      //             size: 16,
+      //           ),
+      //           style: ButtonStyle(
+      //               // overlayColor: MaterialStateColor.resolveWith(
+      //               //     (states) => Colors.transparent),
+      //               padding: MaterialStateProperty.all(EdgeInsets.zero),
+      //               alignment: Alignment.centerRight),
+      //         ),
+      //       )
+      //     : Container()
     ];
   }
 
@@ -174,9 +178,9 @@ class TweetHeader extends StatelessWidget {
             ),
             FittedBox(
               child: Text(
-                tweet_user_handle.length > 15
-                    ? '${tweet_user_handle.substring(0, 15)}...'
-                    : tweet_user_handle,
+                tweet_user_handle,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
                 style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -186,51 +190,61 @@ class TweetHeader extends StatelessWidget {
           ]),
       Container(
         alignment: Alignment.centerRight,
-        child: Expanded(
-          child: Row(
-            children: [
-              Container(
-                height: 35,
-                padding: !stretchedMenu ? EdgeInsets.fromLTRB(0, 0, 15, 0) : EdgeInsets.zero,
-                child: OutlinedButton(
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 25)),
-                  ),
-                  onPressed: () {},
-                  child: const Text(
-                    "Follow",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-              stretchedMenu ? Container(
-                alignment: Alignment.centerRight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      // padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                      child: IconButton(
-                        style: ButtonStyle(
-                            // overlayColor:
-                            //     MaterialStateProperty.all(Colors.transparent),
-                            // backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            alignment: Alignment.center),
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.more_vert,
-                          color: Colors.grey[600],
-                          size: 20,
-                        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    height: 35,
+                    padding: !stretchedMenu
+                        ? EdgeInsets.fromLTRB(0, 0, 15, 0)
+                        : EdgeInsets.zero,
+                    child: OutlinedButton(
+                      style: ButtonStyle(
+                        padding: MaterialStateProperty.all(
+                            EdgeInsets.symmetric(horizontal: 25)),
+                      ),
+                      onPressed: () {},
+                      child: const Text(
+                        "Follow",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w700),
                       ),
                     ),
-                  ],
-                ),
-              ): Container()
-            ],
-          ),
+                  ),
+                  stretchedMenu
+                      ? Container(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                // padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                child: IconButton(
+                                  style: ButtonStyle(
+                                      // overlayColor:
+                                      //     MaterialStateProperty.all(Colors.transparent),
+                                      // backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+                                      padding: MaterialStateProperty.all(
+                                          EdgeInsets.zero),
+                                      alignment: Alignment.center),
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.more_vert,
+                                    color: Colors.grey[600],
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container()
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     ];
@@ -249,7 +263,7 @@ class TweetHeader extends StatelessWidget {
           : Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
-              children: headerRowWidgets(),
+              children: headerRowWidgets(MediaQuery.of(context).size.width),
             ),
     );
   }
