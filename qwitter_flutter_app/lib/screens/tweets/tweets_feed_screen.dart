@@ -105,8 +105,6 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
               preferredSize: Size.fromHeight(100),
               child: QwitterAppBar(
                 bottomWidget: TabBar(
-                  indicatorColor: Colors.blue,
-                  unselectedLabelColor: Colors.grey[600],
                   tabs: [
                     Tab(
                       child: Text(

@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
         //print('SharedPreferences cleared!');
       });
     });
+
   }
 
   @override

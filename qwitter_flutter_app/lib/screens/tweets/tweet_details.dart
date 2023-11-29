@@ -281,8 +281,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                         Text(
                                           "45K",
                                           style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .secondaryHeaderColor),
+                                              color: Colors.white),
                                         ),
                                         SizedBox(
                                           width: 5,
@@ -330,8 +329,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                     tweetProvider.retweetsCount
                                                         .toString(),
                                                     style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .secondaryHeaderColor),
+                                                        color: Colors.white),
                                                   ),
                                                   style: ButtonStyle(
                                                     alignment: Alignment.center,
@@ -362,8 +360,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                   child: Text(
                                                     "41",
                                                     style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .secondaryHeaderColor),
+                                                        color: Colors.white),
                                                   ),
                                                   style: ButtonStyle(
                                                     alignment: Alignment.center,
@@ -398,8 +395,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                     tweetProvider.likesCount
                                                         .toString(),
                                                     style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .secondaryHeaderColor),
+                                                        color: Colors.white),
                                                   ),
                                                   style: ButtonStyle(
                                                     alignment: Alignment.center,
@@ -443,8 +439,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                   child: Text(
                                                     "41",
                                                     style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .secondaryHeaderColor),
+                                                        color: Colors.white),
                                                   ),
                                                   style: ButtonStyle(
                                                     alignment: Alignment.center,
