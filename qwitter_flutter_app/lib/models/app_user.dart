@@ -46,7 +46,7 @@ class AppUser extends User {
     prefs.setString('password', password ?? '');
 
     // For saving the profile picture, you can store the file path.
-    prefs.setString('profile_picture_path', profilePicture?.path ?? '');
+    prefs.setString('profileImageUrl', profilePicture?.path ?? '');
     prefs.setString('token', token ?? '');
 
     //print'User data saved $username');
@@ -63,7 +63,7 @@ class AppUser extends User {
     appUser.birthDate = prefs.getString('birth_date');
     appUser.password = prefs.getString('password');
     appUser.profilePicture =
-        File(prefs.getString('profile_picture_path') ?? '');
+        File(prefs.getString('profileImageUrl') ?? '');
     appUser.token = prefs.getString('token');
 
     return appUser;

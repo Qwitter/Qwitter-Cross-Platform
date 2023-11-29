@@ -6,14 +6,16 @@ import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 
 class TweetsServices {
-  static String _baseUrl = 'http://qwitterback.cloudns.org:3000/';
+  static String _baseUrl = 'http://qwitterback.cloudns.org:3000';
 
-  static Future<http.Response> getTimelineResponse() async {
+  static Future<http.Response> getTimelineResponse(int page) async {
     AppUser user = AppUser();
 
-    final url = Uri.parse('$_baseUrl/api/v1/tweets');
+    final url =
+        Uri.parse('$_baseUrl/api/v1/tweets?page=${page.toString()}&limit=10');
 
     print(user.token);
+
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -23,30 +25,98 @@ class TweetsServices {
     return response;
   }
 
-  static Future<List<Tweet>> getTimeline() async {
-    getTimelineResponse().then((response) {
-      if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        print(jsonBody);
-        List<Tweet> tweets = [];
-        // final List<dynamic> tweetList =
-        //     jsonDecode(response.body) as List<dynamic>;
+  static Future<http.Response> getTweetRepliesResponse(Tweet tweet) async {
+    AppUser user = AppUser();
 
-        // // Mapping the JSON data to List<Tweet>
-        // List<Tweet> tweets =
-        //     tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+    final url = Uri.parse('$_baseUrl/api/v1/tweets/' + tweet.id! + "/replies");
 
-        return tweets;
-      } else {
-        print(response.statusCode.toString());
-      }
-    }).onError((error, stackTrace) {
-      print(error.toString());
-      print(stackTrace.toString());
-      return [];
+    print(user.token);
+
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'authorization': 'Bearer ${user.token}',
     });
 
-    return [];
+    return response;
+  }
+
+  static Future<http.Response> likeTweetRequest(Tweet tweet) async {
+    AppUser user = AppUser();
+
+    final url = Uri.parse('$_baseUrl/api/v1/tweets/' + tweet.id! + "/like");
+
+    print(user.token);
+
+    final response = await http.post(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'authorization': 'Bearer ${user.token}',
+    });
+
+    return response;
+  }
+
+  static Future<http.Response> unlikeTweetRequest(Tweet tweet) async {
+    AppUser user = AppUser();
+
+    final url = Uri.parse('$_baseUrl/api/v1/tweets/' + tweet.id! + "/like");
+
+    print(user.token);
+
+    final response = await http.delete(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'authorization': 'Bearer ${user.token}',
+    });
+
+    return response;
+  }
+
+  static Future<List<Tweet>> getTimeline(int page) async {
+    try {
+      final response = await getTimelineResponse(page);
+
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+
+        List<Tweet> tweets =
+            tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+        print('${tweets.length} tweets fetched');
+        return tweets;
+      } else {
+        print('Failed to fetch tweets: ${response.statusCode}');
+        return [];
+      }
+    } catch (error, stackTrace) {
+      print('Error fetching tweets: $error');
+      print('StackTrace: $stackTrace');
+      return [];
+    }
+  }
+
+  static Future<List<Tweet>> getTweetReplies(Tweet tweet) async {
+    try {
+      final response = await getTweetRepliesResponse(tweet);
+
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        final List<dynamic> tweetList = jsonBody["replies"] as List<dynamic>;
+
+        List<Tweet> tweets =
+            tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+        print('${tweets.length} replies fetched');
+        return tweets;
+      } else {
+        print('Failed to fetch tweets: ${response.statusCode}');
+        return [];
+      }
+    } catch (error, stackTrace) {
+      print('Error fetching tweets: $error');
+      print('StackTrace: $stackTrace');
+      return [];
+    }
   }
 
   static void makeRepost(ref, Tweet tweet) {
@@ -54,7 +124,17 @@ class TweetsServices {
   }
 
   static void makeLike(ref, Tweet tweet) {
-    ref.read(tweet.provider.notifier).toggleLike();
+    try {
+      final response = tweet.isLiked!
+          ? unlikeTweetRequest(tweet)
+          : likeTweetRequest(tweet);
+
+      ref.read(tweet.provider.notifier).toggleLike();
+    } catch (error, stackTrace) {
+      print('Error fetching tweets: $error');
+      print('StackTrace: $stackTrace');
+      return;
+    }
   }
 
   static void makeFollow(ref, Tweet tweet) {
