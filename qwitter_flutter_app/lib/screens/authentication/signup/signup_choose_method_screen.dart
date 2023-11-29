@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/add_birthdate_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
 import '../../../api/google_signin_api.dart';
 
@@ -44,8 +45,8 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
   }
 
   Future signupGoogle() async {
-    final user = await GoogleSignInApi.login();
-    if (user == null) {
+    final authUser = await GoogleSignInApi.login();
+    if (authUser == null) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -53,17 +54,14 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
         ),
       );
     } else {
-      final username = user.displayName;
-      final email = user.email;
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Sign in successful $username with email $email'),
-        ),
-      );
+      final gid = authUser.id;
+      final username = authUser.displayName;
+      final email = authUser.email;
+      User user = User().setFullName(username).setEmail(email).setId(gid);
+
       // ignore: use_build_context_synchronously
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const SuggestedFollowsScreen()),
+        MaterialPageRoute(builder: (context) => AddBirthdateScreen(user: user)),
       );
     }
   }
