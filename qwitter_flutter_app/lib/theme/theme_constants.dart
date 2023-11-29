@@ -24,18 +24,19 @@ ThemeData _buildThemeData(Brightness brightness) {
     scaffoldBackgroundColor: brightness == Brightness.light ? white : black,
     appBarTheme: AppBarTheme(
       color: brightness == Brightness.light ? white : black,
-      elevation: 1.1,
-      shadowColor: white,
-      
+      elevation: 0.5,
+      shadowColor: Colors.grey[700],
     ),
     bottomAppBarTheme: BottomAppBarTheme(
       color: brightness == Brightness.light ? white : black,
-      elevation: 1.1,
-      shadowColor: white,
-
+      elevation: 0.5,
+      shadowColor: Colors.grey[700],
     ),
     tabBarTheme: const TabBarTheme(
-      labelColor: white
+      labelColor: white,
+      overlayColor: MaterialStatePropertyAll(Colors.transparent),
+      unselectedLabelColor: Colors.grey,
+      indicatorColor: Colors.blue,
     ),
     useMaterial3: true,
     primaryColor: mainColor,
