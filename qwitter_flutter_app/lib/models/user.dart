@@ -10,6 +10,7 @@ class User {
   String? password;
   List? usernameSuggestions;
   File? profilePicture;
+  bool? isFollowed;
 
   User({
     this.id,
@@ -20,6 +21,7 @@ class User {
     this.password,
     this.usernameSuggestions,
     this.profilePicture,
+    this.isFollowed,
   });
 
   // Add all setters and return user
@@ -110,12 +112,13 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      username: json['username'],
+      username: json['userName'],
       email: json['email'],
       fullName: json['full_name'],
       birthDate: json['birth_date'],
       password: json['password'],
-      profilePicture: File(json['profile_picture_path']),
+      isFollowed: false,
+      profilePicture: File(json['profileImageUrl']),
     );
   }
 
