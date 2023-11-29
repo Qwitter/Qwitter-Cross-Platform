@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
@@ -172,6 +173,16 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
                                     googleSignUp().then((value) {
                                       print('Response: ${value.statusCode}S');
                                       if (value.statusCode == 200) {
+                                        // user.printUserData();
+                                        final userJson = jsonDecode(value.body);
+                                        // print(userJson);
+                                        User user =
+                                            User.fromJson(userJson["user"]);
+                                        user.token = userJson['token'];
+                                        // user.printUserData();
+                                        final appUser =
+                                            AppUser().copyUserData(user);
+                                        appUser.saveUserData();
                                         // ignore: use_build_context_synchronously
                                         Navigator.of(context).push(
                                           MaterialPageRoute(

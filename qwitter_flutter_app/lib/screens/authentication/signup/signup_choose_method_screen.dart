@@ -108,7 +108,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
 
     print('Signed token: $token\n');
 
-    final response = await http.get(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -150,7 +150,6 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
           googleSignIn().then((value) {
             print(value.statusCode.toString());
             if (value.statusCode == 200) {
-              // ignore: use_build_context_synchronously
               final userJson = jsonDecode(value.body);
               // print(userJson);
               User user = User.fromJson(userJson["user"]);
