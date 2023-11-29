@@ -156,24 +156,16 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     }
 
     return WillPopScope(
-      onWillPop: () {
-        buttonFunction = (context) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ProfilePictureScreen(
-                user: widget.user,
-              ),
-            ),
-          );
-        };
-        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
-        return Future.value(true);
+      onWillPop: () async {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        return true;
       },
       child: Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
+            autoImplyLeading: false,
           ),
         ),
         body: Container(

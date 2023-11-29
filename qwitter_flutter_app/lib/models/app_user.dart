@@ -25,7 +25,7 @@ class AppUser extends User {
 
   Future<void> saveUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('user_id', id ?? 0);
+    prefs.setString('user_id', id ?? '0');
     prefs.setString('username', username ?? '');
     prefs.setString('email', email ?? '');
     prefs.setString('full_name', fullName ?? '');
@@ -42,7 +42,7 @@ class AppUser extends User {
     final prefs = await SharedPreferences.getInstance();
     // Create a User object from the retrieved data
     final appUser = AppUser();
-    appUser.id = prefs.getInt('user_id');
+    appUser.id = prefs.getString('user_id');
     appUser.username = prefs.getString('username');
     appUser.email = prefs.getString('email');
     appUser.fullName = prefs.getString('full_name');

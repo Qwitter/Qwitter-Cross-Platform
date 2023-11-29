@@ -126,7 +126,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             //printuserBirthDate);
             checkEmailAvailability().then((value) {
               if (value.statusCode == 200) {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ConfirmationCodeScreen(

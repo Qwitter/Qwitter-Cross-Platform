@@ -106,10 +106,9 @@ class _ConfirmationCodeScreenState
   String? codeValidations(String? code) {
     if (code == null || code.isEmpty) return null;
 
-    if (code.length != 6) {
-      if (code.length == 8) {
-        return null;
-      }
+    final fieldLength = widget.user!.fullName != null ? 6 : 8;
+
+    if (code.length != fieldLength) {
       return 'Invalid confirmation code.';
     }
 
@@ -135,6 +134,7 @@ class _ConfirmationCodeScreenState
 
   @override
   Widget build(BuildContext context) {
+    final fieldLength = widget.user!.fullName != null ? 6 : 8;
     void Function(BuildContext)? buttonFunction;
 
     codeController.addListener(() {
@@ -245,7 +245,7 @@ class _ConfirmationCodeScreenState
                       placeholder: 'Verification code',
                       paddingValue: const EdgeInsets.all(0),
                       controller: codeController,
-                      maxLength: widget.user!.fullName != null ? 6 : 8,
+                      maxLength: fieldLength,
                       validator: codeValidations,
                     ),
                     const SizedBox(height: 5),

@@ -1,10 +1,19 @@
 // import 'dart:js_util';
 
+import 'dart:convert';
+
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/add_birthdate_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
@@ -26,6 +35,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
 
   final emailController = TextEditingController();
   late TextEditingController passController;
+  User user = User();
 
   bool isActive = false;
   void hello() {
@@ -43,9 +53,76 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     );
   }
 
-  Future signupGoogle() async {
-    final user = await GoogleSignInApi.login();
-    if (user == null) {
+  Future<String> readTextFromFile(String fileName) async {
+    try {
+      // Use rootBundle to load the file from the assets
+      String contents = await rootBundle.loadString('assets/$fileName');
+      return contents;
+    } catch (e) {
+      print('Error reading file: $e');
+      return '';
+    }
+  }
+
+  Future<http.Response> checkEmailAvailability() async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
+
+    // Define the data you want to send as a map
+    print('Email: ${user.email}');
+    final Map<String, String> data = {
+      'userNameOrEmail': user.email!,
+    };
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
+
+    // Successfully sent the data
+    return response;
+  }
+
+  Future<http.Response> googleSignIn() async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/google/login');
+
+    String token;
+
+    String private = await readTextFromFile('private.txt');
+    // Create the json web token
+    final jwt = JWT(
+      {
+        'google_id': user.id,
+        'name': user.fullName,
+        'email': user.email,
+      },
+    );
+    // Sign it
+    token = jwt.sign(SecretKey(private));
+
+    print('Signed token: $token\n');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer $token',
+      },
+    );
+
+    // Successfully sent the data
+    return response;
+  }
+
+  Future signGoogle() async {
+    final authUser = await GoogleSignInApi.login();
+    if (authUser == null) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -53,18 +130,33 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
         ),
       );
     } else {
-      final username = user.displayName;
-      final email = user.email;
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Sign in successful $username with email $email'),
-        ),
-      );
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const SuggestedFollowsScreen()),
-      );
+      final gid = authUser.id;
+      final username = authUser.displayName;
+      final email = authUser.email;
+      user.setEmail(email).setFullName(username).setId(gid);
+      checkEmailAvailability().then((value) {
+        print('Response: ${value.statusCode}');
+        if (value.statusCode == 200) {
+          print('email not found go add birthdate');
+          // ignore: use_build_context_synchronously
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => AddBirthdateScreen(user: user)),
+          );
+        } else {
+          // New token should be recieved here
+          print('email found go to suggested follows');
+          googleSignIn().then((value) {
+            if (value.statusCode == 200) {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => const SuggestedFollowsScreen()),
+              );
+            }
+          });
+        }
+      });
     }
   }
 
@@ -76,7 +168,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
 
   void signIn() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const LoginEmailScreen()),
+      MaterialPageRoute(builder: (context) => const LoginChooseScreen()),
     );
   }
 
@@ -145,7 +237,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
                 height: 60,
                 child: CustomIconButton(
                   text: "Sign up with Google",
-                  onPressed: signupGoogle,
+                  onPressed: signGoogle,
                   image: googleImagePath,
                 ),
               ),
@@ -155,7 +247,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
                 height: 60,
                 child: CustomIconButton(
                   text: "Sign up with Apple",
-                  onPressed: signupGoogle,
+                  onPressed: () {},
                   image: appleImagePath,
                 ),
               ),

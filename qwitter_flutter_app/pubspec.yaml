@@ -51,6 +51,7 @@ dependencies:
   path_provider: ^2.1.1
   http_parser: ^4.0.2
   mime: ^1.0.4
+  dart_jsonwebtoken: ^2.12.1
   
 
 dev_dependencies:
@@ -81,6 +82,7 @@ flutter:
     - assets/images/apple.png
     - assets/images/pfp.jpg
     - assets/images/x_logo.png
+    - assets/private.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

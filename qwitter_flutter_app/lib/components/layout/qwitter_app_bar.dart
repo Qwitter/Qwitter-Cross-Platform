@@ -7,16 +7,19 @@ class QwitterAppBar extends StatelessWidget {
     this.onPressed,
     this.currentIcon = Icons.close,
     this.showLogoOnly = false,
+    this.autoImplyLeading = true,
   });
   final bool isButton;
   final VoidCallback? onPressed;
   final IconData currentIcon;
   final bool showLogoOnly;
+  final bool autoImplyLeading;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 75,
+      automaticallyImplyLeading: autoImplyLeading,
       centerTitle: showLogoOnly ? true : false,
       title: Stack(
         children: [
