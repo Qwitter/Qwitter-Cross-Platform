@@ -55,11 +55,11 @@ class _ForgetNewPasswordScreenState
 
   String? passwordEquality(String? password) {
     if (password == null || password.isEmpty) return null;
-    final message = passwordValidations(password);
-    if (password != passController.text && message == null) {
+
+    if (password != passController.text) {
       return 'Passwords do not match.';
     }
-    return message;
+    return null;
   }
 
   Future changePassword() async {
@@ -104,7 +104,7 @@ class _ForgetNewPasswordScreenState
                 if (value.statusCode == 200) {
                   // navigate to login screen
                   Fluttertoast.showToast(msg: "password changed successfully!");
-                  Navigator.pushReplacement(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const LoginEmailScreen()));
