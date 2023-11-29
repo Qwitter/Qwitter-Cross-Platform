@@ -28,7 +28,7 @@ class BookmarksScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  print("Test Popup menu item");
+                  // print("Test Popup menu item");
                 },
                 value: 1,
               ),

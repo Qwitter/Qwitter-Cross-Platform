@@ -27,7 +27,7 @@ class _TweetBodyState extends ConsumerState<TweetBody> {
 
   @override
   Widget build(BuildContext context) {
-    print("rebuilt");
+    // print("rebuilt");
     final tweetProvider = ref.read(widget.tweet.provider);
     return Container(
       width: MediaQuery.of(context).size.width -
