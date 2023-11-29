@@ -70,7 +70,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
   }
 
   Future<http.Response> googleSignIn() async {
-    final url = Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/user');
+    final url = Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/auth/google/login');
 
     String token;
 
@@ -88,7 +88,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
 
     //print('Signed token: $token\n');
 
-    final response = await http.get(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
