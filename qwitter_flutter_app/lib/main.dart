@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     AppUser user = AppUser();
     user.getUserData();
-    clearSharedPreferences();
+    // clearSharedPreferences();
     //print'user data : ${user.getUsername}');
     return MaterialApp(
       title: 'Flutter Demo',
@@ -52,8 +52,8 @@ class MyApp extends StatelessWidget {
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (snapshot.hasData) {
-              print(snapshot.data);
+            } else if (user.username != null) {
+              // print(snapshot.data);
               return TweetFeedScreen();
             } else {
               return SignupChooseMethodScreen();
