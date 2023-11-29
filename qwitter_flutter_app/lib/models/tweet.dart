@@ -13,7 +13,7 @@ class Media {
 }
 
 class Tweet {
-  int id;
+  String? id;
   String? createdAt;
   User? user;
   String? retweetUserName;

@@ -11,6 +11,7 @@ import 'package:qwitter_flutter_app/providers/secondary_button_provider.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
 class LoginMainScreen extends ConsumerStatefulWidget {
   const LoginMainScreen({super.key, required this.passedInput});
@@ -68,10 +69,14 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
           login().then((value) {
             if (value.statusCode == 200) {
               // navigate to feed
-              Fluttertoast.showToast(
-                msg: "Into the feed",
-                backgroundColor: Colors.green[200],
-              );
+              // Fluttertoast.showToast(
+              //   msg: "Into the feed",
+              //   backgroundColor: Colors.green[200],
+              // );
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx){
+                return TweetFeedScreen();
+              }));
             } else {
               Fluttertoast.showToast(
                 msg: "Wrong password",
