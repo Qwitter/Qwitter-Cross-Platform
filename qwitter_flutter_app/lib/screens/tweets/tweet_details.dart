@@ -1,14 +1,11 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qwitter_flutter_app/Components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_body.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
@@ -84,8 +81,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                     .chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
 
-                var curvedAnimation =
-                    CurvedAnimation(parent: animation, curve: curve);
+                // var curvedAnimation =
+                //     CurvedAnimation(parent: animation, curve: curve);
                 return SlideTransition(position: offsetAnimation, child: child);
               },
             ),
@@ -97,6 +94,17 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    TweetsServices.getTweetReplies(widget.tweet).then((replies) {
+      //print(replies.length);
+      ref.read(widget.tweet.provider.notifier).setReplies(replies);
+    }).onError((error, stackTrace) {
+      //print(error);
+    });
+  }
+
   void _openRepostModal() {
     showModalBottomSheet(
       context: context,
@@ -540,45 +548,11 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                             ),
                           ],
                         )
-                      : TweetCard(
-                          tweet: Tweet(
-                              createdAt: '2021-09-01T00:00:00.000Z',
-                              id: "1 + ${index.toString()}",
-                              hashtags: ["a", "b"],
-                              isBookmarked: true,
-                              isLiked: true,
-                              isQuoted: false,
-                              isRetweeted: true,
-                              likesCount: 15,
-                              media: [
-                                Media(
-                                    "https://miro.medium.com/v2/resize:fit:1200/1*P_H_UpQahH0juwQpXWXnpQ.jpeg",
-                                    "Image")
-                              ],
-                              mentions: [],
-                              quoteToId: null,
-                              quotesCount: 12,
-                              repliesCount: 133,
-                              replyToId: widget.tweet.id.toString(),
-                              repostToId: null,
-                              retweetUserName: "Abdallah",
-                              retweetsCount: 12,
-                              text: "Text for a retweet ${index.toString()}",
-                              urls: [],
-                              user: User(
-                                  birthDate: "07",
-                                  email: "abdallah@gmail.com",
-                                  fullName: "Abdallah Ahmed",
-                                  id: "1",
-                                  isFollowed: true,
-                                  password: "abdallah123",
-                                  profilePicture: File(
-                                      "https://pbs.twimg.com/profile_images/1723702722476613632/bzpNL81G_400x400.jpg"),
-                                  username: "abdallah_aali",
-                                  usernameSuggestions: [])),
-                        );
+                      : 
+                      
+                      TweetCard(tweet: tweetProvider.replies[index - 1]);
                 },
-                itemCount: 10,
+                itemCount: tweetProvider.replies.length + 1,
               ),
               Positioned(
                 bottom: 0,
@@ -614,12 +588,13 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                             )
                           : Container(),
                       Container(
-                        padding:const EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: TextFormField(
                           focusNode: focusNode,
                           controller: textEditingController,
-                          style: const TextStyle(color: Colors.white), // Text color
-                          decoration:const  InputDecoration(
+                          style: const TextStyle(
+                              color: Colors.white), // Text color
+                          decoration: const InputDecoration(
                             hintText: "Post your reply",
                             labelStyle: TextStyle(
                                 color: Colors.grey,

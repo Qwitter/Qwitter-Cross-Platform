@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 
 class TweetBottomActionBar extends StatelessWidget {
-  int commentsCount;
-  int repostsCount;
-  int likesCount;
+  final int commentsCount;
+  final int repostsCount;
+  final int likesCount;
 
   final bool reposted;
   final bool liked;
@@ -29,7 +28,7 @@ class TweetBottomActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 65,
       child: Row(
         children: [

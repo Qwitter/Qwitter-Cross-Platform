@@ -13,7 +13,7 @@ class AppUser extends User {
 
   AppUser._internal();
 
-  void copyUserData(User user) {
+  AppUser copyUserData(User user) {
     id = user.id;
     username = user.username;
     email = user.email;
@@ -21,6 +21,19 @@ class AppUser extends User {
     birthDate = user.birthDate;
     password = user.password;
     profilePicture = user.profilePicture;
+    usernameSuggestions = user.usernameSuggestions;
+    isFollowed = user.isFollowed;
+    followersCount = user.followersCount;
+    followingCount = user.followingCount;
+    createdAt = user.createdAt;
+    profileBannerUrl = user.profileBannerUrl;
+    url = user.url;
+    description = user.description;
+    isProtected = user.isProtected;
+    isVerified = user.isVerified;
+    token = user.token;
+
+    return this;
   }
 
   Future<void> saveUserData() async {
@@ -33,7 +46,8 @@ class AppUser extends User {
     prefs.setString('password', password ?? '');
 
     // For saving the profile picture, you can store the file path.
-    prefs.setString('profile_picture_path', profilePicture?.path ?? '');
+    prefs.setString('profileImageUrl', profilePicture?.path ?? '');
+    prefs.setString('token', token ?? '');
 
     //print'User data saved $username');
   }
@@ -49,7 +63,8 @@ class AppUser extends User {
     appUser.birthDate = prefs.getString('birth_date');
     appUser.password = prefs.getString('password');
     appUser.profilePicture =
-        File(prefs.getString('profile_picture_path') ?? '');
+        File(prefs.getString('profileImageUrl') ?? '');
+    appUser.token = prefs.getString('token');
 
     return appUser;
   }

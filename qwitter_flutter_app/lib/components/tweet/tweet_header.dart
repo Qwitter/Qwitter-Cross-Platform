@@ -1,48 +1,48 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
 class TweetHeader extends StatelessWidget {
   final String tweetUserHandle;
   final String tweetUserName;
   final bool tweetUserVerified;
-  String tweetTime = "";
-  // bool tweet_edited = false;
-  bool followed = false;
-  bool stretched = false;
-  bool stretchedMenu = true;
+  final String tweetTime;
+  final bool followed;
+  final bool stretched;
+  final bool stretchedMenu;
 
-  TweetHeader({
+  const TweetHeader({
+    Key? key,
     required this.tweetUserHandle,
     required this.tweetUserName,
     required this.tweetUserVerified,
-    required this.tweetTime,
+    this.tweetTime = "",
+    this.followed = false,
+    this.stretched = false,
+    this.stretchedMenu = false,
     // required this.tweet_edited,
-  });
+  }) : super(key: key);
 
-  TweetHeader.stretched({
+  const TweetHeader.stretched({
+    Key? key,
     required this.tweetUserHandle,
     required this.tweetUserName,
     required this.tweetUserVerified,
     this.stretchedMenu = true,
-  }) {
-    stretched = true;
-  }
+    this.tweetTime = "",
+    this.followed = false,
+  })  : stretched = true,
+        super(key: key);
 
   List<Widget> tweetVerifiedIcon() {
     return [
       SizedBox(width: 5),
-      Container(
-        child: Icon(
-          Icons.verified,
-          color: Colors.blue,
-          size: 16,
-        ),
-      )
+      Icon(
+        Icons.verified,
+        color: Colors.blue,
+        size: 16,
+      ),
     ];
   }
 
@@ -60,7 +60,7 @@ class TweetHeader extends StatelessWidget {
           child: FittedBox(
             child: Text(
               tweetUserName.length > 15
-                  ? '${tweetUserName.substring(0, 15)}'
+                  ? tweetUserName.substring(0, 15)
                   : tweetUserName,
               style: const TextStyle(
                 fontSize: 14,
@@ -74,8 +74,8 @@ class TweetHeader extends StatelessWidget {
       ...tweetUserVerified ? tweetVerifiedIcon() : [Container()],
       Padding(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-        child: Container(
-          width: width*0.15,
+        child: SizedBox(
+          width: width * 0.15,
           child: Text(
             tweetUserHandle,
             overflow: TextOverflow.ellipsis,
@@ -146,7 +146,7 @@ class TweetHeader extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
+                SizedBox(
                   height: 30,
                   child: TextButton(
                     onPressed: () {},
@@ -161,7 +161,7 @@ class TweetHeader extends StatelessWidget {
                       child: FittedBox(
                         child: Text(
                           tweetUserName.length > 15
-                              ? '${tweetUserName.substring(0, 15)}'
+                              ? tweetUserName.substring(0, 15)
                               : tweetUserName,
                           style: const TextStyle(
                             fontSize: 16,
@@ -219,13 +219,9 @@ class TweetHeader extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Container(
-                                // padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                              SizedBox(
                                 child: IconButton(
                                   style: ButtonStyle(
-                                      // overlayColor:
-                                      //     MaterialStateProperty.all(Colors.transparent),
-                                      // backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
                                       padding: MaterialStateProperty.all(
                                           EdgeInsets.zero),
                                       alignment: Alignment.center),
@@ -252,7 +248,7 @@ class TweetHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: stretched ? 90 : 30,
       child: stretched
           ? Row(

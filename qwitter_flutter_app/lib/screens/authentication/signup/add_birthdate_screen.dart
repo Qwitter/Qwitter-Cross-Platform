@@ -1,15 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
@@ -43,13 +42,13 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
       String contents = await rootBundle.loadString('assets/$fileName');
       return contents;
     } catch (e) {
-      print('Error reading file: $e');
+      //print('Error reading file: $e');
       return '';
     }
   }
 
   Future<http.Response> googleSignUp() async {
-    print('Signing up with Google');
+    //print('Signing up with Google');
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/auth/google/signup');
 
@@ -72,7 +71,7 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
     // Sign it
     token = jwt.sign(SecretKey(private));
 
-    print('Signed token: $token\n');
+    //print('Signed token: $token\n');
 
     final response = await http.post(
       url,
@@ -158,9 +157,9 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
                                 );
                               },
                             ).then((value) {
-                              print('value: $value');
+                              //print('value: $value');
                               if (value != null) {
-                                print('signing up with google');
+                                //print('signing up with google');
                                 userBirthDate = '${value.toIso8601String()}Z';
                                 // save the date as ISO 8601 string
                                 birthdayController.text =
@@ -170,8 +169,18 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
                                     widget.user.setBirthDate(userBirthDate);
 
                                     googleSignUp().then((value) {
-                                      print('Response: ${value.statusCode}S');
+                                      //print('Response: ${value.statusCode}S');
                                       if (value.statusCode == 200) {
+                                        // user.printUserData();
+                                        final userJson = jsonDecode(value.body);
+                                        // //print(userJson);
+                                        User user =
+                                            User.fromJson(userJson["user"]);
+                                        user.token = userJson['token'];
+                                        // user.printUserData();
+                                        final appUser =
+                                            AppUser().copyUserData(user);
+                                        appUser.saveUserData();
                                         // ignore: use_build_context_synchronously
                                         Navigator.of(context).push(
                                           MaterialPageRoute(

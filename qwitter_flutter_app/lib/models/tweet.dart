@@ -1,9 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/single_tweet_provider.dart';
-import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 
 class Media {
   final String value;
@@ -16,6 +14,8 @@ class Tweet {
   String? id;
   String? createdAt;
   User? user;
+  String? source;
+  String? coordinates;
   String? retweetUserName;
   int? repliesCount;
   int? retweetsCount;
@@ -33,12 +33,15 @@ class Tweet {
   List<String>? mentions;
   List<String>? urls;
   List<Media>? media;
+  List<Tweet> replies = [];
   late final StateNotifierProvider<SingleTweetProvider, Tweet> provider;
 
   Tweet({
     required this.id,
     required this.createdAt,
     required this.user,
+    required this.source,
+    required this.coordinates,
     required this.repliesCount,
     required this.retweetsCount,
     required this.likesCount,
@@ -56,6 +59,7 @@ class Tweet {
     required this.isRetweeted,
     required this.isQuoted,
     required this.isBookmarked,
+
   }) {
     provider = StateNotifierProvider((ref) => SingleTweetProvider(this));
   }
@@ -66,33 +70,38 @@ class Tweet {
       id: json['id'],
       createdAt: json['createdAt'],
       user: user,
+      source: json['source'],
+      coordinates: json['coordinates'],
       retweetUserName: json['userName'],
       repliesCount: json['replyCount'],
       retweetsCount: json['retweetCount'],
-      likesCount: json['likesCount'],
+      likesCount: (json['likes'] as List<dynamic>).length,
       quotesCount: json['qouteCount'],
       text: json['text'],
-      replyToId: json['replyToTweetId'].toString(),
-      repostToId: json['retweetedId'].toString(),
-      quoteToId: json['qouteTweetedId'].toString(),
-      hashtags: json['entities']['hashtags']
+      replyToId: json['replyToTweetId'],
+      repostToId: json['retweetedId'],
+      quoteToId: json['qouteTweetedId'],
+      hashtags: json['entities'] != null ? json['entities']['hashtags']
           .map<String>((hashtag) => hashtag['value'].toString())
-          .toList(),
-      mentions: json['entities']['mentions']
+          .toList() : [],
+      mentions: json['entities'] != null ? json['entities']['mentions']
           .map<String>((mention) => mention['mentionedUsername'].toString())
-          .toList(),
-      urls: json['entities']['urls']
+          .toList() : [],
+      urls: json['entities'] != null ? json['entities']['urls']
           .map<String>((url) => url['value'].toString())
-          .toList(),
+          .toList() : [],
       // media: json['entities']['media'].map<String, String>((media) => MapEntry(media['value'], media['type'])),
-      media: List<Media>.from(json['entities']['media'].map(
-          (media) => Media(media['url'] as String, media['type'] as String))),
-      isLiked: false,
+      media: List<Media>.from(json['entities'] != null ? json['entities']['media'].map(
+          (media) => Media(media['url'] as String, media['type'] as String)) : []),
+      isLiked: json["liked"],
       isRetweeted: false,
       isQuoted: false,
       isBookmarked: false,
     );
 
+    // //print(tweet.id);
     return tweet;
   }
+
+  
 }

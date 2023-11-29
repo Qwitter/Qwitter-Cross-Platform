@@ -11,6 +11,14 @@ class User {
   List? usernameSuggestions;
   File? profilePicture;
   bool? isFollowed;
+  int? followersCount;
+  int? followingCount;
+  String? createdAt;
+  File? profileBannerUrl;
+  String? url;
+  String? description;
+  bool? isProtected;
+  bool? isVerified;
 
   User({
     this.id,
@@ -22,9 +30,18 @@ class User {
     this.usernameSuggestions,
     this.profilePicture,
     this.isFollowed,
+    this.followersCount,
+    this.followingCount,
+    this.createdAt,
+    this.profileBannerUrl,
+    this.url,
+    this.description,
+    this.isProtected,
+    this.isVerified,
   });
 
   // Add all setters and return user
+
 
   User setToken(String? token) {
     this.token = token;
@@ -114,11 +131,23 @@ class User {
       id: json['id'],
       username: json['userName'],
       email: json['email'],
-      fullName: json['full_name'],
-      birthDate: json['birth_date'],
+      fullName: json['name'],
+      birthDate: json['birthDate'],
       password: json['password'],
       isFollowed: false,
-      profilePicture: File(json['profileImageUrl']),
+      profilePicture: File(
+        json['profileImageUrl'] ?? "",
+      ),
+      followersCount: json['followersCount'],
+      followingCount: json['followingCount'],
+      createdAt: json['createdAt'],
+      profileBannerUrl: File(
+        json['profileBannerUrl'] ?? "",
+      ),
+      url: json['url'],
+      description: json['description'],
+      isProtected: json['isProtected'],
+      isVerified: json['isVerified'],
     );
   }
 

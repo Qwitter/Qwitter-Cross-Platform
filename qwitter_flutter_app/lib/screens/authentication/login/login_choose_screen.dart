@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/api/google_signin_api.dart';
-import 'package:flutter/material.dart';
 
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
@@ -42,7 +41,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
       String contents = await rootBundle.loadString('assets/$fileName');
       return contents;
     } catch (e) {
-      print('Error reading file: $e');
+      //print('Error reading file: $e');
       return '';
     }
   }
@@ -52,7 +51,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
         'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
-    print('Email: ${user.email}');
+    //print('Email: ${user.email}');
     final Map<String, String> data = {
       'userNameOrEmail': user.email!,
     };
@@ -87,7 +86,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
     // Sign it
     token = jwt.sign(SecretKey(private));
 
-    print('Signed token: $token\n');
+    //print('Signed token: $token\n');
 
     final response = await http.get(
       url,
@@ -118,9 +117,9 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
       user = User().setFullName(username).setEmail(email).setId(gid);
       // ignore: use_build_context_synchronously
       checkEmailAvailability().then((value) {
-        print('Response: ${value.statusCode}');
+        //print('Response: ${value.statusCode}');
         if (value.statusCode == 200) {
-          print('email not found go add birthdate');
+          //print('email not found go add birthdate');
           // ignore: use_build_context_synchronously
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -128,7 +127,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
           );
         } else {
           // New token should be recieved here
-          print('email found go to suggested follows');
+          //print('email found go to suggested follows');
           googleSignIn().then((value) {
             if (value.statusCode == 200) {
               // ignore: use_build_context_synchronously

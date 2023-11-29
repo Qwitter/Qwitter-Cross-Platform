@@ -118,6 +118,8 @@ class _ConfirmationCodeScreenState
   @override
   void initState() {
     super.initState();
+    ToastContext ctx = ToastContext();
+    ctx.init(context);
     if (widget.user!.fullName != null) {
       sendVerificationEmail();
     }

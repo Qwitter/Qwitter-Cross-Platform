@@ -2,11 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
-import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 
 class TweetMedia extends ConsumerStatefulWidget {
   // final List<Media> tweet_imgs;
@@ -66,7 +63,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
       UniqueKey().toString(),
       UniqueKey().toString()
     ];
-    int orientation_factor =
+    int orientationFactor =
         MediaQuery.of(context).orientation == Orientation.portrait
             ? 1
             : MediaQuery.of(context).orientation == Orientation.landscape
@@ -76,18 +73,17 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
     if (tweetProvider.media!.length >= 2) {
       return Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           ClipRRect(
             borderRadius: BorderRadius.vertical(
                 top: Radius.circular(widget.radius.toDouble()),
-                bottom: Radius.circular(10)),
+                bottom: const Radius.circular(10)),
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    // height: 180,
+                  child: SizedBox(
                     child: Column(
                       children: [
                         GestureDetector(
@@ -98,8 +94,8 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                 uniqueIds[0],
                                 tweetProvider);
                           },
-                          child: Container(
-                            height: orientation_factor *
+                          child: SizedBox(
+                            height: orientationFactor *
                                 (tweetProvider.media!.length == 4
                                     ? MediaQuery.of(context).size.height / 6
                                     : MediaQuery.of(context).size.height / 3 +
@@ -118,7 +114,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                     video: tweetProvider.media![0].value,
                                     aspectRatio: 1,
                                     tweet: tweetProvider,
-                                    height: orientation_factor *
+                                    height: orientationFactor *
                                         (tweetProvider.media!.length == 4
                                             ? MediaQuery.of(context)
                                                     .size
@@ -139,7 +135,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                         tweetProvider.media!.length == 4
                             ? Column(
                                 children: [
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                   GestureDetector(
                                     onTap: () {
                                       pushMediaViewer(
@@ -150,8 +146,8 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                     },
                                     child: isImage(
                                             tweetProvider.media![3].value)
-                                        ? Container(
-                                            height: orientation_factor *
+                                        ? SizedBox(
+                                            height: orientationFactor *
                                                 (tweetProvider.media!.length ==
                                                         4
                                                     ? MediaQuery.of(context)
@@ -181,7 +177,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                                 tweetProvider.media![3].value,
                                             aspectRatio: 1.0,
                                             tweet: tweetProvider,
-                                            height: orientation_factor *
+                                            height: orientationFactor *
                                                 (tweetProvider.media!.length ==
                                                         4
                                                     ? MediaQuery.of(context)
@@ -201,11 +197,11 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     // height: 180,
                     child: Column(
                       children: tweetProvider.media!
@@ -225,8 +221,8 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                   pushMediaViewer(context, image.value.value,
                                       uniqueIds[image.key + 1], tweetProvider);
                                 },
-                                child: Container(
-                                  height: orientation_factor *
+                                child: SizedBox(
+                                  height: orientationFactor *
                                       (tweetProvider.media!.length == 2
                                           ? MediaQuery.of(context).size.height /
                                               3
@@ -248,7 +244,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                           video: image.value.value,
                                           aspectRatio: 1.0,
                                           tweet: tweetProvider,
-                                          height: orientation_factor *
+                                          height: orientationFactor *
                                               (tweetProvider.media!.length == 2
                                                   ? MediaQuery.of(context)
                                                           .size
@@ -264,7 +260,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                               image.key ==
                                       min(tweetProvider.media!.length, 3) - 2
                                   ? Container()
-                                  : SizedBox(
+                                  : const SizedBox(
                                       height: 5,
                                     )
                             ],
@@ -282,7 +278,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
     } else if (tweetProvider.media!.length == 1) {
       return Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           GestureDetector(
@@ -293,7 +289,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(
                     top: Radius.circular(widget.radius.toDouble()),
-                    bottom: Radius.circular(10)),
+                    bottom: const Radius.circular(10)),
                 child: isImage(tweetProvider.media![0].value)
                     ? Hero(
                         tag: uniqueIds[0],

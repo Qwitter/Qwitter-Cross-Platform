@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_username_screen.dart';
@@ -57,9 +59,9 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
-    //print'Token : ${widget.user!.getToken}');
+    //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
-      "Authorization": 'Bearer ${widget.user!.getToken}',
+      "authorization": 'Bearer ${widget.user!.getToken}',
       "Content-Type": "multipart/form-data"
     };
 
@@ -89,10 +91,18 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     if (response.statusCode == 200) {
       // Successfully sent the data
-
+      final responseFromStream= await http.Response.fromStream(response);// json.decode(response.stream.toString());
+      final responseBody = jsonDecode(responseFromStream.body);
+      //print(responseBody);
+      AppUser appUser = AppUser();
+      widget.user!.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.saveUserData();
       return true;
     } else {
       // Handle errors
+      //print(response.statusCode);
+      //print(response.reasonPhrase);
       return false;
     }
   }
@@ -109,7 +119,9 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     File imageFile = File(pickedFile!.path);
 
     buttonFunction = (context) {
+      //print("Image");
       uploadProfilePicture(imageFile).then((value) {
+        //print(value);
         if (value) {
           Toast.show('Image Added Successfully!');
           Navigator.push(
@@ -122,8 +134,10 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
           );
         }
       }).onError((error, stackTrace) {
-        Toast.show('Error sending data $error');
-        //print'Error sending data $error');
+        // Toast.show('Error sending data $error');
+        //print('Error sending data $error');
+        //print(stackTrace);
+
       });
     };
     widget.user!.setProfilePicture(imageFile);
