@@ -1,7 +1,7 @@
 import 'dart:io';
 
 class User {
-  int? id;
+  String? id;
   String? token;
   String? username;
   String? email;
@@ -29,7 +29,7 @@ class User {
     return this;
   }
 
-  User setId(int? id) {
+  User setId(String? id) {
     this.id = id;
     return this;
   }
@@ -75,7 +75,7 @@ class User {
     return token;
   }
 
-  int? get getId {
+  String? get getId {
     return id;
   }
 

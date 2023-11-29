@@ -30,7 +30,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
       return null;
     }
 
-    if (!RegExp(r'^[a-zA-Z0-9](?!.*__)(?!.*_$)[a-zA-Z0-9_]{0,30}$')
+    if (!RegExp(r'^[a-zA-Z0-9](?!.*__)(?!.*_$)[a-zA-Z0-9_]{0,15}$')
         .hasMatch(username)) {
       return 'Invalid Twitter username. Please check the format.';
     }
@@ -112,26 +112,16 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
       }
     });
     return WillPopScope(
-      onWillPop: () {
-        buttonFunction = widget.user!.getProfilePicture == null
-            ? null
-            : (context) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddUsernameScreen(
-                      user: widget.user,
-                    ),
-                  ),
-                );
-              };
-        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
-        return Future.value(true);
+      onWillPop: () async {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        return true;
       },
       child: Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
+            autoImplyLeading: false,
           ),
         ),
         body: Container(

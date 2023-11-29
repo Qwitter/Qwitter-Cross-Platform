@@ -103,8 +103,6 @@ class TweetMedia extends StatelessWidget {
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {
-
                             pushMediaViewer(
                                 context, tweet_imgs[0], unique_ids[0]);
                           },

@@ -30,8 +30,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       return 'Password must be at least 8 characters long.';
     }
 
-    if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)[^\s]+$').hasMatch(password)) {
-      return 'Password must contain at least one letter and one number and no spaces.';
+    if (!RegExp(r'^(?=.*[a-zA-Z])[^\s]+$').hasMatch(password)) {
+      return 'Password must contain at least one letter and no spaces.';
     }
 
     return null;
@@ -122,24 +122,15 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       }
     });
     return WillPopScope(
-      onWillPop: () {
-        buttonFunction = (context) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AddPasswordScreen(
-                user: widget.user,
-              ),
-            ),
-          );
-        };
-        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
-        return Future.value(true);
+      onWillPop: () async {
+        return false;
       },
       child: Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
+            autoImplyLeading: false,
           ),
         ),
         body: Container(
