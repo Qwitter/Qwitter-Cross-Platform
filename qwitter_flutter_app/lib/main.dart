@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
   void clearSharedPreferences() {
     SharedPreferences.getInstance().then((prefs) {
       prefs.clear().then((value) {
-        print('SharedPreferences cleared!');
+        //print('SharedPreferences cleared!');
       });
     });
   }
@@ -53,7 +52,7 @@ class MyApp extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
             } else if (user.username != null) {
-              // print(snapshot.data);
+              // //print(snapshot.data);
               return TweetFeedScreen();
             } else {
               return SignupChooseMethodScreen();

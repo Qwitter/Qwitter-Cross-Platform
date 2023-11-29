@@ -1,14 +1,11 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qwitter_flutter_app/Components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_body.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
@@ -84,8 +81,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                     .chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
 
-                var curvedAnimation =
-                    CurvedAnimation(parent: animation, curve: curve);
+                // var curvedAnimation =
+                //     CurvedAnimation(parent: animation, curve: curve);
                 return SlideTransition(position: offsetAnimation, child: child);
               },
             ),
@@ -101,14 +98,13 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     super.initState();
 
     TweetsServices.getTweetReplies(widget.tweet).then((replies) {
-      print(replies.length);
+      //print(replies.length);
       ref.read(widget.tweet.provider.notifier).setReplies(replies);
     }).onError((error, stackTrace) {
-      print(error);
+      //print(error);
     });
   }
 
-  @override
   void _openRepostModal() {
     showModalBottomSheet(
       context: context,

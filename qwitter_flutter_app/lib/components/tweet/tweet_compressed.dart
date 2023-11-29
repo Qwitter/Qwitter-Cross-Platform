@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:intl/intl.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_media.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 
 class TweetCompressed extends StatelessWidget {

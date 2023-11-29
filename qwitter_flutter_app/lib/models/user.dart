@@ -41,30 +41,7 @@ class User {
   });
 
   // Add all setters and return user
-  void printUserData() {
-    final user = this;
-    print('User Data:');
-    print('ID: ${user.id}');
-    print('Token: ${user.token}');
-    print('Username: ${user.username}');
-    print('Email: ${user.email}');
-    print('Full Name: ${user.fullName}');
-    print('Birth Date: ${user.birthDate}');
-    print('Password: ${user.password}');
-    print('Username Suggestions: ${user.usernameSuggestions}');
-    // Note: You may need to handle null values and format the data accordingly for lists and other types.
 
-    // Printing other properties
-    print('Is Followed: ${user.isFollowed}');
-    print('Followers Count: ${user.followersCount}');
-    print('Following Count: ${user.followingCount}');
-    print('Created At: ${user.createdAt}');
-    print('Profile Banner URL: ${user.profileBannerUrl}');
-    print('URL: ${user.url}');
-    print('Description: ${user.description}');
-    print('Is Protected: ${user.isProtected}');
-    print('Is Verified: ${user.isVerified}');
-  }
 
   User setToken(String? token) {
     this.token = token;

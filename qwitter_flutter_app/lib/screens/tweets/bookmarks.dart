@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/Components/tweet_card.dart';
 
 class BookmarksScreen extends StatelessWidget {
   const BookmarksScreen({super.key});
@@ -28,7 +27,7 @@ class BookmarksScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  // print("Test Popup menu item");
+                  // //print("Test Popup menu item");
                 },
                 value: 1,
               ),
@@ -40,6 +39,7 @@ class BookmarksScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         itemBuilder: (ctx, index) {
+          return Container();
           // return Container(
           //   child: 
           //   TweetCard(

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/components/user_card.dart';
-import 'package:qwitter_flutter_app/models/app_user.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
 class SuggestedFollowsScreen extends StatelessWidget {

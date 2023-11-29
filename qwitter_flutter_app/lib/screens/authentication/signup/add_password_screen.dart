@@ -63,10 +63,10 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     if (response.statusCode == 200) {
       // Successfully sent the data
       final responseBody = json.decode(response.body);
-      // print(responseBody);
+      // //print(responseBody);
       User user = User.fromJson(responseBody["data"]);
       user.token = responseBody['token'];
-      // print(responseBody["token"]);
+      // //print(responseBody["token"]);
       // user.printUserData();
       final appUser = AppUser().copyUserData(user);
       appUser.saveUserData();
@@ -78,7 +78,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       return true;
     } else {
       // Handle errors
-      print('Error sending data ${response.statusCode} ${response.body}');
+      //print('Error sending data ${response.statusCode} ${response.body}');
       return false;
     }
   }
@@ -120,12 +120,12 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
               ),
             );
             }else{
-              print("Failed to create account");
+              //print("Failed to create account");
             }
           }).onError((error, stackTrace) {
             // Toast.show('Error sending data $stackTrace');
-            print('Error sending data $error');
-            print(stackTrace);
+            //print('Error sending data $error');
+            //print(stackTrace);
           });
         };
         widget.user!.setPassword(passwordController.text);

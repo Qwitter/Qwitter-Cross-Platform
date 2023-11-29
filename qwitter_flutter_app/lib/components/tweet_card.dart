@@ -9,7 +9,6 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_reply.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/providers/single_tweet_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
@@ -396,8 +395,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                     .chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
 
-                var curvedAnimation =
-                    CurvedAnimation(parent: animation, curve: curve);
+                // var curvedAnimation =
+                //     CurvedAnimation(parent: animation, curve: curve);
                 return SlideTransition(position: offsetAnimation, child: child);
               },
             ),

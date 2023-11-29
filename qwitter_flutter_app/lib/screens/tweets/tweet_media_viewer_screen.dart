@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qwitter_flutter_app/components/basic_widgets/underlined_text_field.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
-import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
 class TweetMediaViewerScreen extends ConsumerStatefulWidget {
   final String imageUrl;
@@ -140,7 +137,7 @@ class _TweetMediaViewerScreenState
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    // print("Test Popup menu item");
+                    // //print("Test Popup menu item");
                   },
                   value: 1,
                 ),

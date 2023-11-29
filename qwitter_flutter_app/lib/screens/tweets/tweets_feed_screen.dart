@@ -1,13 +1,10 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/Components/tweet_card.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_floating_button.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_scrollup_button.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 
@@ -29,10 +26,10 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     TweetsServices.getTimeline(page).then((list) {
-      print(list.length);
+      //print(list.length);
       ref.read(timelineTweetsProvider.notifier).setTimelineTweets(list);
     }).onError((error, stackTrace) {
-      print(error);
+      //print(error);
     });
   }
 
@@ -55,6 +52,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   }
 
   bool _scrollPressed = false;
+  
   final ScrollController _scrollController = ScrollController();
 
   void _scrollPressedFunc() {
@@ -63,7 +61,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
 
     setState(() {
       _scrollPressed = true;
-      // print(_scrollPressed);
+      // //print(_scrollPressed);
     });
   }
 
@@ -74,7 +72,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
       setState(() {
         _isFetching = true;
       });
-      // print("Page: " + page.toString());
+      // //print("Page: " + page.toString());
 
       // await Future.delayed(Duration(seconds: 10));
 
@@ -87,7 +85,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
     // Logic to fetch new tweets from the provider
     // Example: Call a function to fetch new tweets and update the tweet list
     final List<Tweet> newTweets = await TweetsServices.getTimeline(page);
-    print(newTweets.length);
+    //print(newTweets.length);
     ref.read(timelineTweetsProvider.notifier).setTimelineTweets(newTweets);
     setState(() {
       _isFetching = false;

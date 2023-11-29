@@ -1,9 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/single_tweet_provider.dart';
-import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 
 class Media {
   final String value;
@@ -101,7 +99,7 @@ class Tweet {
       isBookmarked: false,
     );
 
-    // print(tweet.id);
+    // //print(tweet.id);
     return tweet;
   }
 

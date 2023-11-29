@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
@@ -13,7 +12,6 @@ import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_ou
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
-import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_birthdate_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
@@ -60,7 +58,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
       String contents = await rootBundle.loadString('assets/$fileName');
       return contents;
     } catch (e) {
-      print('Error reading file: $e');
+      //print('Error reading file: $e');
       return '';
     }
   }
@@ -70,7 +68,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
         'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
-    print('Email: ${user.email}');
+    //print('Email: ${user.email}');
     final Map<String, String> data = {
       'userNameOrEmail': user.email!,
     };
@@ -106,7 +104,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     // Sign it
     token = jwt.sign(SecretKey(private));
 
-    print('Signed token: $token\n');
+    //print('Signed token: $token\n');
 
     final response = await http.post(
       url,
@@ -136,9 +134,9 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
       final email = authUser.email;
       user.setEmail(email).setFullName(username).setId(gid);
       checkEmailAvailability().then((value) {
-        print('Response: ${value.statusCode}');
+        //print('Response: ${value.statusCode}');
         if (value.statusCode == 200) {
-          print('email not found go add birthdate');
+          //print('email not found go add birthdate');
           // ignore: use_build_context_synchronously
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -146,12 +144,12 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
           );
         } else {
           // New token should be recieved here
-          print('email found go to suggested follows');
+          //print('email found go to suggested follows');
           googleSignIn().then((value) {
-            print(value.statusCode.toString());
+            //print(value.statusCode.toString());
             if (value.statusCode == 200) {
               final userJson = jsonDecode(value.body);
-              // print(userJson);
+              // //print(userJson);
               User user = User.fromJson(userJson["user"]);
               user.token = userJson['token'];
               // user.printUserData();

@@ -14,7 +14,7 @@ class TweetsServices {
     final url =
         Uri.parse('$_baseUrl/api/v1/tweets?page=${page.toString()}&limit=10');
 
-    print(user.token);
+    //print(user.token);
 
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ class TweetsServices {
 
     final url = Uri.parse('$_baseUrl/api/v1/tweets/' + tweet.id! + "/replies");
 
-    print(user.token);
+    //print(user.token);
 
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ class TweetsServices {
 
     final url = Uri.parse('$_baseUrl/api/v1/tweets/' + tweet.id! + "/like");
 
-    print(user.token);
+    //print(user.token);
 
     final response = await http.post(url, headers: {
       'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ class TweetsServices {
 
     final url = Uri.parse('$_baseUrl/api/v1/tweets/' + tweet.id! + "/like");
 
-    print(user.token);
+    //print(user.token);
 
     final response = await http.delete(url, headers: {
       'Content-Type': 'application/json',
@@ -83,15 +83,15 @@ class TweetsServices {
 
         List<Tweet> tweets =
             tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
-        print('${tweets.length} tweets fetched');
+        //print('${tweets.length} tweets fetched');
         return tweets;
       } else {
-        print('Failed to fetch tweets: ${response.statusCode}');
+        //print('Failed to fetch tweets: ${response.statusCode}');
         return [];
       }
-    } catch (error, stackTrace) {
-      print('Error fetching tweets: $error');
-      print('StackTrace: $stackTrace');
+    } catch (error) {
+      //print('Error fetching tweets: $error');
+      //print('StackTrace: $stackTrace');
       return [];
     }
   }
@@ -106,15 +106,15 @@ class TweetsServices {
 
         List<Tweet> tweets =
             tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
-        print('${tweets.length} replies fetched');
+        //print('${tweets.length} replies fetched');
         return tweets;
       } else {
-        print('Failed to fetch tweets: ${response.statusCode}');
+        //print('Failed to fetch tweets: ${response.statusCode}');
         return [];
       }
-    } catch (error, stackTrace) {
-      print('Error fetching tweets: $error');
-      print('StackTrace: $stackTrace');
+    } catch (error) {
+      //print('Error fetching tweets: $error');
+      //print('StackTrace: $stackTrace');
       return [];
     }
   }
@@ -130,9 +130,9 @@ class TweetsServices {
           : likeTweetRequest(tweet);
 
       ref.read(tweet.provider.notifier).toggleLike();
-    } catch (error, stackTrace) {
-      print('Error fetching tweets: $error');
-      print('StackTrace: $stackTrace');
+    } catch (error) {
+      //print('Error fetching tweets: $error');
+      //print('StackTrace: $stackTrace');
       return;
     }
   }

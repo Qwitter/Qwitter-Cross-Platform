@@ -59,7 +59,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
-    print('Token : ${widget.user!.getToken}');
+    //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "authorization": 'Bearer ${widget.user!.getToken}',
       "Content-Type": "multipart/form-data"
@@ -93,7 +93,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
       // Successfully sent the data
       final responseFromStream= await http.Response.fromStream(response);// json.decode(response.stream.toString());
       final responseBody = jsonDecode(responseFromStream.body);
-      print(responseBody);
+      //print(responseBody);
       AppUser appUser = AppUser();
       widget.user!.setProfilePicture(File(responseBody['user']['profileImageUrl']));
       appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
@@ -101,8 +101,8 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
       return true;
     } else {
       // Handle errors
-      print(response.statusCode);
-      print(response.reasonPhrase);
+      //print(response.statusCode);
+      //print(response.reasonPhrase);
       return false;
     }
   }
@@ -119,9 +119,9 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     File imageFile = File(pickedFile!.path);
 
     buttonFunction = (context) {
-      print("Image");
+      //print("Image");
       uploadProfilePicture(imageFile).then((value) {
-        print(value);
+        //print(value);
         if (value) {
           Toast.show('Image Added Successfully!');
           Navigator.push(
@@ -135,8 +135,8 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
         }
       }).onError((error, stackTrace) {
         // Toast.show('Error sending data $error');
-        print('Error sending data $error');
-        print(stackTrace);
+        //print('Error sending data $error');
+        //print(stackTrace);
 
       });
     };

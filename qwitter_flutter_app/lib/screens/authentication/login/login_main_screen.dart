@@ -76,7 +76,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               //   backgroundColor: Colors.green[200],
               // );
               final userJson = jsonDecode(value.body);
-              // print(userJson);
+              // //print(userJson);
               User user = User.fromJson(userJson["user"]);
               user.token = userJson['token'];
               // user.printUserData();
@@ -94,7 +94,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               );
             }
           }).onError((error, stackTrace) {
-            print(error.toString() + " " + stackTrace.toString());
+            //print(error.toString() + " " + stackTrace.toString());
             Fluttertoast.showToast(
               msg: "Error in sending",
               backgroundColor: Colors.grey[700],
