@@ -464,7 +464,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TweetAvatar(avatar: tweetProvider.user!.profilePicture!.path),
+                  TweetAvatar(avatar: tweetProvider.user!.profilePicture!.path.startsWith("http") ? tweetProvider.user!.profilePicture!.path : "http://" + tweetProvider.user!.profilePicture!.path),
                   const SizedBox(
                     width: 3,
                   ),
@@ -496,7 +496,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                           ],
                         ),
                       ),
-                      tweetProvider.replyToId! != Null
+                      tweetProvider.replyToId != Null
                           ? Container()
                           : TweetReply(
                               tweetReplyTo: tweetProvider.replyToId!),
