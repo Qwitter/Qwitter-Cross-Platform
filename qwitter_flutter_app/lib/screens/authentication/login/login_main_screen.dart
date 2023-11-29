@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/secondary_button_provider.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
@@ -73,6 +75,14 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               //   msg: "Into the feed",
               //   backgroundColor: Colors.green[200],
               // );
+              final userJson = jsonDecode(value.body);
+              // print(userJson);
+              User user = User.fromJson(userJson["user"]);
+              user.token = userJson['token'];
+              // user.printUserData();
+              final appUser = AppUser().copyUserData(user);
+              appUser.saveUserData();
+
               Navigator.popUntil(context, (route) => route.isFirst);
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx){
                 return TweetFeedScreen();
@@ -84,6 +94,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               );
             }
           }).onError((error, stackTrace) {
+            print(error.toString() + " " + stackTrace.toString());
             Fluttertoast.showToast(
               msg: "Error in sending",
               backgroundColor: Colors.grey[700],

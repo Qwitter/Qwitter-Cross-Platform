@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
@@ -147,8 +148,16 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
           // New token should be recieved here
           print('email found go to suggested follows');
           googleSignIn().then((value) {
+            print(value.statusCode.toString());
             if (value.statusCode == 200) {
               // ignore: use_build_context_synchronously
+              final userJson = jsonDecode(value.body);
+              // print(userJson);
+              User user = User.fromJson(userJson["user"]);
+              user.token = userJson['token'];
+              // user.printUserData();
+              final appUser = AppUser().copyUserData(user);
+              appUser.saveUserData();
               Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (context) => const SuggestedFollowsScreen()),
