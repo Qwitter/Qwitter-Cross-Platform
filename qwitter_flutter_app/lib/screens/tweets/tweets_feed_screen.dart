@@ -107,7 +107,6 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
                 bottomWidget: TabBar(
                   indicatorColor: Colors.blue,
                   unselectedLabelColor: Colors.grey[600],
-                  labelColor: Theme.of(context).secondaryHeaderColor,
                   tabs: [
                     Tab(
                       child: Text(

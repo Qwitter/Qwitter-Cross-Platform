@@ -317,7 +317,7 @@ class _TweetMediaViewerScreenState
                     bottom: 10,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
+                        color: Colors.black,
                         border: focusNode.hasFocus? Border(
                           top: BorderSide(
                             color: Colors.grey[800]!,

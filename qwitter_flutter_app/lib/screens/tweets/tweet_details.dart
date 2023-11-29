@@ -191,7 +191,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).appBarTheme.copyWith().backgroundColor,
           title: const Text(
             "Post",
             style: TextStyle(color: Colors.white),
@@ -558,7 +558,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                 bottom: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
+                    color: Colors.black,
                     border: Border(
                       top: BorderSide(
                         color: Colors.grey[800]!,

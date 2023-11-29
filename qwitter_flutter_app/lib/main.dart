@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
+import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -31,17 +32,7 @@ class MyApp extends StatelessWidget {
     //print'user data : ${user.getUsername}');
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primaryColor: Colors.black,
-        scaffoldBackgroundColor: Colors.black,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
-        useMaterial3: true,
-        appBarTheme: AppBarTheme(
-          iconTheme: IconThemeData(
-            color: Colors.white, // Change the color of the back icon
-          ),
-        ),
-      ),
+      theme: darkTheme,
       home: FutureBuilder(
           future: user.getUserData(),
           builder: (context, snapshot) {

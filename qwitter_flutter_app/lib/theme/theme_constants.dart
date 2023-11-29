@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-const main_color = Color.fromRGBO(29, 155, 240, 1.0);
-const title_color = Color.fromRGBO(119, 119, 119, 1.0);
+const mainColor = Color.fromRGBO(29, 155, 240, 1.0);
+const titleColor = Color.fromRGBO(119, 119, 119, 1.0);
 const black = Colors.black;
 const white = Colors.white;
 
@@ -11,10 +11,10 @@ const TextTheme _baseTextTheme = TextTheme(
     fontWeight: FontWeight.bold,
   ),
   titleMedium: TextStyle(
-    color: title_color,
+    color: titleColor,
   ),
   bodySmall: TextStyle(
-    color: title_color,
+    color: titleColor,
   ),
 );
 
@@ -25,11 +25,22 @@ ThemeData _buildThemeData(Brightness brightness) {
     appBarTheme: AppBarTheme(
       color: brightness == Brightness.light ? white : black,
       elevation: 1.1,
-      shadowColor: title_color,
+      shadowColor: white,
+      
     ),
-    primaryColor: main_color,
+    bottomAppBarTheme: BottomAppBarTheme(
+      color: brightness == Brightness.light ? white : black,
+      elevation: 1.1,
+      shadowColor: white,
+
+    ),
+    tabBarTheme: const TabBarTheme(
+      labelColor: white
+    ),
+    useMaterial3: true,
+    primaryColor: mainColor,
     floatingActionButtonTheme:
-        FloatingActionButtonThemeData(backgroundColor: main_color),
+        FloatingActionButtonThemeData(backgroundColor: mainColor),
     fontFamily: "Roboto",
     textTheme: _baseTextTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -63,5 +74,5 @@ ThemeData _buildThemeData(Brightness brightness) {
   );
 }
 
-ThemeData light_theme = _buildThemeData(Brightness.light);
-ThemeData dark_theme = _buildThemeData(Brightness.dark);
+ThemeData lightTheme = _buildThemeData(Brightness.light);
+ThemeData darkTheme = _buildThemeData(Brightness.dark);

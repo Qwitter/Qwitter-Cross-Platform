@@ -168,8 +168,8 @@ class TweetFloatingButton extends StatelessWidget {
                         turns: isVisible ? 1 : 0,
                         child: isVisible
                             ? Icon(
-                                Icons.post_add) // Icon when button is visible
-                            : Icon(Icons.add),
+                                Icons.post_add, color:Colors.white) // Icon when button is visible
+                            : Icon(Icons.add, color: Colors.white),
                       ),
                       onPressed: () {
                         if (isVisible) {
