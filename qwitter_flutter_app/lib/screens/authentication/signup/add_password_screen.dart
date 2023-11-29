@@ -123,17 +123,6 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     });
     return WillPopScope(
       onWillPop: () async {
-        // buttonFunction = (context) {
-        //   Navigator.of(context).push(
-        //     MaterialPageRoute(
-        //       builder: (context) => AddPasswordScreen(
-        //         user: widget.user,
-        //       ),
-        //     ),
-        //   );
-        // };
-        // ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
-        // return Future.value(true);
         return false;
       },
       child: Scaffold(

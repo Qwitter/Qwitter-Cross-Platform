@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/api/google_signin_api.dart';
+import 'package:flutter/material.dart';
 
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.dart';
@@ -162,7 +163,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
 
     return response;
   }
-
+  
   bool isActive = false;
   void hello() {
     setState(() {
@@ -221,7 +222,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
             );
           });
         };
-      } else {}
+      }
     });
 
     return Scaffold(

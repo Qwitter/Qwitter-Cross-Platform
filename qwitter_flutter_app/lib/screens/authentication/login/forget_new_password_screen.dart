@@ -99,6 +99,7 @@ class _ForgetNewPasswordScreenState
           if (passwordValidations(passController.text) == null &&
               passwordValidations(confirmPassController.text) == null &&
               passwordEquality(confirmPassController.text) == null) {
+
             buttonFunction = (context) {
               changePassword().then((value) {
                 if (value.statusCode == 200) {
