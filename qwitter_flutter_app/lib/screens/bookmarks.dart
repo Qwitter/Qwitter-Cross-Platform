@@ -38,41 +38,46 @@ class BookmarksScreen extends StatelessWidget {
         iconTheme: Theme.of(context).iconTheme,
         elevation: 1,
       ),
-      body: ListView.builder(itemBuilder: (ctx, index) {
-        return Container(
-            child: TweetCard(
-          tweet_text:
-              "Hello in English, I'm trying to type some words to make my tweet looks good",
-          avatar_image: 'assets/images/user.jpg',
-          tweet_time: '2h',
-          tweet_user_name: 'Abdallah',
-          tweet_user_handle: '@abdallah_aali',
-          tweet_user_verified: true,
-          tweet_edited: true,
-          has_parent_tweet: true,
-        )
-                .setTweetImages(
-                  [],
-                )
-                .setTweetStats(
-                  100,
-                  205,
-                  2365,
-                )
-                .setTweetParent(
-                    'Abdallah',
-                    '@abdallah_aali',
-                    "بالعربي بقا نشوف التنصيص بتاع اللغة العربية ازاي بقا يا عم الحاج",
-                    true,
-                    false,
-                    '2h',
-                    [
-                      'assets/images/tweet_img.jpg',
-                      'assets/images/tweet_img_2.jpg',
-                      'assets/images/tweet_img.jpg'
-                    ],
-                    'assets/images/user.jpg'));
-      }, itemCount: 10,),
+      body: ListView.builder(
+        itemBuilder: (ctx, index) {
+          // return Container(
+          //   child: 
+          //   TweetCard(
+          //     tweet_text:
+          //         "Hello in English, I'm trying to type some words to make my tweet looks good",
+          //     avatar_image: 'assets/images/user.jpg',
+          //     tweet_time: '2h',
+          //     tweet_user_name: 'Abdallah',
+          //     tweet_user_handle: '@abdallah_aali',
+          //     tweet_user_verified: true,
+          //     tweet_edited: true,
+          //     has_parent_tweet: true,
+          //   )
+          //       .setTweetImages(
+          //         [],
+          //       )
+          //       .setTweetStats(
+          //         100,
+          //         205,
+          //         2365,
+          //       )
+          //       .setTweetParent(
+          //           'Abdallah',
+          //           '@abdallah_aali',
+          //           "بالعربي بقا نشوف التنصيص بتاع اللغة العربية ازاي بقا يا عم الحاج",
+          //           true,
+          //           false,
+          //           '2h',
+          //           [
+          //             'assets/images/tweet_img.jpg',
+          //             'assets/images/tweet_img_2.jpg',
+          //             'assets/images/tweet_img.jpg'
+          //           ],
+          //           'assets/images/user.jpg'),
+          // );
+        },
+        itemCount: 10,
+      ),
     );
   }
 }
