@@ -7,27 +7,27 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
 class TweetHeader extends StatelessWidget {
-  final String tweet_user_handle;
-  final String tweet_user_name;
-  final bool tweet_user_verified;
-  String tweet_time = "";
+  final String tweetUserHandle;
+  final String tweetUserName;
+  final bool tweetUserVerified;
+  String tweetTime = "";
   // bool tweet_edited = false;
   bool followed = false;
   bool stretched = false;
   bool stretchedMenu = true;
 
   TweetHeader({
-    required this.tweet_user_handle,
-    required this.tweet_user_name,
-    required this.tweet_user_verified,
-    required this.tweet_time,
+    required this.tweetUserHandle,
+    required this.tweetUserName,
+    required this.tweetUserVerified,
+    required this.tweetTime,
     // required this.tweet_edited,
   });
 
   TweetHeader.stretched({
-    required this.tweet_user_handle,
-    required this.tweet_user_name,
-    required this.tweet_user_verified,
+    required this.tweetUserHandle,
+    required this.tweetUserName,
+    required this.tweetUserVerified,
     this.stretchedMenu = true,
   }) {
     stretched = true;
@@ -59,9 +59,9 @@ class TweetHeader extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: FittedBox(
             child: Text(
-              tweet_user_name.length > 15
-                  ? '${tweet_user_name.substring(0, 15)}'
-                  : tweet_user_name,
+              tweetUserName.length > 15
+                  ? '${tweetUserName.substring(0, 15)}'
+                  : tweetUserName,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -71,13 +71,13 @@ class TweetHeader extends StatelessWidget {
           ),
         ),
       ),
-      ...tweet_user_verified ? tweetVerifiedIcon() : [Container()],
+      ...tweetUserVerified ? tweetVerifiedIcon() : [Container()],
       Padding(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
         child: Container(
           width: width*0.15,
           child: Text(
-            tweet_user_handle,
+            tweetUserHandle,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(
@@ -99,7 +99,7 @@ class TweetHeader extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
         child: FittedBox(
           child: Text(
-            DateHelper.formatDateString(tweet_time),
+            DateHelper.formatDateString(tweetTime),
             style: TextStyle(
                 fontSize: 13,
                 color: Colors.grey[600],
@@ -160,9 +160,9 @@ class TweetHeader extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: FittedBox(
                         child: Text(
-                          tweet_user_name.length > 15
-                              ? '${tweet_user_name.substring(0, 15)}'
-                              : tweet_user_name,
+                          tweetUserName.length > 15
+                              ? '${tweetUserName.substring(0, 15)}'
+                              : tweetUserName,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -173,12 +173,12 @@ class TweetHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-                ...tweet_user_verified ? tweetVerifiedIcon() : [Container()],
+                ...tweetUserVerified ? tweetVerifiedIcon() : [Container()],
               ],
             ),
             FittedBox(
               child: Text(
-                tweet_user_handle,
+                tweetUserHandle,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: TextStyle(

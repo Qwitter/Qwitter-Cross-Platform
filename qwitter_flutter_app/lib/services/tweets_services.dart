@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/screens/tweet_details.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 
 class TweetsServices {
   static String _baseUrl = 'http://192.168.1.10:3001';

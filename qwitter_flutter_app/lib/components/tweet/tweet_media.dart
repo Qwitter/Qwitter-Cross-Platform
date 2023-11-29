@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
-import 'package:qwitter_flutter_app/screens/tweet_media_viewer_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 
 class TweetMedia extends ConsumerStatefulWidget {
   // final List<Media> tweet_imgs;
@@ -52,47 +52,6 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
   }
 
   void pushMediaViewer(BuildContext context, tweetImg, uniqueid, Tweet tweet) {
-    // Navigator.push(
-    //   context,
-    //   isImage(tweetImg)
-    //       ? MaterialPageRoute(builder: (context) {
-    //           return TweetMediaViewerScreen(
-    //             imageUrl: tweetImg,
-    //             tag: uniqueid,
-    //             isImage: isImage(tweetImg),
-    //             tweet: tweet,
-    //           );
-    //         })
-    //       : PageRouteBuilder(
-    //           pageBuilder: (context, animation, secondaryAnimation) =>
-    //               TweetMediaViewerScreen(
-    //             imageUrl: tweetImg,
-    //             tag: uniqueid,
-    //             isImage: isImage(tweetImg),
-    //             tweet: tweet,
-    //           ),
-    //           transitionDuration:
-    //               Duration(milliseconds: 500), // Set the duration here
-    //           transitionsBuilder:
-    //               (context, animation, secondaryAnimation, child) {
-    //             const begin = Offset(1.0, 0.0);
-    //             const end = Offset.zero;
-    //             const curve = Curves.easeInOut;
-    //             var tween = Tween(begin: begin, end: end)
-    //                 .chain(CurveTween(curve: curve));
-    //             var offsetAnimation = animation.drive(tween);
-
-    //             var curvedAnimation =
-    //                 CurvedAnimation(parent: animation, curve: curve);
-    //             return SlideTransition(position: offsetAnimation, child: child);
-    //           },
-    //         ),
-    // ).then((t) {
-    //   setState(() {
-    //     ref.read(tweet.provider.notifier).setTweet(t as Tweet);
-    //   });
-    // });
-
     widget.pushMediaViewerFunc(context, tweetImg, uniqueid, tweet);
   }
 

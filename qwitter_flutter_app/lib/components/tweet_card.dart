@@ -10,8 +10,8 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_reply.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/single_tweet_provider.dart';
-import 'package:qwitter_flutter_app/screens/tweet_details.dart';
-import 'package:qwitter_flutter_app/screens/tweet_media_viewer_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 
 // ignore: must_be_immutable
@@ -484,10 +484,10 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TweetHeader(
-                              tweet_user_handle: tweetProvider.user!.username!,
-                              tweet_user_name: tweetProvider.user!.fullName!,
-                              tweet_user_verified: true,
-                              tweet_time: tweetProvider.createdAt!,
+                              tweetUserHandle: tweetProvider.user!.username!,
+                              tweetUserName: tweetProvider.user!.fullName!,
+                              tweetUserVerified: true,
+                              tweetTime: tweetProvider.createdAt!,
                               // tweet_edited: tweetProvider_edited,
                             ),
                             TweetMenu(
@@ -499,15 +499,15 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                       tweetProvider.replyToId! != Null
                           ? Container()
                           : TweetReply(
-                              tweet_reply_to: tweetProvider.replyToId!),
+                              tweetReplyTo: tweetProvider.replyToId!),
                       TweetBody(
                         tweet: tweetProvider,
                         pushMediaViewerFunc: pushMediaViewer,
                       ),
                       TweetBottomActionBar(
-                        comments_count: tweetProvider.repliesCount!,
-                        reposts_count: tweetProvider.retweetsCount!,
-                        likes_count: tweetProvider.likesCount!,
+                        commentsCount: tweetProvider.repliesCount!,
+                        repostsCount: tweetProvider.retweetsCount!,
+                        likesCount: tweetProvider.likesCount!,
                         makeFollow: () => _makeFollow(tweetProvider),
                         openRepostModal: () => _openRepostModal(tweetProvider),
                         makeLike: () => _makeLike(tweetProvider),
