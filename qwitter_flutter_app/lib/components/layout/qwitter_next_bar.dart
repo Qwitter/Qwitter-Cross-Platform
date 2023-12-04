@@ -1,26 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
-import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
-import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 
-class QwitterNextBar extends ConsumerWidget {
-  const QwitterNextBar(
-      {super.key,
-      required this.buttonFunction,
-      this.useProvider = false,
-      this.buttonText = "Next",
-      this.secondaryButtonText = "",
-      this.secondaryButtonFunction});
-  final VoidCallback? buttonFunction;
-  final bool useProvider;
-  final String buttonText;
-  final String secondaryButtonText;
-  final VoidCallback? secondaryButtonFunction;
+class QwitterNextBar extends StatelessWidget {
+  const QwitterNextBar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final buttonFunctionProvider = ref.watch(nextBarProvider);
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 5),
       decoration: const BoxDecoration(
@@ -32,28 +17,10 @@ class QwitterNextBar extends ConsumerWidget {
           ),
         ),
       ),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        secondaryButtonText == ""
-            ? const SizedBox(
-                width: 1,
-              )
-            : Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: SecondaryButtonOutlined(
-                    text: secondaryButtonText,
-                    on_pressed: secondaryButtonFunction ?? () {}),
-              ),
+      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: SecondaryButton(
-              text: buttonText,
-              on_pressed: useProvider
-                  ? buttonFunction == null
-                      ? null
-                      : () {
-                          buttonFunctionProvider!(context);
-                        }
-                  : buttonFunction),
+          padding: EdgeInsets.only(right: 16),
+          child: SecondaryButton(text: 'Next', on_pressed: () {}),
         ),
       ]),
     );
