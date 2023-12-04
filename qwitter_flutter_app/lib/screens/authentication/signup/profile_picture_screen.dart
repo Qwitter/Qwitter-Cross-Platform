@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_username_screen.dart';
@@ -13,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 
 class ProfilePictureScreen extends ConsumerStatefulWidget {
@@ -57,9 +59,9 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
-    print('Token : ${widget.user!.getToken}');
+    //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
-      "Authorization": 'Bearer ${widget.user!.getToken}',
+      "authorization": 'Bearer ${widget.user!.getToken}',
       "Content-Type": "multipart/form-data"
     };
 
@@ -89,13 +91,18 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     if (response.statusCode == 200) {
       // Successfully sent the data
-      final responseBody = await response.stream.bytesToString();
-      var jsonData = json.decode(responseBody);
-      print(jsonData['user']['profileImageUrl']);
-
+      final responseFromStream= await http.Response.fromStream(response);// json.decode(response.stream.toString());
+      final responseBody = jsonDecode(responseFromStream.body);
+      //print(responseBody);
+      AppUser appUser = AppUser();
+      widget.user!.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.saveUserData();
       return true;
     } else {
       // Handle errors
+      //print(response.statusCode);
+      //print(response.reasonPhrase);
       return false;
     }
   }
@@ -112,7 +119,9 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     File imageFile = File(pickedFile!.path);
 
     buttonFunction = (context) {
+      //print("Image");
       uploadProfilePicture(imageFile).then((value) {
+        //print(value);
         if (value) {
           Toast.show('Image Added Successfully!');
           Navigator.push(
@@ -125,8 +134,10 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
           );
         }
       }).onError((error, stackTrace) {
-        Toast.show('Error sending data $error');
-        print('Error sending data $error');
+        // Toast.show('Error sending data $error');
+        //print('Error sending data $error');
+        //print(stackTrace);
+
       });
     };
     widget.user!.setProfilePicture(imageFile);
@@ -159,24 +170,16 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     }
 
     return WillPopScope(
-      onWillPop: () {
-        buttonFunction = (context) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ProfilePictureScreen(
-                user: widget.user,
-              ),
-            ),
-          );
-        };
-        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
-        return Future.value(true);
+      onWillPop: () async {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        return true;
       },
       child: Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
+            autoImplyLeading: false,
           ),
         ),
         body: Container(
@@ -247,7 +250,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
             secondaryButtonText: 'Skip for now',
             secondaryButtonFunction: () {
               widget.user!.profilePicture = null;
-              print('Username : ${widget.user!.username}');
+              //print'Username : ${widget.user!.username}');
               Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -46,7 +46,7 @@ class ChangeEmailScreen extends StatelessWidget {
                 DecoratedTextField(
                   keyboardType: TextInputType.emailAddress,
                   placeholder: 'Email address',
-                  padding_value: const EdgeInsets.all(0),
+                  paddingValue: const EdgeInsets.all(0),
                   controller: emailController,
                 ),
               ],

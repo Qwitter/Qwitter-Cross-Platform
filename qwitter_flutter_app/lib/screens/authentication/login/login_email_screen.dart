@@ -120,7 +120,7 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
                 keyboardType: TextInputType.emailAddress,
                 placeholder: "Phone,email address or username",
                 controller: emailController,
-                padding_value: const EdgeInsets.all(0),
+                paddingValue: const EdgeInsets.all(0),
               ),
             ],
           ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +30,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
       return null;
     }
 
-    if (!RegExp(r'^[a-zA-Z0-9](?!.*__)(?!.*_$)[a-zA-Z0-9_]{0,30}$')
+    if (!RegExp(r'^[a-zA-Z0-9](?!.*__)(?!.*_$)[a-zA-Z0-9_]{0,15}$')
         .hasMatch(username)) {
       return 'Invalid Twitter username. Please check the format.';
     }
@@ -103,7 +102,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
             }
           }).onError((error, stackTrace) {
             Toast.show('Error sending data $error');
-            print('Error sending data $error');
+            //print'Error sending data $error');
           });
         };
         ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
@@ -113,26 +112,16 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
       }
     });
     return WillPopScope(
-      onWillPop: () {
-        buttonFunction = widget.user!.getProfilePicture == null
-            ? null
-            : (context) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddUsernameScreen(
-                      user: widget.user,
-                    ),
-                  ),
-                );
-              };
-        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
-        return Future.value(true);
+      onWillPop: () async {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        return true;
       },
       child: Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
+            autoImplyLeading: false,
           ),
         ),
         body: Container(
@@ -168,7 +157,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
                     DecoratedTextField(
                       keyboardType: TextInputType.name,
                       placeholder: 'Username',
-                      padding_value: const EdgeInsets.all(0),
+                      paddingValue: const EdgeInsets.all(0),
                       controller: usernameController,
                       validator: usernameValidations,
                     ),

@@ -6,12 +6,12 @@ class PrimaryButton extends ConsumerWidget {
   const PrimaryButton({
     super.key,
     required this.text,
-    this.on_pressed,
+    this.onPressed,
     this.useProvider = false,
   });
 
   final String text;
-  final VoidCallback? on_pressed;
+  final VoidCallback? onPressed;
   final bool useProvider;
 
   @override
@@ -22,7 +22,9 @@ class PrimaryButton extends ConsumerWidget {
         backgroundColor:
             const Color.fromARGB(255, 29, 155, 240), // Text color (black)
         foregroundColor: Colors.white,
-        onSurface: Colors.blue, // Background color (white)
+        disabledForegroundColor: Colors.blue.withOpacity(0.38),
+        disabledBackgroundColor:
+            Colors.blue.withOpacity(0.12), // Background color (white)
         elevation: 0, // No shadow
         padding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding
@@ -31,12 +33,12 @@ class PrimaryButton extends ConsumerWidget {
         ),
       ),
       onPressed: useProvider
-          ? on_pressed == null
+          ? onPressed == null
               ? null
               : () {
                   buttonFunctionProvider!(context);
                 }
-          : on_pressed,
+          : onPressed,
       child: Text(text),
     );
   }

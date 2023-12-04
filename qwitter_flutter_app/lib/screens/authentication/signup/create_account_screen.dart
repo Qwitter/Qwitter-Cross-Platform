@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,10 +123,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             user.fullName = usernameController.text;
             user.email = emailController.text;
             user.birthDate = birthdayController.text;
-            print(userBirthDate);
+            //printuserBirthDate);
             checkEmailAvailability().then((value) {
               if (value.statusCode == 200) {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ConfirmationCodeScreen(
@@ -149,7 +148,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               }
             }).onError((error, stackTrace) {
               Toast.show('Error sending data $stackTrace');
-              print('Error sending data $error');
+              //print'Error sending data $error');
             });
           };
           ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
@@ -160,49 +159,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       });
     }
 
-    Future<void> _showDatePicker(BuildContext context) async {
+    Future<void> showDates(BuildContext context) async {
       // ignore: unused_local_variable
       FocusScope.of(context).unfocus();
-      final DateTime? selectedDate = await showCupertinoModalPopup<DateTime>(
-        context: context,
-        builder: (BuildContext context) {
-          return Expanded(
-            child: Positioned(
-              bottom: 0,
-              width: double.infinity,
-              child: SizedBox(
-                height: 220,
-                width: double.infinity,
-                child: CupertinoTheme(
-                  data: const CupertinoThemeData(
-                    textTheme: CupertinoTextThemeData(
-                      dateTimePickerTextStyle: TextStyle(
-                        color: Color.fromARGB(255, 222, 222, 222),
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: DateTime.now().subtract(
-                      const Duration(days: 365 * 21),
-                    ),
-                    maximumDate: DateTime.now(),
-                    maximumYear: DateTime.now().year,
-                    onDateTimeChanged: (DateTime newDateTime) {
-                      // Update the text field with the selected date
-                      userBirthDate = '${newDateTime.toIso8601String()}Z';
-                      birthdayController.text =
-                          "${newDateTime.year}-${newDateTime.month}-${newDateTime.day}";
-                    },
-                    backgroundColor: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      );
     }
 
     return Scaffold(
@@ -239,7 +198,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     DecoratedTextField(
                       keyboardType: TextInputType.name,
                       placeholder: 'Name',
-                      max_length: 50,
+                      maxLength: 50,
                       controller: usernameController,
                       validator: usernameValidations,
                     ),
@@ -253,9 +212,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       padding: const EdgeInsets.only(top: 18),
                       child: GestureDetector(
                         onTap: () {
-                          if (defaultTargetPlatform == TargetPlatform.iOS)
-                            _showDatePicker(context);
-                          else {
+                          if (defaultTargetPlatform == TargetPlatform.iOS) {
+                            showDates(context);
+                          } else {
                             FocusScope.of(context).unfocus();
                             showDatePicker(
                               context: context,

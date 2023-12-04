@@ -41,13 +41,13 @@ class QwitterNextBar extends ConsumerWidget {
                 padding: const EdgeInsets.only(left: 16),
                 child: SecondaryButtonOutlined(
                     text: secondaryButtonText,
-                    on_pressed: secondaryButtonFunction ?? () {}),
+                    onPressed: secondaryButtonFunction ?? () {}),
               ),
         Padding(
           padding: const EdgeInsets.only(right: 16),
           child: SecondaryButton(
               text: buttonText,
-              on_pressed: useProvider
+              onPressed: useProvider
                   ? buttonFunction == null
                       ? null
                       : () {

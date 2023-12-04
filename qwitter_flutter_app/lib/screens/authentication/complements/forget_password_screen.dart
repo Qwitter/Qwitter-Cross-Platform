@@ -10,7 +10,6 @@ class ForgetPasswordScreen extends StatefulWidget {
   State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
 }
 
-
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   bool _checkBoxValue = false;
 
@@ -25,7 +24,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             color: Colors.white,
             size: 27,
           ),
-          onPressed: () { Navigator.of(context).pop();},
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
         title: Container(
           alignment: AlignmentDirectional.center,
@@ -39,7 +40,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         actions: [
           Container(
               padding: const EdgeInsets.all(10),
-              child: const Icon(Icons.close, color: Colors.transparent, size: 27)),
+              child:
+                  const Icon(Icons.close, color: Colors.transparent, size: 27)),
         ],
       ),
       body: Column(
@@ -139,11 +141,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     style: TextStyle(color: Colors.grey.shade600)),
                 TextSpan(
                   text: 'X support ',
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => print('taped'),
-                    style: const TextStyle(color: Colors.blue),
+                  recognizer: TapGestureRecognizer()..onTap = () {},
+                  style: const TextStyle(color: Colors.blue),
                 ),
-                TextSpan(text: 'if you don\'t have access.',style: TextStyle(color: Colors.grey.shade600))
+                TextSpan(
+                    text: 'if you don\'t have access.',
+                    style: TextStyle(color: Colors.grey.shade600))
               ]),
             ),
           ),
@@ -156,18 +159,23 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           Container(
             padding:
                 const EdgeInsets.only(top: 10, bottom: 30, right: 30, left: 30),
-            child:  Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SecondaryButtonOutlined(text: 'Cancel', on_pressed: (){},),
-                SecondaryButton(text: 'Next', on_pressed: (){},)
+                SecondaryButtonOutlined(
+                  text: 'Cancel',
+                  onPressed: () {},
+                ),
+                SecondaryButton(
+                  text: 'Next',
+                  onPressed: () {},
+                )
               ],
             ),
           ),
         ],
       ),
-     
     );
   }
 }

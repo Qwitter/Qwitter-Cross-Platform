@@ -5,7 +5,7 @@ class TweetAvatar extends StatelessWidget {
   final String avatar;
   final double radius;
 
-  const TweetAvatar({Key? key, required this.avatar, this.radius = 20}) : super(key: key);
+  TweetAvatar({Key? key, required this.avatar, this.radius = 20}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class TweetAvatar extends StatelessWidget {
       width: radius*3,
       child: CircleAvatar(
         radius: radius,
-        backgroundImage: AssetImage(avatar),
+        backgroundImage: NetworkImage(avatar),
       ),
     );
   }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TweetReply extends StatelessWidget {
-  final String tweet_reply_to;
+  final String tweetReplyTo;
 
-  TweetReply({required this.tweet_reply_to});
+  TweetReply({required this.tweetReplyTo});
 
   @override
   Widget build(BuildContext context) {
-    return tweet_reply_to != ''
+    return tweetReplyTo != ''
         ? Column(
             children: [
               Container(
@@ -29,7 +29,7 @@ class TweetReply extends StatelessWidget {
                             padding:
                                 MaterialStateProperty.all(EdgeInsets.zero)),
                         child: Text(
-                          tweet_reply_to,
+                          tweetReplyTo,
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.blue,

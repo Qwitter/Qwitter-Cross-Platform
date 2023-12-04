@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/profile_picture_screen.dart';
@@ -30,8 +31,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       return 'Password must be at least 8 characters long.';
     }
 
-    if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)[^\s]+$').hasMatch(password)) {
-      return 'Password must contain at least one letter and one number and no spaces.';
+    if (!RegExp(r'^(?=.*[a-zA-Z])[^\s]+$').hasMatch(password)) {
+      return 'Password must contain at least one letter and no spaces.';
     }
 
     return null;
@@ -62,14 +63,22 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     if (response.statusCode == 200) {
       // Successfully sent the data
       final responseBody = json.decode(response.body);
+      // //print(responseBody);
+      User user = User.fromJson(responseBody["data"]);
+      user.token = responseBody['token'];
+      // //print(responseBody["token"]);
+      // user.printUserData();
+      final appUser = AppUser().copyUserData(user);
+      appUser.saveUserData();
       widget.user!.setUsername(responseBody['data']['userName']);
       widget.user!.setUsernameSuggestions(responseBody['suggestions']);
       widget.user!.setToken(responseBody['token']);
-      print(responseBody['data']['userName']);
-      print(responseBody['suggestions'][0]);
+      //printresponseBody['data']['userName']);
+      //printresponseBody['suggestions'][0]);
       return true;
     } else {
       // Handle errors
+      //print('Error sending data ${response.statusCode} ${response.body}');
       return false;
     }
   }
@@ -99,7 +108,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
         buttonFunction = (context) {
           widget.user!.password = passwordController.text;
           sendData().then((value) {
-            Toast.show('Account created successfully!');
+            if(value){
+              Toast.show('Account created successfully!');
 
             Navigator.push(
               context,
@@ -109,9 +119,13 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
                 ),
               ),
             );
+            }else{
+              //print("Failed to create account");
+            }
           }).onError((error, stackTrace) {
-            Toast.show('Error sending data $stackTrace');
-            print('Error sending data $error');
+            // Toast.show('Error sending data $stackTrace');
+            //print('Error sending data $error');
+            //print(stackTrace);
           });
         };
         widget.user!.setPassword(passwordController.text);
@@ -122,24 +136,15 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       }
     });
     return WillPopScope(
-      onWillPop: () {
-        buttonFunction = (context) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AddPasswordScreen(
-                user: widget.user,
-              ),
-            ),
-          );
-        };
-        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
-        return Future.value(true);
+      onWillPop: () async {
+        return false;
       },
       child: Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
+            autoImplyLeading: false,
           ),
         ),
         body: Container(
@@ -175,7 +180,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
                     DecoratedTextField(
                       keyboardType: TextInputType.visiblePassword,
                       placeholder: 'Password',
-                      padding_value: const EdgeInsets.all(0),
+                      paddingValue: const EdgeInsets.all(0),
                       controller: passwordController,
                       isPassword: true,
                       validator: passwordValidations,

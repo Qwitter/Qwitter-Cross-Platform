@@ -49,6 +49,9 @@ dependencies:
   http: ^1.1.0
   mockito: ^5.4.2
   path_provider: ^2.1.1
+  http_parser: ^4.0.2
+  mime: ^1.0.4
+  dart_jsonwebtoken: ^2.12.1
   grouped_list: ^5.1.2
   
 
@@ -80,6 +83,7 @@ flutter:
     - assets/images/apple.png
     - assets/images/pfp.jpg
     - assets/images/x_logo.png
+    - assets/private.txt
     - assets/images/abo.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

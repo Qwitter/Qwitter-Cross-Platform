@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/providers/secondary_button_provider.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
 
 class SecondaryButton extends ConsumerWidget {
   const SecondaryButton(
       {super.key,
       required this.text,
       this.useProvider = false,
-      required this.on_pressed,
+      required this.onPressed,
       this.paddingValue =
           const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       this.textStyle = const TextStyle(
@@ -16,7 +15,7 @@ class SecondaryButton extends ConsumerWidget {
       )});
 
   final String text;
-  final VoidCallback? on_pressed;
+  final VoidCallback? onPressed;
   final EdgeInsets? paddingValue;
   final TextStyle? textStyle;
   final bool useProvider;
@@ -30,7 +29,9 @@ class SecondaryButton extends ConsumerWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white, // Background color (white)
           foregroundColor: Colors.black,
-          onSurface: Colors.grey, // Text color (black)
+          disabledForegroundColor: Colors.grey.withOpacity(0.38),
+          disabledBackgroundColor:
+              Colors.grey.withOpacity(0.12), // Text color (black)
           elevation: 0, // No shadow
           padding: paddingValue, // Padding
           minimumSize: const Size(30, 30),
@@ -40,12 +41,12 @@ class SecondaryButton extends ConsumerWidget {
           ),
         ),
         onPressed: useProvider
-            ? on_pressed == null
+            ? onPressed == null
                 ? null
                 : () {
                     buttonFunctionProvider!(context);
                   }
-            : on_pressed,
+            : onPressed,
         child: Text(
           text,
           style: textStyle,

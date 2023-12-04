@@ -137,7 +137,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                 return PrimaryButton(
                   text: "Update password",
                   useProvider: true,
-                  on_pressed: buttonFunction == null
+                  onPressed: buttonFunction == null
                       ? null
                       : () {
                           buttonFunction!(context);

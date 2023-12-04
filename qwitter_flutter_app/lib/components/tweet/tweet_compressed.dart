@@ -2,28 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:intl/intl.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_media.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
 
 class TweetCompressed extends StatelessWidget {
-  final String tweet_text;
-  final List<String> tweet_imgs;
-  final String tweet_user_handle;
-  final String tweet_user_name;
-  final bool tweet_user_verified;
-  final String tweet_time;
-  final bool tweet_edited;
+  final String tweetText;
+  final List<Media> tweetImgs;
+  final String tweetUserHandle;
+  final String tweetUserName;
+  final bool tweetUserVerified;
+  final String tweetTime;
+  final bool tweetEdited;
   final String tweet_avatar;
 
   const TweetCompressed({
     Key? key,
-    required this.tweet_text,
-    required this.tweet_imgs,
+    required this.tweetText,
+    required this.tweetImgs,
     required this.tweet_avatar,
-    required this.tweet_user_handle,
-    required this.tweet_user_name,
-    required this.tweet_user_verified,
-    required this.tweet_time,
-    required this.tweet_edited,
+    required this.tweetUserHandle,
+    required this.tweetUserName,
+    required this.tweetUserVerified,
+    required this.tweetTime,
+    required this.tweetEdited,
   }) : super(key: key);
 
   @override
@@ -54,13 +54,13 @@ class TweetCompressed extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
                       child: TweetHeader(
-                          tweet_user_handle: tweet_user_handle,
-                          tweet_user_name: tweet_user_name,
-                          tweet_user_verified: tweet_user_verified,
-                          tweet_time: tweet_time,
-                          tweet_edited: tweet_edited),
+                        tweetUserHandle: tweetUserHandle,
+                        tweetUserName: tweetUserName,
+                        tweetUserVerified: tweetUserVerified,
+                        tweetTime: tweetTime,
+                        // tweetEdited: tweetEdited,
+                      ),
                     ),
-              
                   ],
                 ),
               ),
@@ -70,8 +70,8 @@ class TweetCompressed extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Text(
-                  tweet_text,
-                  textAlign: Bidi.hasAnyRtl(tweet_text)
+                  tweetText,
+                  textAlign: Bidi.hasAnyRtl(tweetText)
                       ? TextAlign.end
                       : TextAlign.start,
                   style: TextStyle(
@@ -86,7 +86,10 @@ class TweetCompressed extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              TweetMedia(tweet_imgs: tweet_imgs, radius: 0),
+              // TweetMedia(
+              //   tweetImgs: tweetImgs,
+              //   radius: 0,
+              // ),
             ]),
           ),
         ],

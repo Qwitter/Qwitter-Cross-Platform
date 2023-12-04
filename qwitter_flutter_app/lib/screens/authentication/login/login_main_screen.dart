@@ -7,10 +7,13 @@ import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/secondary_button_provider.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
 class LoginMainScreen extends ConsumerStatefulWidget {
   const LoginMainScreen({super.key, required this.passedInput});
@@ -68,10 +71,22 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
           login().then((value) {
             if (value.statusCode == 200) {
               // navigate to feed
-              Fluttertoast.showToast(
-                msg: "Into the feed",
-                backgroundColor: Colors.green[200],
-              );
+              // Fluttertoast.showToast(
+              //   msg: "Into the feed",
+              //   backgroundColor: Colors.green[200],
+              // );
+              final userJson = jsonDecode(value.body);
+              // //print(userJson);
+              User user = User.fromJson(userJson["user"]);
+              user.token = userJson['token'];
+              // user.printUserData();
+              final appUser = AppUser().copyUserData(user);
+              appUser.saveUserData();
+
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx){
+                return TweetFeedScreen();
+              }));
             } else {
               Fluttertoast.showToast(
                 msg: "Wrong password",
@@ -79,6 +94,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               );
             }
           }).onError((error, stackTrace) {
+            //print(error.toString() + " " + stackTrace.toString());
             Fluttertoast.showToast(
               msg: "Error in sending",
               backgroundColor: Colors.grey[700],
@@ -122,7 +138,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 placeholder: widget.passedInput,
                 controller: emailController,
                 enabled: false,
-                padding_value: const EdgeInsets.all(0),
+                paddingValue: const EdgeInsets.all(0),
               ),
               const SizedBox(height: 20),
               DecoratedTextField(
@@ -130,7 +146,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 placeholder: "Password",
                 controller: passController,
                 isPassword: true,
-                padding_value: const EdgeInsets.all(0),
+                paddingValue: const EdgeInsets.all(0),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
@@ -165,7 +181,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               buttonFunction = ref.watch(secondaryButtonProvider);
               return SecondaryButton(
                 text: "Login",
-                on_pressed: buttonFunction == null
+                onPressed: buttonFunction == null
                     ? null
                     : () {
                         buttonFunction!(context);
