@@ -17,7 +17,6 @@ class TweetBody extends StatelessWidget {
   final List<String> sub_tweet_imgs;
   final String sub_tweet_text;
   final String sub_tweet_avatar;
-  final bool stretched;
 
   const TweetBody({
     Key? key,
@@ -32,14 +31,13 @@ class TweetBody extends StatelessWidget {
     required this.sub_tweet_imgs,
     required this.sub_tweet_text,
     required this.sub_tweet_avatar,
-    this.stretched = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width -
-          (stretched ? 50 : 80), // Set the maximum width for text wrapping
+          80, // Set the maximum width for text wrapping
       child: Column(
           crossAxisAlignment: Bidi.hasAnyRtl(tweet_text)
               ? CrossAxisAlignment.end
