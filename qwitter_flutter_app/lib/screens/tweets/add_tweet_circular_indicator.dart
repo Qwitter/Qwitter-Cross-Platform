@@ -13,7 +13,11 @@ class AddTweetCircularIndicator extends StatelessWidget {
         value: progress,
         strokeWidth: 2,
         valueColor: AlwaysStoppedAnimation<Color>(
-          progress < 0.2 ? Colors.red : Colors.blue,
+          progress < 0.8
+              ? progress < 0.4
+                  ? Colors.red
+                  : const Color.fromARGB(255, 236, 214, 13)
+              : Colors.blue,
         ),
       ),
     );

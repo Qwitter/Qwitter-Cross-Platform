@@ -1,91 +1,291 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
+import 'package:qwitter_flutter_app/providers/tweet_images_provider.dart';
+import 'package:qwitter_flutter_app/providers/tweet_progress_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/add_tweet_action_bar.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+// ignore: depend_on_referenced_packages
+import 'package:path/path.dart';
+import 'package:qwitter_flutter_app/services/tweets_services.dart';
 
-class AddTweetScreen extends StatefulWidget {
+class AddTweetScreen extends ConsumerStatefulWidget {
   const AddTweetScreen({super.key});
 
   @override
-  State<AddTweetScreen> createState() => _AddTweetScreenState();
+  ConsumerState<AddTweetScreen> createState() => _AddTweetScreenState();
 }
 
-class _AddTweetScreenState extends State<AddTweetScreen> {
-  TextEditingController _tweetController = TextEditingController();
-  double _progress = 1.0;
+class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
+  final TextEditingController _tweetController = TextEditingController();
+  Future<void> _fetchNewTweets(page) async {
+    // Logic to fetch new tweets from the provider
+    // Example: Call a function to fetch new tweets and update the tweet list
+    final List<Tweet> newTweets = await TweetsServices.getTimeline(page);
+    //print(newTweets.length);
+    ref.read(timelineTweetsProvider.notifier).setTimelineTweets(newTweets);
+  }
+
+  Future<bool> addTweet(List<File>? imageFiles) async {
+    final url = Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/tweets');
+
+    final request = http.MultipartRequest('POST', url);
+
+    Map<String, String> headers = {
+      "authorization": 'Bearer ${AppUser().getToken}',
+      "Content-Type": "multipart/form-data"
+    };
+
+    print("authorization: ${AppUser().getToken}");
+
+    request.headers.addAll(headers);
+    Map<String, String> fields = {
+      "text": _tweetController.text.toString(),
+      "source": Platform.isAndroid ? "Android" : "iOS",
+      "coordinates": "0,0",
+      "sensitive": "false",
+    };
+
+    request.fields.addAll(fields);
+    print("Request fields: ${request.fields}");
+    // Add all image files to the 'media' field
+    if (imageFiles != null) {
+      for (int i = 0; i < imageFiles!.length; i++) {
+        final imageFile = imageFiles[i];
+        final fileName = basename(imageFile.path);
+
+        final stream = http.ByteStream(imageFile.openRead());
+        final length = await imageFile.length();
+        final imgType = lookupMimeType(imageFile.path);
+        final contentType = imgType!.split('/');
+
+        final multipartFile = http.MultipartFile(
+          'media[]', // Use the same field name for all files
+          stream,
+          length,
+          filename: fileName,
+          contentType: MediaType(contentType[0], contentType[1]),
+        );
+
+        request.files.add(multipartFile);
+      }
+    }
+
+    try {
+      // Send the request
+      final response = await request.send();
+      print(
+          "Sent in tweet : ${request.fields['text']} ${imageFiles?.length} images , first image: ${imageFiles?[0].path}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseFromStream = await http.Response.fromStream(response);
+        final responseBody = jsonDecode(responseFromStream.body);
+        print("Successfully uploaded tweet: $responseBody");
+        return true;
+      } else {
+        final responseFromStream = await http.Response.fromStream(response);
+        final responseBody = jsonDecode(responseFromStream.body);
+        print("Error uploading tweet: $responseBody");
+        print(response.statusCode);
+        return false;
+      }
+    } catch (e) {
+      print("Error uploading profile pictures: $e");
+      return false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(tweetProgressProvider.notifier).setTweetProgress(1);
+    });
+
     print('Picture : ${AppUser().profilePicture!.path}');
   }
 
   @override
+  void dispose() {
+    _tweetController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(75),
-        child: QwitterAppBar(
+    final tweetImages = ref.watch(tweetImagesProvider);
+
+    return WillPopScope(
+      onWillPop: () {
+        if (_tweetController.text.isNotEmpty) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Discard Tweet?'),
+              content:
+                  const Text('Are you sure you want to discard this tweet?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, 'Discard');
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Discard'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          Navigator.pop(context);
+        }
+        return Future.value(false);
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(75),
+          child: QwitterAppBar(
             showLogo: false,
             autoImplyLeading: false,
             isButton: true,
             includeActions: true,
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              if (_tweetController.text.isNotEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Discard Tweet?'),
+                    content: const Text(
+                        'Are you sure you want to discard this tweet?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context, 'Discard');
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Discard'),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                Navigator.pop(context);
+              }
+            },
             actionButton: PrimaryButton(
               text: 'Post',
-              onPressed: () {},
+              onPressed: () {
+                if (_tweetController.text.isNotEmpty) {
+                  addTweet(tweetImages).then((value) {
+                    if (value) {
+                      Fluttertoast.showToast(
+                          msg: 'Tweet posted successfully!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.grey[800],
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                      Navigator.pop(context);
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: 'Error posting tweet',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.grey[800],
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                    }
+                  });
+                }
+              },
               paddingValue:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
               buttonSize: const Size(100, 10),
-            )),
-      ),
-      body: Container(
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 5),
-              child: CircleAvatar(
-                radius: 22,
-                backgroundImage:
-                    NetworkImage(AppUser().profilePicture!.path ?? ''),
-              ),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: TextField(
-                onChanged: (text) {
-                  setState(() {
-                    // Calculate progress based on text length
-                    _progress =
-                        1.0 - (text.length / 10.0); // Assuming max length is 10
-                  });
-                },
-                style: const TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400),
-                decoration: const InputDecoration(
-                  hintText: 'What\'s happening?',
-                  hintStyle: TextStyle(
-                    fontSize: 20,
-                    color: Color.fromARGB(255, 132, 132, 132),
+          ),
+        ),
+        body: Container(
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundImage:
+                          NetworkImage(AppUser().profilePicture!.path ?? ''),
+                    ),
                   ),
-                  counterText: '',
-                  border: InputBorder.none,
-                ),
-                maxLines: null,
-                maxLength: 280,
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? (MediaQuery.of(context).size.height -
+                                MediaQuery.of(context).viewInsets.bottom) *
+                            0.5
+                        : (MediaQuery.of(context).size.height -
+                                MediaQuery.of(context).viewInsets.bottom) *
+                            0.2,
+                    child: Expanded(
+                      child: TextField(
+                        onChanged: (text) {
+                          ref
+                              .read(tweetProgressProvider.notifier)
+                              .setTweetProgress(1 - text.length / 280);
+                        },
+                        style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                        decoration: const InputDecoration(
+                          hintText: 'What\'s happening?',
+                          hintStyle: TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 132, 132, 132),
+                          ),
+                          counterText: '',
+                          border: InputBorder.none,
+                        ),
+                        maxLines: null,
+                        controller: _tweetController,
+                        expands: true,
+                        maxLength: 280,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const AddTweetActionBar()
+            ],
+          ),
         ),
       ),
-      bottomNavigationBar: const AddTweetActionBar(),
     );
   }
 }
