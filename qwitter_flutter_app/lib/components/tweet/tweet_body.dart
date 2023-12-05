@@ -1,74 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_compressed.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_media.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
 
-class TweetBody extends StatelessWidget {
-  final String tweet_text;
-  final List<String> tweet_imgs;
-
-  final bool has_parent_tweet;
-  final String sub_tweet_user_handle;
-  final String sub_tweet_user_name;
-  final bool sub_tweet_user_verified;
-  final String sub_tweet_time;
-  final bool sub_tweet_edited;
-  final List<String> sub_tweet_imgs;
-  final String sub_tweet_text;
-  final String sub_tweet_avatar;
+class TweetBody extends ConsumerStatefulWidget {
+  final Tweet tweet;
   final bool stretched;
+  final Function? pushMediaViewerFunc;
 
-  const TweetBody({
+  TweetBody({
     Key? key,
-    required this.tweet_text,
-    required this.tweet_imgs,
-    required this.has_parent_tweet,
-    required this.sub_tweet_user_handle,
-    required this.sub_tweet_user_name,
-    required this.sub_tweet_user_verified,
-    required this.sub_tweet_time,
-    required this.sub_tweet_edited,
-    required this.sub_tweet_imgs,
-    required this.sub_tweet_text,
-    required this.sub_tweet_avatar,
+    required this.tweet,
+    Function? this.pushMediaViewerFunc,
     this.stretched = false,
   }) : super(key: key);
 
   @override
+  ConsumerState<TweetBody> createState() => _TweetBodyState();
+}
+
+class _TweetBodyState extends ConsumerState<TweetBody> {
+  @override
   Widget build(BuildContext context) {
-    return Container(
+    // //print("rebuilt");
+    final tweetProvider = ref.read(widget.tweet.provider);
+    return SizedBox(
       width: MediaQuery.of(context).size.width -
-          (stretched ? 50 : 80), // Set the maximum width for text wrapping
+          (widget.stretched
+              ? 50
+              : 80), // Set the maximum width for text wrapping
       child: Column(
-          crossAxisAlignment: Bidi.hasAnyRtl(tweet_text)
+          crossAxisAlignment: Bidi.hasAnyRtl(widget.tweet.text!)
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: [
             Text(
-              tweet_text,
-              textAlign:
-                  Bidi.hasAnyRtl(tweet_text) ? TextAlign.end : TextAlign.start,
-              style: TextStyle(
+              widget.tweet.text!,
+              textAlign: Bidi.hasAnyRtl(widget.tweet.text!)
+                  ? TextAlign.end
+                  : TextAlign.start,
+              style: const TextStyle(
                 height: 1.2,
                 fontSize: 16,
                 color: Colors.white,
               ),
               softWrap: true, // Allow text to wrap within the specified width
             ),
-            TweetMedia(tweet_imgs: tweet_imgs),
-            has_parent_tweet
-                ? TweetCompressed(
-                    tweet_text: sub_tweet_text,
-                    tweet_imgs: sub_tweet_imgs,
-                    tweet_user_handle: sub_tweet_user_handle,
-                    tweet_user_name: sub_tweet_user_name,
-                    tweet_user_verified: sub_tweet_user_verified,
-                    tweet_time: sub_tweet_time,
-                    tweet_edited: sub_tweet_edited,
-                    tweet_avatar: sub_tweet_avatar,
-                  )
-                : Container()
+            TweetMedia(
+              tweet: tweetProvider,
+              pushMediaViewerFunc: widget.pushMediaViewerFunc,
+            ),
           ]),
     );
   }

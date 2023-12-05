@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 
 class TweetBottomActionBar extends StatelessWidget {
-  int comments_count;
-  int reposts_count;
-  int likes_count;
+  final int commentsCount;
+  final int repostsCount;
+  final int likesCount;
 
   final bool reposted;
   final bool liked;
 
   final makeFollow;
+  final makeComment;
   final openRepostModal;
   final makeLike;
 
   TweetBottomActionBar({
-    required this.comments_count,
-    required this.reposts_count,
-    required this.likes_count,
+    required this.commentsCount,
+    required this.repostsCount,
+    required this.likesCount,
     required this.makeFollow,
+    required this.makeComment,
     required this.openRepostModal,
     required this.makeLike,
     required this.reposted,
@@ -26,7 +28,7 @@ class TweetBottomActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 65,
       child: Row(
         children: [
@@ -36,7 +38,7 @@ class TweetBottomActionBar extends StatelessWidget {
               style: ButtonStyle(
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                   alignment: Alignment.centerLeft),
-              onPressed: () {},
+              onPressed: makeComment,
               icon: Icon(
                 Icons.chat_bubble_outline,
                 color: Colors.grey[600],
@@ -44,7 +46,7 @@ class TweetBottomActionBar extends StatelessWidget {
               ),
               label: FittedBox(
                 child: Text(
-                  comments_count.toString(),
+                  commentsCount.toString(),
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -68,7 +70,7 @@ class TweetBottomActionBar extends StatelessWidget {
               ),
               label: FittedBox(
                 child: Text(
-                  reposts_count.toString(),
+                  repostsCount.toString(),
                   style: TextStyle(
                     fontSize: 16,
                     color: reposted ? Colors.green : Colors.grey[600],
@@ -92,7 +94,7 @@ class TweetBottomActionBar extends StatelessWidget {
               ),
               label: FittedBox(
                 child: Text(
-                  likes_count.toString(),
+                  likesCount.toString(),
                   style: TextStyle(
                     fontSize: 16,
                     color: liked ? Colors.pink : Colors.grey[600],

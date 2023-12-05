@@ -1,14 +1,28 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
 
-class TweetMedia extends StatelessWidget {
-  final List<String> tweet_imgs;
+class TweetMedia extends ConsumerStatefulWidget {
+  // final List<Media> tweet_imgs;
+  // final User tweetUser;
+  final Tweet tweet;
   final int radius;
-  TweetMedia({required this.tweet_imgs, this.radius = 10});
+  final pushMediaViewerFunc;
+  TweetMedia({
+    required this.tweet,
+    required this.pushMediaViewerFunc,
+    this.radius = 10,
+    
+  });
 
+  @override
+  ConsumerState<TweetMedia> createState() => _TweetMediaState();
+}
+
+class _TweetMediaState extends ConsumerState<TweetMedia> {
   bool isImage(String filePath) {
     final imageExtensions = [
       'jpg',
@@ -34,53 +48,74 @@ class TweetMedia extends StatelessWidget {
     return videoExtensions.contains(fileExtension);
   }
 
+  void pushMediaViewer(BuildContext context, tweetImg, uniqueid, Tweet tweet) {
+    widget.pushMediaViewerFunc(context, tweetImg, uniqueid, tweet);
+  }
+
   @override
   Widget build(BuildContext context) {
-    int orientation_factor =
+    
+    final tweetProvider = ref.watch(widget.tweet.provider);
+
+    List<String> uniqueIds = [
+      UniqueKey().toString(),
+      UniqueKey().toString(),
+      UniqueKey().toString(),
+      UniqueKey().toString()
+    ];
+    int orientationFactor =
         MediaQuery.of(context).orientation == Orientation.portrait
             ? 1
             : MediaQuery.of(context).orientation == Orientation.landscape
                 ? 2
                 : 1;
     // double width = (MediaQuery.of(context).size.width - 65) / 2;
-    if (tweet_imgs.length >= 2) {
+    if (tweetProvider.media!.length >= 2) {
       return Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           ClipRRect(
             borderRadius: BorderRadius.vertical(
-                top: Radius.circular(radius.toDouble()),
-                bottom: Radius.circular(10)),
+                top: Radius.circular(widget.radius.toDouble()),
+                bottom: const Radius.circular(10)),
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    // height: 180,
+                  child: SizedBox(
                     child: Column(
                       children: [
                         GestureDetector(
                           onTap: () {
-                            print("Test Image");
+                            pushMediaViewer(
+                                context,
+                                tweetProvider.media![0].value,
+                                uniqueIds[0],
+                                tweetProvider);
                           },
-                          child: Container(
-                            height: orientation_factor *
-                                (tweet_imgs.length == 4
+                          child: SizedBox(
+                            height: orientationFactor *
+                                (tweetProvider.media!.length == 4
                                     ? MediaQuery.of(context).size.height / 6
                                     : MediaQuery.of(context).size.height / 3 +
-                                        (5 * (tweet_imgs.length % 2))),
-                            child: isImage(tweet_imgs[0])
-                                ? Image.asset(
-                                    tweet_imgs[0],
-                                    fit: BoxFit.cover,
-                                    // width: (MediaQuery.of(context).size.width - 65),
+                                        (5 *
+                                            (tweetProvider.media!.length % 2))),
+                            child: isImage(tweetProvider.media![0].value)
+                                ? Hero(
+                                    tag: uniqueIds[0],
+                                    child: Image.network(
+                                      tweetProvider.media![0].value,
+                                      fit: BoxFit.cover,
+                                      // width: (MediaQuery.of(context).size.width - 65),
+                                    ),
                                   )
                                 : TweetVideo(
-                                    video: tweet_imgs[0],
-                                    aspect_ratio: 1,
-                                    height: orientation_factor *
-                                        (tweet_imgs.length == 4
+                                    video: tweetProvider.media![0].value,
+                                    aspectRatio: 1,
+                                    tweet: tweetProvider,
+                                    height: orientationFactor *
+                                        (tweetProvider.media!.length == 4
                                             ? MediaQuery.of(context)
                                                     .size
                                                     .height /
@@ -89,23 +124,32 @@ class TweetMedia extends StatelessWidget {
                                                         .size
                                                         .height /
                                                     3 +
-                                                (5 * (tweet_imgs.length % 2))),
-                                    auto_play: true,
+                                                (5 *
+                                                    (tweetProvider
+                                                            .media!.length %
+                                                        2))),
+                                    autoPlay: true,
                                   ),
                           ),
                         ),
-                        tweet_imgs.length == 4
+                        tweetProvider.media!.length == 4
                             ? Column(
                                 children: [
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                   GestureDetector(
                                     onTap: () {
-                                      print("Test Image");
+                                      pushMediaViewer(
+                                          context,
+                                          tweetProvider.media![3].value,
+                                          uniqueIds[3],
+                                          tweetProvider);
                                     },
-                                    child: isImage(tweet_imgs[3])
-                                        ? Container(
-                                            height: orientation_factor *
-                                                (tweet_imgs.length == 4
+                                    child: isImage(
+                                            tweetProvider.media![3].value)
+                                        ? SizedBox(
+                                            height: orientationFactor *
+                                                (tweetProvider.media!.length ==
+                                                        4
                                                     ? MediaQuery.of(context)
                                                             .size
                                                             .height /
@@ -119,17 +163,23 @@ class TweetMedia extends StatelessWidget {
                                                         .width -
                                                     65) /
                                                 2,
-                                            child: Image.asset(
-                                              tweet_imgs[3],
-                                              fit: BoxFit.cover,
-                                              // width: (MediaQuery.of(context).size.width - 65),
+                                            child: Hero(
+                                              tag: uniqueIds[3],
+                                              child: Image.network(
+                                                tweetProvider.media![3].value,
+                                                fit: BoxFit.cover,
+                                                // width: (MediaQuery.of(context).size.width - 65),
+                                              ),
                                             ),
                                           )
                                         : TweetVideo(
-                                            video: tweet_imgs[3],
-                                            aspect_ratio: 1.0,
-                                            height: orientation_factor *
-                                                (tweet_imgs.length == 4
+                                            video:
+                                                tweetProvider.media![3].value,
+                                            aspectRatio: 1.0,
+                                            tweet: tweetProvider,
+                                            height: orientationFactor *
+                                                (tweetProvider.media!.length ==
+                                                        4
                                                     ? MediaQuery.of(context)
                                                             .size
                                                             .height /
@@ -147,16 +197,19 @@ class TweetMedia extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     // height: 180,
                     child: Column(
-                      children: tweet_imgs
+                      children: tweetProvider.media!
                           .sublist(
-                              1, tweet_imgs.length > 3 ? 3 : tweet_imgs.length)
+                              1,
+                              tweetProvider.media!.length > 3
+                                  ? 3
+                                  : tweetProvider.media!.length)
                           .asMap()
                           .entries
                           .map(
@@ -165,11 +218,12 @@ class TweetMedia extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  print("Test Image");
+                                  pushMediaViewer(context, image.value.value,
+                                      uniqueIds[image.key + 1], tweetProvider);
                                 },
-                                child: Container(
-                                  height: orientation_factor *
-                                      (tweet_imgs.length == 2
+                                child: SizedBox(
+                                  height: orientationFactor *
+                                      (tweetProvider.media!.length == 2
                                           ? MediaQuery.of(context).size.height /
                                               3
                                           : MediaQuery.of(context).size.height /
@@ -177,17 +231,21 @@ class TweetMedia extends StatelessWidget {
                                   width:
                                       (MediaQuery.of(context).size.width - 65) /
                                           2,
-                                  child: isImage(image.value)
-                                      ? Image.asset(
-                                          image.value,
-                                          fit: BoxFit.cover,
-                                          // width: (MediaQuery.of(context).size.width - 65),
+                                  child: isImage(image.value.value)
+                                      ? Hero(
+                                          tag: uniqueIds[image.key + 1],
+                                          child: Image.network(
+                                            image.value.value,
+                                            fit: BoxFit.cover,
+                                            // width: (MediaQuery.of(context).size.width - 65),
+                                          ),
                                         )
                                       : TweetVideo(
-                                          video: image.value,
-                                          aspect_ratio: 1.0,
-                                          height: orientation_factor *
-                                              (tweet_imgs.length == 2
+                                          video: image.value.value,
+                                          aspectRatio: 1.0,
+                                          tweet: tweetProvider,
+                                          height: orientationFactor *
+                                              (tweetProvider.media!.length == 2
                                                   ? MediaQuery.of(context)
                                                           .size
                                                           .height /
@@ -199,9 +257,10 @@ class TweetMedia extends StatelessWidget {
                                         ),
                                 ),
                               ),
-                              image.key == min(tweet_imgs.length, 3) - 2
+                              image.key ==
+                                      min(tweetProvider.media!.length, 3) - 2
                                   ? Container()
-                                  : SizedBox(
+                                  : const SizedBox(
                                       height: 5,
                                     )
                             ],
@@ -216,25 +275,38 @@ class TweetMedia extends StatelessWidget {
           )
         ],
       );
-    } else if (tweet_imgs.length == 1) {
+    } else if (tweetProvider.media!.length == 1) {
       return Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           GestureDetector(
               onTap: () {
-                print("Test Image");
+                pushMediaViewer(context, tweetProvider.media![0].value,
+                    uniqueIds[0], tweetProvider);
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(radius.toDouble()),
-                    bottom: Radius.circular(10)),
-                child: Image.asset(
-                  'assets/images/tweet_img.jpg',
-                  fit: BoxFit.cover,
-                  width: (MediaQuery.of(context).size.width - 65),
-                ),
+                    top: Radius.circular(widget.radius.toDouble()),
+                    bottom: const Radius.circular(10)),
+                child: isImage(tweetProvider.media![0].value)
+                    ? Hero(
+                        tag: uniqueIds[0],
+                        child: Image.network(
+                          tweetProvider.media![0].value,
+                          fit: BoxFit.cover,
+                          // width: (MediaQuery.of(context).size.width - 65),
+                        ),
+                      )
+                    : TweetVideo(
+                        video: tweetProvider.media![0].value,
+                        aspectRatio: 1,
+                        tweet: tweetProvider,
+                        height: MediaQuery.of(context).size.height / 3 +
+                            (5 * (tweetProvider.media!.length % 2)),
+                        autoPlay: true,
+                      ),
               ))
         ],
       );
