@@ -34,13 +34,16 @@ class QwitterAppBar extends StatelessWidget {
                     width: 1,
                   )
                 : !isButton
-                    ? CircleAvatar(
-                        radius: 13,
-                        backgroundImage: (user.profilePicture!.path.isEmpty
-                            ? const AssetImage("assets/images/def.jpg")
-                            : NetworkImage( user.profilePicture!.path.startsWith("http") ? user.profilePicture!.path : "http://" + user.profilePicture!.path)
-                                as ImageProvider),
-                      )
+                    ? GestureDetector(
+                      onTap: onPressed,
+                      child: CircleAvatar(
+                          radius: 13,
+                          backgroundImage: (user.profilePicture!.path.isEmpty
+                              ? const AssetImage("assets/images/def.jpg")
+                              : NetworkImage( user.profilePicture!.path.startsWith("http") ? user.profilePicture!.path : "http://" + user.profilePicture!.path)
+                                  as ImageProvider),
+                        ),
+                    )
                     : IconButton(
                         onPressed: onPressed,
                         icon: Icon(
