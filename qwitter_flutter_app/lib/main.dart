@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
+
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +26,6 @@ class MyApp extends StatelessWidget {
         //print('SharedPreferences cleared!');
       });
     });
-
   }
 
   @override
@@ -37,7 +40,6 @@ class MyApp extends StatelessWidget {
       home: FutureBuilder(
           future: user.getUserData(),
           builder: (context, snapshot) {
-            
             if (snapshot.connectionState == ConnectionState.waiting) {
               // Display a loading indicator while the future is loading
               return Center(
@@ -45,7 +47,7 @@ class MyApp extends StatelessWidget {
               );
             } else if (user.username != null) {
               // //print(snapshot.data);
-              return TweetFeedScreen();
+              return ConversationScreen();
             } else {
               return SignupChooseMethodScreen();
             }

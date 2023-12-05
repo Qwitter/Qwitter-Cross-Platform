@@ -17,7 +17,7 @@ class CconversationScreenState extends State<ConversationScreen> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.black,
           elevation: 0,
           leading: SizedBox(
             width: double.infinity,
@@ -42,7 +42,7 @@ class CconversationScreenState extends State<ConversationScreen> {
               child: TextButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 236, 236, 236),
+                  backgroundColor: Color.fromARGB(255, 44, 43, 43),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -50,8 +50,8 @@ class CconversationScreenState extends State<ConversationScreen> {
                 child: const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Search Driect Messages",
-                      style: TextStyle(fontSize: 15, color: Colors.grey),
+                      "  Search Driect Messages",
+                      style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 197, 193, 193)),
                     )),
               )),
           actions: [
@@ -70,65 +70,81 @@ class CconversationScreenState extends State<ConversationScreen> {
             child: Column(
               children: [
                 ConversationWidget(
-                    imagePath: "assets/images/abo.jpeg",
-                    name: "Abo obeda",
-                    handle: "ahmedMohamed123",
-                    lastMsg: "We will win ISA"),
-                ConversationWidget(
-                    imagePath: "assets/images/abo.jpeg",
-                    name: "Abo obeda",
-                    handle: "ahmedMohamed123",
-                    lastMsg: "We will win ISA"),
-                ConversationWidget(
-                    imagePath: "assets/images/abo.jpeg",
-                    name: "Abo obeda",
-                    handle: "ahmedMohamed123",
-                    lastMsg: "We will win ISA"),
-                ConversationWidget(
-                    imagePath: "assets/images/abo.jpeg",
-                    name: "Abo obeda",
-                    handle: "ahmedMohamed123",
-                    lastMsg: "We will win ISA"),
-                ConversationWidget(
-                    imagePath: "assets/images/abo.jpeg",
-                    name: "Abo obeda",
-                    handle: "ahmedMohamed123",
-                    lastMsg: "We will win ISA"),
-                ConversationWidget(
                   imagePath: "assets/images/abo.jpeg",
-                  name: "Abo obeda",
+                  name: "Abo asdjfdflsjljfasllfdjjsafdjl",
                   handle: "ahmedMohamed123",
                   lastMsg: "We will win ISA",
+                  converstaionID: "1",
                 ),
                 ConversationWidget(
                   imagePath: "assets/images/abo.jpeg",
                   name: "Abo obeda",
                   handle: "ahmedMohamed123",
                   lastMsg: "We will win ISA",
-                ),
-              ConversationWidget(
-                  imagePath: "assets/images/abo.jpeg",
-                  name: "Abo obeda",
-                  handle: "ahmedMohamed123",
-                  lastMsg: "We will win ISA",
+                  converstaionID: "1",
                 ),
                 ConversationWidget(
                   imagePath: "assets/images/abo.jpeg",
                   name: "Abo obeda",
                   handle: "ahmedMohamed123",
                   lastMsg: "We will win ISA",
-                ),ConversationWidget(
+                  converstaionID: "1",
+                ),
+                ConversationWidget(
                   imagePath: "assets/images/abo.jpeg",
                   name: "Abo obeda",
                   handle: "ahmedMohamed123",
                   lastMsg: "We will win ISA",
+                  converstaionID: "1",
+                ),
+                ConversationWidget(
+                  imagePath: "assets/images/abo.jpeg",
+                  name: "Abo obeda",
+                  handle: "ahmedMohamed123",
+                  lastMsg: "We will win ISA",
+                  converstaionID: "1",
+                ),
+                ConversationWidget(
+                  imagePath: "assets/images/abo.jpeg",
+                  name: "Abo obeda",
+                  handle: "ahmedMohamed123",
+                  lastMsg: "We will win ISA",
+                  converstaionID: "1",
+                ),
+                ConversationWidget(
+                  imagePath: "assets/images/abo.jpeg",
+                  name: "Abo obeda",
+                  handle: "ahmedMohamed123",
+                  lastMsg: "We will win ISA",
+                  converstaionID: "1",
+                ),
+                ConversationWidget(
+                  imagePath: "assets/images/abo.jpeg",
+                  name: "Abo obeda",
+                  handle: "ahmedMohamed123",
+                  lastMsg: "We will win ISA",
+                  converstaionID: "1",
+                ),
+                ConversationWidget(
+                  imagePath: "assets/images/abo.jpeg",
+                  name: "Abo obeda",
+                  handle: "ahmedMohamed123",
+                  lastMsg: "We will win ISA",
+                  converstaionID: "1",
+                ),
+                ConversationWidget(
+                  imagePath: "assets/images/abo.jpeg",
+                  name: "Abo obeda",
+                  handle: "ahmedMohamed123",
+                  lastMsg: "We will win ISA",
+                  converstaionID: "1",
                 ),
               ],
             ),
           ),
         ),
         bottomNavigationBar: const QwitterBottomNavigationBar(),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
       ),
     );
   }
