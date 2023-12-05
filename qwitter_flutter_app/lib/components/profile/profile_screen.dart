@@ -109,7 +109,7 @@ class _ProfileDetailsWidgetState extends State<ProfileDetailsWidget> {
               if (!widget._mainAppUser && !widget._isFollowed && _scrollingView)
                 Container(
                     margin: EdgeInsets.only(right: 20),
-                    child: SecondaryButton(text: "Follow")),
+                    child: SecondaryButton(text: "Follow",onPressed: (){},)),
               if (widget._mainAppUser ||
                   (!widget._mainAppUser && widget._isFollowed) ||
                   (!widget._mainAppUser &&
