@@ -80,7 +80,6 @@ class TweetsServices {
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
         final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
-
         List<Tweet> tweets =
             tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
         //print('${tweets.length} tweets fetched');
@@ -125,9 +124,8 @@ class TweetsServices {
 
   static void makeLike(ref, Tweet tweet) {
     try {
-      final response = tweet.isLiked!
-          ? unlikeTweetRequest(tweet)
-          : likeTweetRequest(tweet);
+      final response =
+          tweet.isLiked! ? unlikeTweetRequest(tweet) : likeTweetRequest(tweet);
 
       ref.read(tweet.provider.notifier).toggleLike();
     } catch (error) {
@@ -147,106 +145,103 @@ class TweetsServices {
     }));
   }
 
-  static Future<List<Tweet>> getTweetsLikedByUser(String username,int page) async {
-    AppUser appUser=AppUser();
-    final url =
-        Uri.parse('$_baseUrl/api/v1/tweets/user/$username/like?page=${page.toString()}&limit=10');
+  static Future<List<Tweet>> getTweetsLikedByUser(
+      String username, int page) async {
+    AppUser appUser = AppUser();
+    final url = Uri.parse(
+        '$_baseUrl/api/v1/tweets/user/$username/like?page=${page.toString()}&limit=10');
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'authorization': 'Bearer ${appUser.token}',
     });
 
-
     if (response.statusCode == 200) {
+      final jsonBody = jsonDecode(response.body);
+      final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+
+      List<Tweet> tweets =
+          tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+
+      return tweets;
+    } else {
+      return [];
+    }
+  }
+
+  static Future<List<Tweet>> getTweetsPostedByUser(
+      String username, int page) async {
+    AppUser appUser = AppUser();
+    final url = Uri.parse(
+        '$_baseUrl/api/v1/tweets/user/$username?page=${page.toString()}&limit=10');
+    try {
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ${appUser.token}',
+      });
+      print(" token : ${appUser.token}");
+      if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
         final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
 
-        List<Tweet> tweets =
-            tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
-        //print('${tweets.length} tweets fetched');
+        List<Tweet> tweets = tweetList.map((tweet) {
+          return Tweet.fromJson(tweet);
+        }).toList();
+
         return tweets;
       } else {
-        //print('Failed to fetch tweets: ${response.statusCode}');
         return [];
       }
-    
+    } catch (e) {
+      return [];
+    }
   }
 
-
-  static Future<List<Tweet>> getTweetsPostedByUser(String username,int page) async { ///not so sure about this one
-    AppUser appUser=AppUser();
-    final url =
-        Uri.parse('$_baseUrl/api/v1/tweets/user/$username?page=${page.toString()}&limit=10');
+  static Future<List<Tweet>> getMediaSectionTweets(
+      String username, int page) async {
+    AppUser appUser = AppUser();
+    final url = Uri.parse(
+        '$_baseUrl/api/v1/tweets/user/$username/media?page=${page.toString()}&limit=10');
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'authorization': 'Bearer ${appUser.token}',
     });
 
-
     if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+      final jsonBody = jsonDecode(response.body);
+      final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
 
-        List<Tweet> tweets =
-            tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
-        //print('${tweets.length} tweets fetched');
-        return tweets;
-      } else {
-        //print('Failed to fetch tweets: ${response.statusCode}');
-        return [];
-      }
+      List<Tweet> tweets =
+          tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+
+      return tweets;
+    } else {
+      return [];
+    }
   }
 
-  static Future<List<Tweet>> getMediaSectionTweets(String username,int page) async {
-    AppUser appUser=AppUser();
-    final url =
-        Uri.parse('$_baseUrl/api/v1/tweets/user/$username/media?page=${page.toString()}&limit=10');
+  static Future<List<Tweet>> getRepliesSectionTweets(
+      String username, int page) async {
+    AppUser appUser = AppUser();
+    final url = Uri.parse(
+        '$_baseUrl/api/v1/tweets/user/$username/replies?page=${page.toString()}&limit=10');
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'authorization': 'Bearer ${appUser.token}',
     });
 
-
     if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+      final jsonBody = jsonDecode(response.body);
+      final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
 
-        List<Tweet> tweets =
-            tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
-        //print('${tweets.length} tweets fetched');
-        return tweets;
-      } else {
-        //print('Failed to fetch tweets: ${response.statusCode}');
-        return [];
-      }
+      List<Tweet> tweets =
+          tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+      return tweets;
+    } else {
+      return [];
+    }
   }
-
-  static Future<List<Tweet>> getRepliesSectionTweets(String username,int page) async {
-    AppUser appUser=AppUser();
-    final url =
-        Uri.parse('$_baseUrl/api/v1/tweets/user/$username/replies?page=${page.toString()}&limit=10');
-    final response = await http.get(url, headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'authorization': 'Bearer ${appUser.token}',
-    });
-
-
-    if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
-
-        List<Tweet> tweets =
-            tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
-        //print('${tweets.length} tweets fetched');
-        return tweets;
-      } else {
-        //print('Failed to fetch tweets: ${response.statusCode}');
-        return [];
-      }
-  }
-  
 }

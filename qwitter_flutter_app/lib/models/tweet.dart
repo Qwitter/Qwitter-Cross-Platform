@@ -75,7 +75,7 @@ class Tweet {
       retweetUserName: json['userName'],
       repliesCount: json['replyCount'],
       retweetsCount: json['retweetCount'],
-      likesCount: (json['likes'] as List<dynamic>).length,
+      likesCount: json['likesCount'],
       quotesCount: json['qouteCount'],
       text: json['text'],
       replyToId: json['replyToTweetId'],

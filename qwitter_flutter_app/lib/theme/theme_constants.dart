@@ -38,10 +38,13 @@ ThemeData _buildThemeData(Brightness brightness) {
       unselectedLabelColor: Colors.grey,
       indicatorColor: Colors.blue,
     ),
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: Colors.blue, // Set your desired cursor color
+    ),
     useMaterial3: true,
     primaryColor: mainColor,
     floatingActionButtonTheme:
-        FloatingActionButtonThemeData(backgroundColor: mainColor),
+        const FloatingActionButtonThemeData(backgroundColor: mainColor),
     fontFamily: "Roboto",
     textTheme: _baseTextTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(

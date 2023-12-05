@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/basic_widgets/underlined_text_field_label_only.dart';
 import 'package:intl/intl.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -13,11 +16,13 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late DateTime _birthDate;
   late TextEditingController _birthDateFieldController;
+  late AppUser appUser;
 
   @override
   void initState() {
     super.initState();
     _birthDate = DateTime.now();
+    appUser = AppUser();
     _birthDateFieldController =
         TextEditingController(text: formatDate(_birthDate));
   }
@@ -25,10 +30,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String formatDate(DateTime date) {
     return DateFormat('MMMM dd, yyyy').format(date);
   }
-  void _saveUserProfileData()
-  {
-    
+
+  void _saveUserProfileData(String name,String description,String location,String url,String birthData) {}
+  Future<void> _updateUserProfile() async {
+    String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+    Uri url = Uri.parse('$_baseUrl/api/v1/user/profile');
+    http.Response response = await http.put(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'authorization': 'Bearer ${appUser.token}',
+    }, body: {
+      "name": "",
+      "description": "",
+      "location": "",
+      "url": "",
+      "birth_data": ""
+    });
+
+    if(response.statusCode==200){
+      print("saved successfully");
+    }
   }
+  Future<void> _uploadProfilePicture(String path)async{
+
+  }
+  Future<void> _uploadProfilePBannericture(String path)async{
+
+  }
+  
+
   void changeBirthDate() {
     showModalBottomSheet(
         context: context,
@@ -77,7 +107,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             size: 30,
           ),
           onPressed: () {
-            // Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
         ),
         title: const Text(
@@ -180,7 +210,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     maxLines: 1,
                     controller: null,
                     validator: (val) {
-                      if(val==null || val=="") {
+                      if (val == null || val == "") {
                         return "this field can't be empty";
                       } else {
                         return null;

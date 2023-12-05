@@ -16,6 +16,7 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'side_drop_down_menu.dart';
+import 'package:intl/intl.dart';
 
 class ProfileDetailsScreen extends ConsumerStatefulWidget {
   const ProfileDetailsScreen({super.key, required this.username});
@@ -38,23 +39,11 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   late User user;
   final AppUser appUser = AppUser();
   List<int> pages = [1, 1, 1, 1];
-  // late ScrollController _postedTweetsScrollController;
-  // late ScrollController _likedTweetsScrollController;
-  // late ScrollController _repliedTweetsScrollController;
-  // late ScrollController _mediaTweetsScrollController;
-  // double _postedTweetsScrollOffset=0;
-  // double _likedTweetsScrollOffset=0;
-  // double _repliedTweetsScrollOffset=0;
-  // double _mediaTweetsScrollOffset=0;
+
 
   @override
   void initState() {
     super.initState();
-    // _postedTweetsScrollController = ScrollController();
-    // _likedTweetsScrollController = ScrollController();
-    // _mediaTweetsScrollController = ScrollController();
-    // _repliedTweetsScrollController = ScrollController();
-
     _scrollController = ScrollController();
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
     _scrollController.addListener(_scrollListener);
@@ -88,9 +77,22 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
     if (response.statusCode == 200) {
       final jsonBody = jsonDecode(response.body);
-      return User.fromJson(jsonBody);
+      
+      User user= User.fromJson(jsonBody);
+      if(user.username==AppUser().username){
+        //update the app user stored data
+        AppUser().updataUserData(user);
+      }
+        return user;
     }
     return null;
+  }
+
+    String formatDate(String date) {
+    return DateFormat('MMMM dd, yyyy').format(DateTime.parse(date));
+  }
+    String formatNumber(int number) {
+    return NumberFormat.compact(explicitSign: false).format(number);
   }
 
   Future<void> _fetchNewTweets(int tabIndex, int page) async {
@@ -112,15 +114,13 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
           await TweetsServices.getTweetsLikedByUser(user.username!, page);
       ref.read(profileTweetsProvider.notifier).updateLikedTweets(newTweets);
     }
+    setState(() {
+      
+    });
   }
 
   @override
   void dispose() {
-    // _postedTweetsScrollController.dispose();
-    // _likedTweetsScrollController.dispose();
-    // _mediaTweetsScrollController.dispose();
-    // _repliedTweetsScrollController.dispose();
-    ref.read(profileTweetsProvider.notifier).reset();
     _scrollController.removeListener(_scrollListener);
     _tabController.removeListener(_changeTab);
     _tabController.dispose();
@@ -131,11 +131,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   void _scrollListener() {
     setState(() {
       double newPosition = _scrollController.position.pixels;
-      // if(_tabController.index==0) _postedTweetsScrollOffset=newPosition;
-      // if(_tabController.index==1) _repliedTweetsScrollOffset=newPosition;
-      // if(_tabController.index==2) _mediaTweetsScrollOffset=newPosition;
-      // if(_tabController.index==3) _likedTweetsScrollOffset=newPosition;
-
       if (newPosition > 80) {
         _scrollingView = true;
       } else {
@@ -165,20 +160,33 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   Widget build(BuildContext context) {
     ProfileTweets profileTweets = ref.watch(profileTweetsProvider);
 
+    print("read profile tweets from the profile screen");
+    print(profileTweets.postedTweets);
     return FutureBuilder(
       future: _getUserData(),
       builder: (context, snapshot) {
         if (snapshot.data == null) {
-          return const LinearProgressIndicator(
-            //// need more work
-            color: Colors.white,
-            backgroundColor: Colors.blue,
+          return const SafeArea(
+            child: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    //// need more work
+                    color: Colors.white,
+                    backgroundColor: Colors.blue,
+                  ),
+                ),
+              ),
+            ),
           );
         } else {
           user = snapshot.data!;
           return SafeArea(
             child: Scaffold(
               body: NestedScrollView(
+                floatHeaderSlivers: true,
                 controller: _scrollController,
                 headerSliverBuilder: (
                   BuildContext context,
@@ -193,6 +201,8 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                           leading: IconButton(
                             onPressed: () {
                               ////////////////////////////////////////////
+                             ref.read(profileTweetsProvider.notifier).reset();
+                              ///
                               Navigator.of(context).pop();
                             },
                             icon: const Icon(
@@ -356,6 +366,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                     SliverToBoxAdapter(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             margin: EdgeInsets.only(top: 10, right: 20),
@@ -482,7 +493,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   left: 10,
                                 ),
                                 child: Text(
-                                  'joined ${user.createdAt}', ////////////////////
+                                  'joined ${formatDate(user.createdAt!)}', ////////////////////
                                   style: TextStyle(
                                       color: Colors.grey.shade700,
                                       fontSize: 16,
@@ -508,7 +519,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   left: 10,
                                 ),
                                 child: Text(
-                                  'Born ${user.birthDate}', ////////////////////
+                                  'Born ${formatDate(user.birthDate!)}', ////////////////////
                                   style: TextStyle(
                                       color: Colors.grey.shade700,
                                       fontSize: 16,
@@ -531,9 +542,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   child: Row(
                                     children: [
                                       Text(
-                                        '${user.followingCount}',
-
-                                        ///need more work
+                                        formatNumber(user.followingCount!),
                                         style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 16,
@@ -562,7 +571,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   child: Row(
                                     children: [
                                       Text(
-                                        '${user.followersCount}',
+                                        formatNumber(user.followersCount!),
                                         style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 16,
@@ -639,8 +648,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                   },
                   child: TabBarView(
                     controller: _tabController,
+                    
                     children: [
-                      profileTweets.postedTweets != null
+                      ref.watch(profileTweetsProvider).postedTweets != null
                           ? ListView.builder(
                               itemBuilder: (context, index) {
                                 return TweetCard(
@@ -702,6 +712,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             ),
                       
                     ],
+
                   ),
                 ),
               ),

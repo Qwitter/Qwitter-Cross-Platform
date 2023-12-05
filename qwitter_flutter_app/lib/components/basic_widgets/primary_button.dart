@@ -8,11 +8,15 @@ class PrimaryButton extends ConsumerWidget {
     required this.text,
     this.onPressed,
     this.useProvider = false,
+    this.paddingValue = const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+    this.buttonSize = const Size(30, 40),
   });
 
   final String text;
   final VoidCallback? onPressed;
   final bool useProvider;
+  final EdgeInsets? paddingValue;
+  final Size buttonSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,9 +29,11 @@ class PrimaryButton extends ConsumerWidget {
         disabledForegroundColor: Colors.blue.withOpacity(0.38),
         disabledBackgroundColor:
             Colors.blue.withOpacity(0.12), // Background color (white)
-        elevation: 0, // No shadow
-        padding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding
+        elevation: 0, // No shadow),
+        padding: paddingValue, // Padding
+        fixedSize: buttonSize,
+        minimumSize: const Size(50, 30),
+        maximumSize: const Size(150, 50),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24), // Custom shape
         ),
