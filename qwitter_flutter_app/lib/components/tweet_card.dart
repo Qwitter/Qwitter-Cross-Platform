@@ -8,6 +8,7 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_bottom_action_bar.dar
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_reply.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
@@ -410,6 +411,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
   @override
   Widget build(BuildContext context) {
     final tweetProvider = ref.watch(widget.tweet.provider);
+    AppUser user = AppUser();
+    user.getUserData();
 
     return GestureDetector(
       onTap: () {
@@ -451,9 +454,9 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                           width: 5,
                         ),
                         Text(
-                          tweetProvider.retweetUserName.toString() +
+                           (tweetProvider.retweetUser!.fullName == user.fullName ? "You" : tweetProvider.retweetUser!.fullName.toString()) +
                               " reposted",
-                          style: TextStyle(color: Colors.grey[700]),
+                          style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w800),
                         ),
                       ],
                     ),
@@ -495,10 +498,10 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                           ],
                         ),
                       ),
-                      tweetProvider.replyToId != Null
+                      tweetProvider.replyToId.toString() == "null"
                           ? Container()
                           : TweetReply(
-                              tweetReplyTo: tweetProvider.replyToId!),
+                              tweetReplyTo: tweetProvider.replyToId!, tweetReplytoUsername: tweetProvider.user!.username!),
                       TweetBody(
                         tweet: tweetProvider,
                         pushMediaViewerFunc: pushMediaViewer,
@@ -513,7 +516,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                         reposted: tweetProvider.isRetweeted!,
                         makeComment: () =>
                             TweetsServices.makeComment(context, tweetProvider),
-                        liked: tweetProvider.isLiked!,
+                        liked: tweetProvider.isLiked ?? false,
                       ),
                     ],
                   )

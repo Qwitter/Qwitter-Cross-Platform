@@ -30,7 +30,7 @@ class SingleTweetProvider extends StateNotifier<Tweet> {
 
   void setReplies(List<Tweet> replies){
     Tweet tweet = state;
-    tweet.replies = replies;
+    tweet.replies = [...tweet.replies, ...replies];
     state = tweet;
   }
 
