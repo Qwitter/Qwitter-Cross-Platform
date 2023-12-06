@@ -466,7 +466,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TweetAvatar(avatar: tweetProvider.user!.profilePicture!.path.startsWith("http") ? tweetProvider.user!.profilePicture!.path : "http://" + tweetProvider.user!.profilePicture!.path),
+                  TweetAvatar(avatar: tweetProvider.user!.profilePicture!.path.startsWith("http") ? tweetProvider.user!.profilePicture!.path : "http://" + tweetProvider.user!.profilePicture!.path, username: tweetProvider.user!.username!,),
                   const SizedBox(
                     width: 3,
                   ),
