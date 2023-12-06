@@ -30,14 +30,14 @@ class AccountWidget extends StatelessWidget {
               Text(
                 "${user.fullName}",
                 style: const TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontWeight: FontWeight.w700,
                     fontSize: 17),
               ),
               Text(
                 "${user.username}",
                 style: TextStyle(
-                    color: Colors.grey.shade600,
+                    color: Colors.grey[400],
                     fontWeight: FontWeight.w500,
                     fontSize: 15),
               )

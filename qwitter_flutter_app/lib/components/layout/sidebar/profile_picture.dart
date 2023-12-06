@@ -51,7 +51,7 @@ class ProfilePicture extends StatelessWidget {
               Text(
                "${appUser.fullName}",
                 style: const TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
@@ -77,7 +77,7 @@ class ProfilePicture extends StatelessWidget {
                   Text(
                     appUser.followingCount==null?"0":"${appUser.followingCount}",
                     style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold),
                   ),
@@ -102,7 +102,7 @@ class ProfilePicture extends StatelessWidget {
                   Text(
                     appUser.followersCount==null?"0":"${appUser.followersCount}",
                     style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold),
                   ),

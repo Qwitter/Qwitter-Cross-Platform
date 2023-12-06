@@ -220,11 +220,10 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                     children: [
                                       TweetAvatar(
                                           avatar: widget.tweet.user!
-                                              .profilePicture!.path),
+                                              .profilePicture!.path, username: widget.tweet.user!.username!,),
                                       Expanded(
                                         child: TweetHeader.stretched(
-                                          tweetUserHandle: "@" +
-                                              widget.tweet.user!.username!,
+                                          tweetUserHandle: widget.tweet.user!.username!,
                                           tweetUserName:
                                               widget.tweet.user!.fullName!,
                                           tweetUserVerified: true,

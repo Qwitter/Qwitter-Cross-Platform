@@ -166,6 +166,7 @@ class _TweetMediaViewerScreenState
                                 avatar:
                                     tweetProvider.user!.profilePicture!.path,
                                 radius: 20,
+                                username: tweetProvider.user!.username!,
                               ),
                               Expanded(
                                 child: TweetHeader.stretched(
@@ -298,7 +299,7 @@ class _TweetMediaViewerScreenState
                     child: Row(
                       children: [
                         TweetAvatar(
-                            avatar: tweetProvider.user!.profilePicture!.path),
+                            avatar: tweetProvider.user!.profilePicture!.path,username: tweetProvider.user!.username!,),
                         Expanded(
                             child: TweetHeader.stretched(
                           tweetUserHandle:
