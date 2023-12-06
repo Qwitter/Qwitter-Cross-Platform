@@ -119,7 +119,7 @@ class _TweetMediaViewerScreenState
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           iconTheme: Theme.of(context).iconTheme,
           elevation: 1,
           actions: [

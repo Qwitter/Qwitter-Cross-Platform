@@ -189,6 +189,7 @@ class TweetFloatingButton extends StatelessWidget {
                 onPressed: () {
                   if (isVisible) {
                     // Make post
+                    toggleVisibility();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
