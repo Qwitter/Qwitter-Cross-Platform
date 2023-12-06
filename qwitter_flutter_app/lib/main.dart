@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     AppUser user = AppUser();
     user.getUserData();
     // clearSharedPreferences();
-    //print'user data : ${user.getUsername}');
+    // print('user data : ${user.getToken}');
     return MaterialApp(
       title: 'Flutter Demo',
       theme: lightTheme,
