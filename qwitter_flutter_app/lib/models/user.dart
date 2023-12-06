@@ -160,6 +160,13 @@ class User {
       'birth_date': birthDate,
       'password': password,
       'profile_picture_path': profilePicture!.path,
+      'isProtected': isProtected,
+      'isVerified': isVerified,
+      'description': description,
+      'followersCount':followersCount,
+      'followingCount':followingCount,
+      'createdAt': createdAt,
+      // 'profileImageUrl':
     };
   }
 }
