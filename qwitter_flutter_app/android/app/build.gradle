@@ -45,22 +45,21 @@ android {
         applicationId "com.example.qwitter_flutter_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion localProperties.getProperty('flutter.minSdkVersion').toInteger()
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
-        minSdkVersion 21
     }
 
-//    signingConfigs {
-//        debug {
-//            keyAlias 'androiddebugkey'
-//            keyPassword '3ola3omar'
-//            storeFile file('mykey.jks')
-//            storePassword '3ola3omar'
-//        }
-//    }
+   signingConfigs {
+       debug {
+           keyAlias 'androiddebugkey'
+           keyPassword '3ola3omar'
+           storeFile file('mykey.jks')
+           storePassword '3ola3omar'
+       }
+   }
 
     buildTypes {
         release {

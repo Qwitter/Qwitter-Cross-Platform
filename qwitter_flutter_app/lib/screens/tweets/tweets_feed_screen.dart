@@ -109,12 +109,12 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
       child: Scaffold(
         body: Stack(children: [
           Scaffold(
-            drawer: MainDrawer(),
+            drawer: const MainDrawer(),
             appBar: PreferredSize(
-              preferredSize: Size.fromHeight(100),
+              preferredSize: const Size.fromHeight(100),
               child: QwitterAppBar(
                 onPressed: _openDrawer,
-                bottomWidget: TabBar(
+                bottomWidget: const TabBar(
                   tabs: [
                     Tab(
                       child: Text(

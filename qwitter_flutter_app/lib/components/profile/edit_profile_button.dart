@@ -28,16 +28,16 @@ class EditProfileButton extends StatelessWidget {
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
               side: BorderSide(
-                color: Colors.grey.shade500,
+                color: Colors.blueGrey,
               ),
             ),
           ),
           padding: const MaterialStatePropertyAll(EdgeInsets.zero),
         ),
-        child: const Text(
+        child: Text(
           'Edit profile',
           style: TextStyle(
-              color: Colors.black, fontSize: 17, fontWeight: FontWeight.w700),
+              color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700),
         ),
       ),
     );

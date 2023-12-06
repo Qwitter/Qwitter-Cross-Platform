@@ -342,7 +342,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 15),
                                 child: CircleAvatar(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: Colors.black,
                                   radius: _imgRaduis + 5,
                                   child: CircleAvatar(
                                     radius: _imgRaduis,
@@ -405,7 +405,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             child: Text(
                               '${user.fullName}',
                               style: const TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -443,7 +443,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   child: Text(
                                     '${user.description}', ////////////////////
                                     style: TextStyle(
-                                      color: Colors.grey.shade700,
+                                      color: Colors.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -544,7 +544,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                       Text(
                                         formatNumber(user.followingCount!),
                                         style: const TextStyle(
-                                            color: Colors.black,
+                                            color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -573,7 +573,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                       Text(
                                         formatNumber(user.followersCount!),
                                         style: const TextStyle(
-                                            color: Colors.black,
+                                            color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -598,11 +598,13 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                     ),
                     SliverPinnedHeader(
                       child: Container(
-                        decoration: BoxDecoration(color: Colors.white),
+                        decoration: BoxDecoration(color: Colors.black),
                         child: TabBar(
                           controller: _tabController,
+
+                          
                           isScrollable: true,
-                          dividerColor: Colors.grey.shade100,
+                          dividerColor: Colors.grey[900],
                           unselectedLabelStyle: TextStyle(
                               fontSize: 18,
                               color: Colors.grey.shade800,
@@ -611,6 +613,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               fontSize: 18,
                               color: Colors.black,
                               fontWeight: FontWeight.w600),
+                              labelPadding:  EdgeInsets.symmetric(horizontal: 30),
                           tabs: const [
                             Tab(
                               text: 'Posts',
@@ -626,7 +629,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             ),
                           ],
                           indicatorColor: Colors.blue,
-                          labelColor: Colors.black,
+                          labelColor: Colors.white,
                           overlayColor: const MaterialStatePropertyAll(
                               Colors.transparent),
                         ),
