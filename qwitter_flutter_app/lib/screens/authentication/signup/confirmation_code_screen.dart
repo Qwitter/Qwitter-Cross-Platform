@@ -145,7 +145,7 @@ class _ConfirmationCodeScreenState
         buttonFunction = (context) {
           if (widget.user!.fullName != null) {
             verifyEmail().then((value) {
-              Toast.show(json.decode(value.body)['message']);
+              Toast.show(json.decode(value.body)['message']??"Account Verified Successfully");
               if (value.statusCode == 200) {
                 Navigator.push(
                   context,
