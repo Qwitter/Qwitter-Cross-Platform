@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
@@ -52,7 +51,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   }
 
   bool _scrollPressed = false;
-  
+
   final ScrollController _scrollController = ScrollController();
 
   void _scrollPressedFunc() {
@@ -76,16 +75,14 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
 
       // await Future.delayed(Duration(seconds: 10));
 
-      _fetchNewTweets(page);
       _incrementPage();
+      _fetchNewTweets(page);
     }
   }
 
   Future<void> _fetchNewTweets(page) async {
-    // Logic to fetch new tweets from the provider
-    // Example: Call a function to fetch new tweets and update the tweet list
     final List<Tweet> newTweets = await TweetsServices.getTimeline(page);
-    //print(newTweets.length);
+    print(newTweets.length);
     ref.read(timelineTweetsProvider.notifier).setTimelineTweets(newTweets);
     setState(() {
       _isFetching = false;
@@ -96,6 +93,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   Widget build(BuildContext context) {
     // ref.watch(timelineTweetsProvider.notifier).setTimelineTweets(tweets);
     tweets = ref.watch(timelineTweetsProvider);
+    //print(tweets.length);
     return DefaultTabController(
       length: 2,
       child: Scaffold(

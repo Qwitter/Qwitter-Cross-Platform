@@ -287,6 +287,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                     uniqueIds[0], tweetProvider);
               },
               child: ClipRRect(
+                
                 borderRadius: BorderRadius.vertical(
                     top: Radius.circular(widget.radius.toDouble()),
                     bottom: const Radius.circular(10)),
@@ -299,14 +300,16 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                           // width: (MediaQuery.of(context).size.width - 65),
                         ),
                       )
-                    : TweetVideo(
-                        video: tweetProvider.media![0].value,
-                        aspectRatio: 1,
-                        tweet: tweetProvider,
-                        height: MediaQuery.of(context).size.height / 3 +
-                            (5 * (tweetProvider.media!.length % 2)),
-                        autoPlay: true,
-                      ),
+                    : SizedBox(
+                      child: TweetVideo(
+                          video: tweetProvider.media![0].value,
+                          aspectRatio: 1,
+                          tweet: tweetProvider,
+                          height: MediaQuery.of(context).size.height / 3 +
+                              (5 * (tweetProvider.media!.length % 2)),
+                          autoPlay: true,
+                        ),
+                    ),
               ))
         ],
       );

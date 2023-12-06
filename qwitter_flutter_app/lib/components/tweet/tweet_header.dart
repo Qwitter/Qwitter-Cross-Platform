@@ -77,7 +77,7 @@ class TweetHeader extends StatelessWidget {
         child: SizedBox(
           width: width * 0.15,
           child: Text(
-            tweetUserHandle,
+            "@" + tweetUserHandle,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(

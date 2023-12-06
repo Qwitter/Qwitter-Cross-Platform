@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class TweetReply extends StatelessWidget {
   final String tweetReplyTo;
+  final String tweetReplytoUsername;
 
-  TweetReply({required this.tweetReplyTo});
+  TweetReply({required this.tweetReplyTo, required this.tweetReplytoUsername});
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +29,17 @@ class TweetReply extends StatelessWidget {
                         style: ButtonStyle(
                             padding:
                                 MaterialStateProperty.all(EdgeInsets.zero)),
-                        child: Text(
-                          tweetReplyTo,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w400),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Text(
+                            "@" + tweetReplytoUsername,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w400),
+                          ),
                         ),
                         onPressed: () {},
                       ),
