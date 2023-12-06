@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/Components/tweet_card.dart';
+import 'package:qwitter_flutter_app/components/layout/sidebar/main_drawer.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_floating_button.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
@@ -19,6 +20,15 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   bool _isVisible = false;
   bool _isFetching = false;
   List<Tweet> tweets = [];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void _openDrawer() {
+    if(_scaffoldKey.currentState!=null&&_scaffoldKey.currentState!.hasDrawer!=null) {
+      _scaffoldKey.currentState!.openDrawer();
+    }
+    
+    print(1);
+}
 
   @override
   void initState() {
@@ -99,9 +109,11 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
       child: Scaffold(
         body: Stack(children: [
           Scaffold(
+            drawer: MainDrawer(),
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(100),
               child: QwitterAppBar(
+                onPressed: _openDrawer,
                 bottomWidget: TabBar(
                   tabs: [
                     Tab(

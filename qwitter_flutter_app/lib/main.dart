@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
     // print('user data : ${user.getToken}');
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: darkTheme,
+      theme: lightTheme,
       home: FutureBuilder(
           future: user.getUserData(),
           builder: (context, snapshot) {
