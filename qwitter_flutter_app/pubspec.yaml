@@ -86,6 +86,7 @@ flutter:
     - assets/images/pfp.jpg
     - assets/images/x_logo.png
     - assets/images/def.jpg
+    - assets/
 
     # - assets/private.txt
 
