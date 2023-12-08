@@ -24,16 +24,15 @@ class MyApp extends StatelessWidget {
     SharedPreferences.getInstance().then((prefs) {
       prefs.clear().then((value) {
         //print('SharedPreferences cleared!');
-      });
+      }); 
     });
   }
-
   @override
   Widget build(BuildContext context) {
     AppUser user = AppUser();
     user.getUserData();
     // clearSharedPreferences();
-    //print'user data : ${user.getUsername}');
+    // print('user data : ${user.getToken}');
     return MaterialApp(
       title: 'Flutter Demo',
       theme: darkTheme,

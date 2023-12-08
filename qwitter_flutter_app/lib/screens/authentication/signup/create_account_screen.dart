@@ -131,6 +131,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   MaterialPageRoute(
                     builder: (context) => ConfirmationCodeScreen(
                       user: user,
+                      code: ConfirmationCodeType.signup,
                     ),
                   ),
                 );

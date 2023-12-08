@@ -74,4 +74,19 @@ class AppUser extends User {
     await prefs.remove(
         'username'); // This will remove data associated with the provided key
   }
+
+  Future<void> updataUserData(User user) async{
+    username = user.username;
+    fullName = user.fullName;
+    birthDate = user.birthDate;
+    url = user.url;
+    description = user.description;
+    isProtected = user.isProtected;
+    isVerified = user.isVerified;
+    followersCount = user.followersCount;
+    followingCount = user.followingCount;
+    profileBannerUrl = user.profileBannerUrl;
+    profilePicture = user.profilePicture;
+    email = user.email;
+  }
 }

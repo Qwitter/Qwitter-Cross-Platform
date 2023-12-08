@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/add_tweet_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TweetFloatingButton extends StatelessWidget {
@@ -188,22 +189,31 @@ class TweetFloatingButton extends StatelessWidget {
                 onPressed: () {
                   if (isVisible) {
                     // Make post
-                    // Temp Behaviour
-                    SharedPreferences.getInstance().then((prefs) {
-                      prefs.clear().then((value) {
-                        //print('SharedPreferences cleared!');
-                      });
-                    });
-
-                    Navigator.popUntil(context, (route) => false);
+                    toggleVisibility();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext context) {
-                          return const SignupChooseMethodScreen();
+                          return const AddTweetScreen();
                         },
                       ),
                     );
+                    // // Temp Behaviour
+                    // SharedPreferences.getInstance().then((prefs) {
+                    //   prefs.clear().then((value) {
+                    //     //print('SharedPreferences cleared!');
+                    //   });
+                    // });
+
+                    // Navigator.popUntil(context, (route) => false);
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (BuildContext context) {
+                    //       return const SignupChooseMethodScreen();
+                    //     },
+                    //   ),
+                    // );
                   } else {
                     // open buttons list
                     toggleVisibility();

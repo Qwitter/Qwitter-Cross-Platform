@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
@@ -98,8 +97,10 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     super.initState();
 
     TweetsServices.getTweetReplies(widget.tweet).then((replies) {
-      //print(replies.length);
-      ref.read(widget.tweet.provider.notifier).setReplies(replies);
+      print("reppp: " + replies.length.toString());
+      setState(() {
+        ref.read(widget.tweet.provider.notifier).setReplies(replies);
+      });
     }).onError((error, stackTrace) {
       //print(error);
     });
@@ -183,7 +184,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
 
   Widget build(BuildContext context) {
     final tweetProvider = ref.watch(widget.tweet.provider);
-
+    print(tweetProvider.id);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context, tweetProvider);
@@ -191,7 +192,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).appBarTheme.copyWith().backgroundColor,
+          backgroundColor:
+              Theme.of(context).appBarTheme.copyWith().backgroundColor,
           title: const Text(
             "Post",
             style: TextStyle(color: Colors.white),
@@ -205,6 +207,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
             children: [
               ListView.builder(
                 itemBuilder: (ctx, index) {
+                  print("replies" + tweetProvider.replies.toString());
                   return index == 0
                       ? Column(
                           children: [
@@ -217,11 +220,10 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                     children: [
                                       TweetAvatar(
                                           avatar: widget.tweet.user!
-                                              .profilePicture!.path),
+                                              .profilePicture!.path, username: widget.tweet.user!.username!,),
                                       Expanded(
                                         child: TweetHeader.stretched(
-                                          tweetUserHandle: "@" +
-                                              widget.tweet.user!.username!,
+                                          tweetUserHandle: widget.tweet.user!.username!,
                                           tweetUserName:
                                               widget.tweet.user!.fullName!,
                                           tweetUserVerified: true,
@@ -280,8 +282,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                         ),
                                         Text(
                                           "45K",
-                                          style: TextStyle(
-                                              color: Colors.white),
+                                          style: TextStyle(color: Colors.white),
                                         ),
                                         SizedBox(
                                           width: 5,
@@ -543,11 +544,9 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                             ),
                           ],
                         )
-                      : 
-                      
-                      TweetCard(tweet: tweetProvider.replies[index - 1]);
+                      : index == tweetProvider.replies.length + 1 ? SizedBox(height: focusNode.hasFocus ? 150 :80,) : TweetCard(tweet: tweetProvider.replies[index - 1]);
                 },
-                itemCount: tweetProvider.replies.length + 1,
+                itemCount: tweetProvider.replies.length + 2,
               ),
               Positioned(
                 bottom: 0,
@@ -644,8 +643,21 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                             backgroundColor:
                                                 MaterialStateColor.resolveWith(
                                                     (states) => Colors.blue)),
-                                        child: Text("Reply"),
-                                        onPressed: () {},
+                                        child: Text(
+                                          "Reply",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        onPressed: () {
+                                          if (textEditingController
+                                              .text.isNotEmpty) {
+                                            setState(() {
+                                              TweetsServices.makeReply(
+                                                  ref,
+                                                  tweetProvider,
+                                                  textEditingController.text);
+                                            });
+                                          }
+                                        },
                                       ),
                                     ),
                                   )

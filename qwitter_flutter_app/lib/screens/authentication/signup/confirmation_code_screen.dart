@@ -5,17 +5,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/forget_new_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_password_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:toast/toast.dart';
 
+enum ConfirmationCodeType { signup, password, changeEmail }
+
 class ConfirmationCodeScreen extends ConsumerStatefulWidget {
-  const ConfirmationCodeScreen({super.key, this.user});
+  const ConfirmationCodeScreen({super.key, this.user, this.code});
 
   final User? user;
+
+  final ConfirmationCodeType? code;
 
   @override
   ConsumerState<ConfirmationCodeScreen> createState() =>
@@ -84,6 +90,25 @@ class _ConfirmationCodeScreenState
     return response;
   }
 
+  Future changeEmail(String token) async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/change-email');
+
+    final Map<String, String> data = {"email": widget.user!.email!};
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ${token}',
+      },
+    );
+
+    return response;
+  }
+
   Future<http.Response> sendEmail() async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/auth/forgot-password');
@@ -106,7 +131,7 @@ class _ConfirmationCodeScreenState
   String? codeValidations(String? code) {
     if (code == null || code.isEmpty) return null;
 
-    final fieldLength = widget.user!.fullName != null ? 6 : 8;
+    final fieldLength = widget.code != ConfirmationCodeType.password ? 6 : 8;
 
     if (code.length != fieldLength) {
       return 'Invalid confirmation code.';
@@ -120,7 +145,7 @@ class _ConfirmationCodeScreenState
     super.initState();
     ToastContext ctx = ToastContext();
     ctx.init(context);
-    if (widget.user!.fullName != null) {
+    if (widget.code == ConfirmationCodeType.signup) {
       sendVerificationEmail();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -136,16 +161,17 @@ class _ConfirmationCodeScreenState
 
   @override
   Widget build(BuildContext context) {
-    final fieldLength = widget.user!.fullName != null ? 6 : 8;
+    final fieldLength = widget.code != ConfirmationCodeType.password ? 6 : 8;
     void Function(BuildContext)? buttonFunction;
 
     codeController.addListener(() {
       if (codeController.text.isNotEmpty &&
           codeValidations(codeController.text) == null) {
         buttonFunction = (context) {
-          if (widget.user!.fullName != null) {
+          if (widget.code == ConfirmationCodeType.signup) {
             verifyEmail().then((value) {
-              Toast.show(json.decode(value.body)['message']);
+              Toast.show(json.decode(value.body)['message'] ??
+                  "Account Verified Successfully");
               if (value.statusCode == 200) {
                 Navigator.push(
                   context,
@@ -163,7 +189,7 @@ class _ConfirmationCodeScreenState
               //print'Error sending data $error');
               buttonFunction = null;
             });
-          } else {
+          } else if (widget.code == ConfirmationCodeType.password) {
             resetPassword().then((value) {
               if (value.statusCode == 200) {
                 //printjson.decode(value.body)['token']);
@@ -175,6 +201,34 @@ class _ConfirmationCodeScreenState
                     ),
                   ),
                 );
+              } else {
+                buttonFunction = null;
+              }
+            }).onError((error, stackTrace) {
+              Toast.show('Error sending data $error');
+              //print'Error sending data $error');
+              buttonFunction = null;
+            });
+          } else if (widget.code == ConfirmationCodeType.changeEmail) {
+            verifyEmail().then((value) {
+              Toast.show(json.decode(value.body)['message'] ??
+                  "Account Verified Successfully");
+              if (value.statusCode == 200) {
+                changeEmail(AppUser().getToken!).then((value) {
+                  if (value.statusCode == 200) {
+                    AppUser().setEmail(widget.user!.email!);
+                    Toast.show('Email Changed Successfuly');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TweetFeedScreen()),
+                    );
+                  } else {
+                    buttonFunction = null;
+                  }
+                }).onError((error, stackTrace) {
+                  Toast.show('Error sending data $error');
+                });
               } else {
                 buttonFunction = null;
               }
@@ -198,6 +252,7 @@ class _ConfirmationCodeScreenState
             MaterialPageRoute(
               builder: (context) => ConfirmationCodeScreen(
                 user: widget.user,
+                code: widget.code,
               ),
             ),
           );
@@ -326,7 +381,7 @@ class _ConfirmationCodeScreenState
                       TextButton(
                         onPressed: () {
                           // Add your action here for the first option.
-                          if (widget.user!.fullName != null) {
+                          if (widget.code == ConfirmationCodeType.signup) {
                             sendVerificationEmail();
                           } else {
                             sendEmail();

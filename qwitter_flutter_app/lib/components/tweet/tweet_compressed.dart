@@ -50,7 +50,7 @@ class TweetCompressed extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    TweetAvatar(avatar: tweet_avatar, radius: 10),
+                    TweetAvatar(avatar: tweet_avatar, radius: 10, username: tweetUserHandle,),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
                       child: TweetHeader(

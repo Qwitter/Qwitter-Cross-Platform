@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
 class TweetHeader extends StatelessWidget {
@@ -46,7 +47,7 @@ class TweetHeader extends StatelessWidget {
     ];
   }
 
-  List<Widget> headerRowWidgets(width) {
+  List<Widget> headerRowWidgets(width, context) {
     return [
       TextButton(
         onPressed: () {},
@@ -58,14 +59,24 @@ class TweetHeader extends StatelessWidget {
         child: Align(
           alignment: Alignment.centerLeft,
           child: FittedBox(
-            child: Text(
-              tweetUserName.length > 15
-                  ? tweetUserName.substring(0, 15)
-                  : tweetUserName,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ProfileDetailsScreen(username: tweetUserHandle),
+                    ));
+              },
+              child: Text(
+                tweetUserName.length > 15
+                    ? tweetUserName.substring(0, 15)
+                    : tweetUserName,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -77,7 +88,7 @@ class TweetHeader extends StatelessWidget {
         child: SizedBox(
           width: width * 0.15,
           child: Text(
-            tweetUserHandle,
+            "@" + tweetUserHandle,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(
@@ -137,7 +148,7 @@ class TweetHeader extends StatelessWidget {
     ];
   }
 
-  List<Widget> headerColumnWidgets() {
+  List<Widget> headerColumnWidgets(goToProfile) {
     return [
       Column(
           mainAxisSize: MainAxisSize.min,
@@ -159,14 +170,17 @@ class TweetHeader extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: FittedBox(
-                        child: Text(
-                          tweetUserName.length > 15
-                              ? tweetUserName.substring(0, 15)
-                              : tweetUserName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        child: GestureDetector(
+                          onTap: goToProfile,
+                          child: Text(
+                            tweetUserName.length > 15
+                                ? tweetUserName.substring(0, 15)
+                                : tweetUserName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -178,7 +192,7 @@ class TweetHeader extends StatelessWidget {
             ),
             FittedBox(
               child: Text(
-                tweetUserHandle,
+                "@" + tweetUserHandle,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: TextStyle(
@@ -246,6 +260,7 @@ class TweetHeader extends StatelessWidget {
     ];
   }
 
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -254,12 +269,21 @@ class TweetHeader extends StatelessWidget {
           ? Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: headerColumnWidgets(),
+              children: headerColumnWidgets((){
+                print("handle : " + tweetUserHandle);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ProfileDetailsScreen(username: tweetUserHandle),
+                    ));
+              }),
             )
           : Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
-              children: headerRowWidgets(MediaQuery.of(context).size.width),
+              children:
+                  headerRowWidgets(MediaQuery.of(context).size.width, context),
             ),
     );
   }
