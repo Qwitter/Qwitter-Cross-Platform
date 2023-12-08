@@ -20,11 +20,10 @@ class MyApp extends StatelessWidget {
     SharedPreferences.getInstance().then((prefs) {
       prefs.clear().then((value) {
         //print('SharedPreferences cleared!');
-      });
+      }); 
     });
 
   }
-
   @override
   Widget build(BuildContext context) {
     AppUser user = AppUser();
