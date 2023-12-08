@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:qwitter_flutter_app/components/account_information_screen.dart';
+import 'package:qwitter_flutter_app/components/account_settings_screen.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/accounts_widget.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/profile_picture.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/theme_changing_widget.dart';
@@ -247,16 +249,24 @@ class MainDrawer extends StatelessWidget {
                         const EdgeInsets.only(top: 20, right: 30, left: 30),
                     childrenPadding: const EdgeInsets.only(left: 20),
                     iconColor: Colors.white,
+
                     title: const Text(
                       'Settings & Privacy',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.w500),
+                        
                     ),
                     children: [
                       ListTile(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const AccountSettingsScreen(),
+                            ),
+                          );
+                        },
                         leading: const Icon(Icons.settings,
                             size: 25, color: Colors.white),
                         title: const Text(

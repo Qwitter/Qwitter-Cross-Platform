@@ -1,83 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/custom_setting_card.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_back_app_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/screens/authentication/complements/change_email_screen.dart';
 
 class AccountInformationScreen extends StatelessWidget {
   const AccountInformationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final AppUser user = AppUser();
     return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(75),
-        child: QwitterBackAppBar(
-          currentIcon: Icons.arrow_back,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(75),
+        child: QwitterTitleAppBar(
           title: "Account information",
-          extraTitle: "@username",
+          extraTitle: "@${user.username}",
         ),
       ),
       body: SizedBox(
         width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CustomSettingCard(
-              title: "Username",
-              subtitle: "@Maes",
-            ),
-            const CustomSettingCard(
-              title: "Phone",
-              subtitle: "+20101111002",
-            ),
-            const CustomSettingCard(
-              title: "Email Address",
-              subtitle: "x@gmail.com",
-            ),
-            const CustomSettingCard(
-              title: "Country",
-              subtitle: "Select a country",
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'select the country you live in.',
-                      style: TextStyle(color: Colors.grey[700], fontSize: 14),
-                    ),
-                    WidgetSpan(
-                      child: InkWell(
-                        onTap: () {
-                          // Handle the click action for "strong password" here.
-                        },
-                        child: const Text(
-                          ' Learn more',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 14,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomSettingCard(
+                title: "Username",
+                subtitle: "@${user.username}",
+              ),
+              CustomSettingCard(
+                title: "Email Address",
+                subtitle: user.email!,
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ChangeEmailScreen(
+                                email: user.email!,
+                              )));
+                },
+              ),
+              const CustomSettingCard(
+                title: "Country",
+                subtitle: "Select a country",
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'select the country you live in.',
+                        style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                      ),
+                      WidgetSpan(
+                        child: InkWell(
+                          onTap: () {
+                            // Handle the click action for "strong password" here.
+                          },
+                          child: const Text(
+                            ' Learn more',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const CustomSettingCard(
-              title: "Automation",
-              subtitle: "Manage your automated account",
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(17, 0, 0, 0),
-              child: TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Log out",
-                    style: TextStyle(color: Colors.red),
-                  )),
-            ),
-          ],
+              const CustomSettingCard(
+                title: "Automation",
+                subtitle: "Manage your automated account",
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(17, 0, 0, 0),
+                child: TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      "Log out",
+                      style: TextStyle(color: Colors.red),
+                    )),
+              ),
+            ],
+          ),
         ),
       ),
     );
