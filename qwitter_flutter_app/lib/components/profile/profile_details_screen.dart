@@ -21,9 +21,6 @@ import 'package:intl/intl.dart';
 class ProfileDetailsScreen extends ConsumerStatefulWidget {
   const ProfileDetailsScreen({super.key, required this.username});
   final String username;
-  final bool _mainAppUser = true;
-  final bool _isFollowed = true;
-  final bool _isNotificationsEnabled = true;
 
   @override
   ConsumerState<ProfileDetailsScreen> createState() =>
@@ -82,7 +79,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
     if (response.statusCode == 200) {
       final jsonBody = jsonDecode(response.body);
-
       User user = User.fromJson(jsonBody);
       if (user.username == AppUser().username) {
         //update the app user stored data
@@ -143,8 +139,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
       if (newPosition / 5 <= 20) _imgRaduis = 35 - newPosition / 5;
     });
 
-    print(
-        "max scroll extent : ${_scrollController.position.maxScrollExtent} and current scroll position : ${_scrollController.position.pixels}");
+
   }
 
   void _openSideDropDown() {
@@ -155,7 +150,52 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
         barrierColor: Colors.transparent);
   }
 
-  void _toggleFollowState() {}
+  Future<void> _toggleFollowState() async {
+    String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+    Uri url = Uri.parse('$_baseUrl/api/v1/user/follow/${widget.username}');
+
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer ${appUser.getToken}',
+    };
+    if (user.isFollowed == false) {
+      http.Response response = await http.post(url, headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ${appUser.token}',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
+      });
+
+      if (response.statusCode == 200) {
+        print("follow done successfully");
+        setState(() {
+        user.isFollowed = true;
+        });
+      } else {
+        print("an error occured when trying to follow ${user.username} and the status code : ${response.statusCode}");
+      }
+    } else {
+      http.Response response = await http.delete(url, headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ${appUser.token}',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
+      });
+
+      if (response.statusCode == 200) {
+        print("unfollow done");
+          setState(() {
+          user.isFollowed = false;
+          });
+      } else {
+         print("an error occured when trying to unfollow ${user.username} and the status code : ${response.statusCode}");
+
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -251,9 +291,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               ),
                             if (user.username == appUser.username ||
                                 (user.username != appUser.username &&
-                                    widget._isFollowed) ||
-                                (!widget._mainAppUser &&
-                                    !widget._isFollowed &&
+                                    user.isFollowed==true) ||
+                                (user.username != appUser.username &&
+                                    user.isFollowed==false &&
                                     !_scrollingView))
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,7 +358,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                           flexibleSpace: Container(
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 7, 7, 7),
-                              image: DecorationImage(
+                              image: DecorationImage(onError: (exception, stackTrace) {
+                                print("error in loading the picture");
+                              },
                                 image: (user.profileBannerUrl!.path.isEmpty
                                     ? const AssetImage(
                                         "assets/images/def_banner.png")
@@ -326,7 +368,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                                 .startsWith("http://")
                                             ? user.profileBannerUrl!.path
                                             : "http://" +
-                                                user.profileBannerUrl!.path)
+                                                user.profileBannerUrl!.path,)
                                         as ImageProvider),
                                 fit: BoxFit.cover,
                                 opacity: _scrollingView ? 0.17 : 1.0,
@@ -349,6 +391,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   radius: _imgRaduis + 5,
                                   child: CircleAvatar(
                                     radius: _imgRaduis,
+                                    onBackgroundImageError: (exception, stackTrace) {
+                                      print("error when loading picture");
+                                    },
                                     backgroundImage: (user
                                             .profilePicture!.path.isEmpty
                                         ? const AssetImage(
@@ -391,13 +436,16 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                 //     Spacer(),
                                 if (user.username == appUser.username)
                                   EditProfileButton(),
-                                if (user.username != appUser.username &&
-                                    user.isFollowed == true)
-                                  NotificationsButton(
-                                      isNotificationsEnabled:
-                                          widget._isNotificationsEnabled),
+                                // if (user.username != appUser.username &&
+                                //     user.isFollowed == true)
+                                //   NotificationsButton(
+                                //       isNotificationsEnabled:
+                                //           user.isMuted),
                                 if (user.username != appUser.username)
-                                  FollowButton(isFollowed: widget._isFollowed)
+                                  FollowButton(
+                                    isFollowed: user.isFollowed!,
+                                    onTap: _toggleFollowState,
+                                  )
                               ],
                             ),
                           ),
@@ -613,8 +661,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                           labelStyle: const TextStyle(
                               fontSize: 18,
                               color: Colors.black,
-                              fontWeight: FontWeight.w600),
-                          labelPadding: EdgeInsets.symmetric(horizontal: 30),
+                              fontWeight: FontWeight.w600,),
+                          labelPadding: EdgeInsets.symmetric(horizontal: 20),
+                          // indicatorPadding: EdgeInsets.symmetric(horizontal: 0),
                           tabs: const [
                             Tab(
                               text: 'Posts',
@@ -644,9 +693,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                   onNotification: (notification) {
                     if (notification.metrics.pixels ==
                         notification.metrics.maxScrollExtent) {
-                      _fetchNewTweets(
-                          _tabController.index, pages[_tabController.index]);
-                      pages[_tabController.index]++;
+                      // _fetchNewTweets(
+                      //     _tabController.index, pages[_tabController.index]);
+                      // pages[_tabController.index]++;
                     }
                     return true;
                   },
