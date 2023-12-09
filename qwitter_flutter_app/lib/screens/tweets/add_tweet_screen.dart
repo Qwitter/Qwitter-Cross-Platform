@@ -4,12 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
-import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/providers/tweet_images_provider.dart';
 import 'package:qwitter_flutter_app/providers/tweet_progress_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/add_tweet_action_bar.dart';
@@ -18,7 +15,6 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
-import 'package:qwitter_flutter_app/services/tweets_services.dart';
 
 class AddTweetScreen extends ConsumerStatefulWidget {
   const AddTweetScreen({super.key});
@@ -29,13 +25,6 @@ class AddTweetScreen extends ConsumerStatefulWidget {
 
 class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
   final TextEditingController _tweetController = TextEditingController();
-  Future<void> _fetchNewTweets(page) async {
-    // Logic to fetch new tweets from the provider
-    // Example: Call a function to fetch new tweets and update the tweet list
-    final List<Tweet> newTweets = await TweetsServices.getTimeline(page);
-    //print(newTweets.length);
-    ref.read(timelineTweetsProvider.notifier).setTimelineTweets(newTweets);
-  }
 
   Future<bool> addTweet(List<File>? imageFiles) async {
     final url = Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/tweets');
@@ -61,7 +50,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
     print("Request fields: ${request.fields}");
     // Add all image files to the 'media' field
     if (imageFiles != null) {
-      for (int i = 0; i < imageFiles!.length; i++) {
+      for (int i = 0; i < imageFiles.length; i++) {
         final imageFile = imageFiles[i];
         final fileName = basename(imageFile.path);
 
@@ -238,7 +227,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
                     child: CircleAvatar(
                       radius: 22,
                       backgroundImage:
-                          NetworkImage(AppUser().profilePicture!.path ?? ''),
+                          NetworkImage(AppUser().profilePicture!.path),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -252,31 +241,29 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
                         : (MediaQuery.of(context).size.height -
                                 MediaQuery.of(context).viewInsets.bottom) *
                             0.2,
-                    child: Expanded(
-                      child: TextField(
-                        onChanged: (text) {
-                          ref
-                              .read(tweetProgressProvider.notifier)
-                              .setTweetProgress(1 - text.length / 280);
-                        },
-                        style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                        decoration: const InputDecoration(
-                          hintText: 'What\'s happening?',
-                          hintStyle: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 132, 132, 132),
-                          ),
-                          counterText: '',
-                          border: InputBorder.none,
+                    child: TextField(
+                      onChanged: (text) {
+                        ref
+                            .read(tweetProgressProvider.notifier)
+                            .setTweetProgress(1 - text.length / 280);
+                      },
+                      style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400),
+                      decoration: const InputDecoration(
+                        hintText: 'What\'s happening?',
+                        hintStyle: TextStyle(
+                          fontSize: 20,
+                          color: Color.fromARGB(255, 132, 132, 132),
                         ),
-                        maxLines: null,
-                        controller: _tweetController,
-                        expands: true,
-                        maxLength: 280,
+                        counterText: '',
+                        border: InputBorder.none,
                       ),
+                      maxLines: null,
+                      controller: _tweetController,
+                      expands: true,
+                      maxLength: 280,
                     ),
                   ),
                 ],
