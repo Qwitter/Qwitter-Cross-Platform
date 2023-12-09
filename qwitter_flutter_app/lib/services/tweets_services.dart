@@ -9,9 +9,12 @@ import 'package:path_provider/path_provider.dart';
 
 class TweetsServices {
   static String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+  static AppUser user = AppUser();
+  static Map<String, String> cookies = {
+    'qwitter_jwt': 'Bearer ${user.getToken}',
+  };
 
   static Future<http.Response> getTimelineResponse(int page) async {
-    AppUser user = AppUser();
     final url =
         Uri.parse('$_baseUrl/api/v1/tweets?page=${page.toString()}&limit=10');
 
@@ -20,7 +23,10 @@ class TweetsServices {
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${user.token}',
+      // 'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     return response;
@@ -38,7 +44,10 @@ class TweetsServices {
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${user.token}',
+      // 'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     return response;
@@ -55,7 +64,10 @@ class TweetsServices {
     final response = await http.post(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${user.token}',
+      // 'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     return response;
@@ -92,7 +104,10 @@ class TweetsServices {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization': 'Bearer ${user.token}',
+          // 'authorization': 'Bearer ${user.token}',
+          'Cookie': cookies.entries
+              .map((entry) => '${entry.key}=${entry.value}')
+              .join('; '),
         },
         body: jsonEncode({
           "text": tweet.text,
@@ -118,7 +133,10 @@ class TweetsServices {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'authorization': 'Bearer ${user.token}',
+          // 'authorization': 'Bearer ${user.token}',
+          'Cookie': cookies.entries
+              .map((entry) => '${entry.key}=${entry.value}')
+              .join('; '),
         },
         body: jsonEncode({
           "text": text,
@@ -143,7 +161,10 @@ class TweetsServices {
     final response = await http.delete(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${user.token}',
+      // 'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     return response;
@@ -214,7 +235,6 @@ class TweetsServices {
   static void makeReply(ref, Tweet tweet, String text) {
     try {
       final response = replyToTweetRequest(text, tweet);
-
     } catch (error, stackTrace) {
       print('Error fetching tweets: $error');
       print('StackTrace: $stackTrace');
@@ -253,7 +273,10 @@ class TweetsServices {
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${appUser.token}',
+      // 'authorization': 'Bearer ${appUser.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     if (response.statusCode == 200) {
@@ -270,7 +293,6 @@ class TweetsServices {
   }
 
   static Future<List<Tweet>> getTweetsPostedByUser(
-    
       String username, int page) async {
     AppUser appUser = AppUser();
     final url = Uri.parse(
@@ -279,7 +301,10 @@ class TweetsServices {
       final response = await http.get(url, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'authorization': 'Bearer ${appUser.token}',
+        // 'authorization': 'Bearer ${appUser.token}',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
       });
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
@@ -306,7 +331,10 @@ class TweetsServices {
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${appUser.token}',
+      // 'authorization': 'Bearer ${appUser.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     if (response.statusCode == 200) {
@@ -330,11 +358,13 @@ class TweetsServices {
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${appUser.token}',
+      // 'authorization': 'Bearer ${appUser.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     if (response.statusCode == 200) {
-      
       final jsonBody = jsonDecode(response.body);
       final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
 
