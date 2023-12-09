@@ -5,8 +5,13 @@ import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
 class ScrollableMessages extends StatefulWidget {
-  ScrollableMessages({super.key, required this.msgs});
+  ScrollableMessages({
+    super.key,
+    required this.msgs,
+    required this.scrollController,
+  });
   List<MessageData> msgs;
+  final ScrollController scrollController;
   @override
   State<ScrollableMessages> createState() => _ScrollableMessagesState();
 }
@@ -16,6 +21,7 @@ class _ScrollableMessagesState extends State<ScrollableMessages> {
   Widget build(context) {
     return Expanded(
       child: GroupedListView<MessageData, DateTime>(
+        controller: widget.scrollController,
         sort: false,
         padding: const EdgeInsets.all(8),
         elements: widget.msgs,

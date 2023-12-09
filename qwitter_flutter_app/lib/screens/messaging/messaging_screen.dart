@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -17,6 +18,7 @@ class MessagingScreen extends ConsumerStatefulWidget {
     required this.converstaionID,
   });
   final String converstaionID;
+
   @override
   ConsumerState<MessagingScreen> createState() => _MessagingScreenState();
 }
@@ -92,17 +94,28 @@ List<MessageData> msgsss = [
 ];
 
 class _MessagingScreenState extends ConsumerState<MessagingScreen> {
-  List<MessageData> msgs=[];
+  List<MessageData> msgs = [];
   final textController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+
+  @override
   void initState() {
     super.initState();
+    scrollController.addListener(scrollListener);
     //call messaging api get latest page;
   }
 
-  void sendMessage() {
+  @override
+  void dispose() {
+    scrollController.dispose();
 
+    super.dispose();
+  }
+
+  scrollListener() {}
+  void sendMessage() {
     // ref.read(messagesProvider.notifier).DeleteHistory();
-    if(textController.text=="")return;
+    if (textController.text == "") return;
     // ref.read(messagesProvider.notifier).insertOldMessages(msgsss);
     final newMessage = MessageData(
       text: textController.text,
@@ -110,8 +123,20 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       byMe: true,
     );
     print("first");
-    ref.read(messagesProvider.notifier).DeleteMessage(newMessage);
+    // print(scrollController.)
+    ref.read(messagesProvider.notifier).addMessage(newMessage);
+
     // ref.read(messagesProvider.notifier).printState();
+    print(msgs[msgs.length - 1].text);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        curve: Curves.easeOut,
+        duration: const Duration(
+          milliseconds: 50,
+        ),
+      );
+    });
 
     // setState(() => msgs.add(newMessage));
     textController.text = "";
@@ -120,7 +145,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   @override
   Widget build(context) {
     msgs = ref.watch(messagesProvider);
-    
+    ref.listen(messagesProvider, (messagesProvider, messagesProvider2) {});
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: PreferredSize(
@@ -159,7 +184,10 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       ),
       body: Column(
         children: [
-          ScrollableMessages(msgs:msgs),
+          ScrollableMessages(
+            msgs: msgs,
+            scrollController: scrollController,
+          ),
           Container(
             constraints: const BoxConstraints(maxHeight: 300),
             child: Padding(
@@ -181,7 +209,6 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
                       color: Colors.white,
                       icon: const Icon(Icons.send),
                       onPressed: sendMessage,
-                      
                     ),
                   ),
                 ],

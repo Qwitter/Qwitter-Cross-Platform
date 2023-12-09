@@ -1,31 +1,28 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/models/conversation_data.dart';
+import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
+import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
-class ConversationWidget extends StatelessWidget {
-  const ConversationWidget({
-    super.key,
-    required this.imagePath,
-    required this.name,
-    required this.handle,
-    required this.lastMsg,
-    required this.converstaionID,
-  });
-  final String imagePath;
-  final String name;
-  final String handle;
-  final String lastMsg;
-  final String converstaionID;
+class ConversationWidget extends ConsumerWidget {
+  const ConversationWidget({super.key, required this.convo});
+  final Conversation convo;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     String date = "";
 
     void switchToMessagingScreen() {
       print("hello world");
+      ref.read(messagesProvider.notifier).DeleteHistory();
       Navigator.of(context).push(
         MaterialPageRoute(
             builder: (context) => MessagingScreen(
-                  converstaionID: converstaionID,
+                  converstaionID: convo.id,
                 )),
       );
     }
@@ -49,7 +46,8 @@ class ConversationWidget extends StatelessWidget {
                   child: InkWell(
                     onTap: () {},
                     child: Ink.image(
-                      image: AssetImage(imagePath),
+                      image:
+                          AssetImage(convo.imgPath ?? "assets/images/def.jpg"),
                       height: 60,
                       width: 60,
                     ),
@@ -65,7 +63,7 @@ class ConversationWidget extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        name,
+                        convo.name.substring(0, min(20, convo.name.length)),
                         overflow: TextOverflow.clip,
                         maxLines: 1,
                         style: const TextStyle(
@@ -79,7 +77,7 @@ class ConversationWidget extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          "@ $handle",
+                          "@" + convo.name,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 15,
@@ -93,7 +91,7 @@ class ConversationWidget extends StatelessWidget {
                     height: 5,
                   ),
                   Text(
-                    lastMsg,
+                    convo.lastMsg?.text ?? " ",
                     style: const TextStyle(color: Colors.grey, fontSize: 15),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/providers/user_search_provider.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/create_conversation_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
@@ -24,9 +26,10 @@ class MyApp extends StatelessWidget {
     SharedPreferences.getInstance().then((prefs) {
       prefs.clear().then((value) {
         //print('SharedPreferences cleared!');
-      }); 
+      });
     });
   }
+
   @override
   Widget build(BuildContext context) {
     AppUser user = AppUser();

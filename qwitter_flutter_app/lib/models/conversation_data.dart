@@ -1,14 +1,26 @@
-class ConversationData {
-  ConversationData({
+import 'package:qwitter_flutter_app/models/message_data.dart';
+
+class Conversation {
+  Conversation({
+    required this.id,
     required this.name,
-    required this.handle,
+    required this.status,
     required this.lastMsg,
-    required this.lastMsgDate,
-    required this.iconPath,
+    this.imgPath,
   });
+
+  final String id;
   String name;
-  String handle;
-  String lastMsg;
-  String iconPath;
-  DateTime lastMsgDate;
+  String? status;
+  String? imgPath;
+  MessageData? lastMsg;
+
+  factory Conversation.fromJson(Map<String, dynamic> json) {
+    return Conversation(
+      id: json['id'],
+      name: json['name'],
+      status: json['status'],
+      lastMsg: MessageData.fromJson(json['lastMessage']),
+    );
+  }
 }

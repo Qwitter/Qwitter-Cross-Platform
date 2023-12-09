@@ -3,7 +3,7 @@ import 'package:qwitter_flutter_app/models/message_data.dart';
 
 class MessageNotifier extends StateNotifier<List<MessageData>> {
   MessageNotifier() : super([]);
-
+  
   void insertOldMessages(List<MessageData> msgs) {
     print("enter");
     print(msgs.length);
