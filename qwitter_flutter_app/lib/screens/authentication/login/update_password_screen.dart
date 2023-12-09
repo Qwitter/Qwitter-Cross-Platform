@@ -213,19 +213,6 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
                           },
                   );
                 }),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const ForgetNewPasswordScreen()));
-                  },
-                  child: Text("Forgotten your password?",
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                      )),
-                ),
               ],
             ),
           ),
