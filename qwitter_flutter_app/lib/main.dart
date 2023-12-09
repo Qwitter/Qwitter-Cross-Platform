@@ -18,12 +18,12 @@ class MyApp extends StatelessWidget {
 
   void clearSharedPreferences() {
     SharedPreferences.getInstance().then((prefs) {
-      prefs.clear().then((value) {
+      prefs.reload().then((value) {
         //print('SharedPreferences cleared!');
-      }); 
+      });
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
     AppUser user = AppUser();
@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
       home: FutureBuilder(
           future: user.getUserData(),
           builder: (context, snapshot) {
-            
             if (snapshot.connectionState == ConnectionState.waiting) {
               // Display a loading indicator while the future is loading
               return Center(

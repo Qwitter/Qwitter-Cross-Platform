@@ -6,13 +6,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 
 class ForgetNewPasswordScreen extends ConsumerStatefulWidget {
-  const ForgetNewPasswordScreen({super.key, required this.token});
-
+  const ForgetNewPasswordScreen({super.key , this.token});
   final String? token;
 
   @override
@@ -71,6 +71,9 @@ class _ForgetNewPasswordScreenState
       "password": passController.text,
       "passwordConfirmation": confirmPassController.text,
     };
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer ${AppUser().getToken}',
+    };
     //printwidget.token);
     final response = await http.post(
       url,
@@ -78,7 +81,9 @@ class _ForgetNewPasswordScreenState
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'authorization': 'Bearer ${widget.token}',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
       },
     );
 
@@ -99,7 +104,6 @@ class _ForgetNewPasswordScreenState
           if (passwordValidations(passController.text) == null &&
               passwordValidations(confirmPassController.text) == null &&
               passwordEquality(confirmPassController.text) == null) {
-
             buttonFunction = (context) {
               changePassword().then((value) {
                 if (value.statusCode == 200) {

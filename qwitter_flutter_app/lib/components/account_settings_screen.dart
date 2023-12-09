@@ -4,6 +4,7 @@ import 'package:qwitter_flutter_app/components/basic_widgets/custom_setting_card
 import 'package:qwitter_flutter_app/components/layout/qwitter_back_app_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/update_password_screen.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
   const AccountSettingsScreen({super.key});
@@ -39,13 +40,19 @@ class AccountSettingsScreen extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AccountInformationScreen()));
+                        builder: (context) => const AccountInformationScreen()));
               },
             ),
-            const CustomSettingCard(
+            CustomSettingCard(
               icon: Icons.lock_outline,
               title: "Change your password",
               subtitle: "Change your password at any time",
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const UpdatePasswordScreen()));
+              },
             ),
             const CustomSettingCard(
               icon: Icons.file_download_outlined,
