@@ -47,13 +47,19 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
       'userName': username,
     };
 
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer ${widget.user!.getToken}',
+    };
+
     final response = await http.patch(
       url,
       body: jsonEncode(data),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${widget.user!.getToken}',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
       },
     );
 
