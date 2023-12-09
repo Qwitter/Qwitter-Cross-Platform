@@ -3,6 +3,8 @@ import 'package:qwitter_flutter_app/components/basic_widgets/custom_setting_card
 import 'package:qwitter_flutter_app/components/layout/qwitter_back_app_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/complements/change_email_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountInformationScreen extends StatelessWidget {
   const AccountInformationScreen({super.key});
@@ -78,7 +80,18 @@ class AccountInformationScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(17, 0, 0, 0),
                 child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      SharedPreferences.getInstance().then((prefs) {
+                        prefs.clear().then((value) {
+                          //print('SharedPreferences cleared!');
+                        });
+                      });
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) =>
+                              const SignupChooseMethodScreen()));
+                    },
                     child: const Text(
                       "Log out",
                       style: TextStyle(color: Colors.red),
