@@ -52,8 +52,10 @@ dependencies:
   http_parser: ^4.0.2
   mime: ^1.0.4
   dart_jsonwebtoken: ^2.12.1
-  visibility_detector: ^0.4.0+2
+  grouped_list: ^5.1.2
   chewie: ^1.7.4
+  visibility_detector: ^0.4.0+2
+  socket_io_client: ^2.0.3+1
   sliver_tools: ^0.2.12
   location: ^5.0.3
   geocoding: ^2.1.1
@@ -91,8 +93,8 @@ flutter:
     - assets/images/def.jpg
     - assets/
     - assets/images/def_banner.png
-
     # - assets/private.txt
+    - assets/images/abo.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
