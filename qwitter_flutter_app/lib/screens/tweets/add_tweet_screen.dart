@@ -30,11 +30,17 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
     final url = Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/tweets');
 
     final request = http.MultipartRequest('POST', url);
-
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer ${AppUser().getToken}',
+    };
     Map<String, String> headers = {
-      "authorization": 'Bearer ${AppUser().getToken}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
       "Content-Type": "multipart/form-data"
     };
+
+    print("Request headers: $headers");
 
     print("authorization: ${AppUser().getToken}");
 
@@ -179,37 +185,42 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
                 Navigator.pop(context);
               }
             },
-            actionButton: PrimaryButton(
-              text: 'Post',
-              onPressed: () {
-                if (_tweetController.text.isNotEmpty) {
-                  addTweet(tweetImages).then((value) {
-                    if (value) {
-                      Fluttertoast.showToast(
-                          msg: 'Tweet posted successfully!',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.grey[800],
-                          textColor: Colors.white,
-                          fontSize: 16.0);
-                      Navigator.pop(context);
-                    } else {
-                      Fluttertoast.showToast(
-                          msg: 'Error posting tweet',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.grey[800],
-                          textColor: Colors.white,
-                          fontSize: 16.0);
-                    }
-                  });
-                }
-              },
-              paddingValue:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-              buttonSize: const Size(100, 10),
+            actionButton: Semantics(
+              button: true,
+              label: 'postTweetButtonLabel',
+              child: PrimaryButton(
+                key: const Key('postTweetButton'),
+                text: 'Post',
+                onPressed: () {
+                  if (_tweetController.text.isNotEmpty) {
+                    addTweet(tweetImages).then((value) {
+                      if (value) {
+                        Fluttertoast.showToast(
+                            msg: 'Tweet posted successfully!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.grey[800],
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+                        Navigator.pop(context);
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: 'Error posting tweet',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.grey[800],
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+                      }
+                    });
+                  }
+                },
+                paddingValue:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                buttonSize: const Size(100, 10),
+              ),
             ),
           ),
         ),
