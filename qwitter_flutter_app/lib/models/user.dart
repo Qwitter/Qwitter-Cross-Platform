@@ -17,6 +17,7 @@ class User {
   File? profileBannerUrl;
   String? url;
   String? description;
+  String? location;
   bool? isProtected;
   bool? isVerified;
 
@@ -82,6 +83,28 @@ class User {
     this.profilePicture = profilePicture;
     return this;
   }
+
+  User setProfileBanner(File? profileBannerUrl) {
+    this.profileBannerUrl = profileBannerUrl;
+    return this;
+  }
+
+  User setURL(String ? url){
+    this.url=url;
+    return this;
+  }
+
+  User setLocation(String? location){
+    this.location=location;
+    return this;
+  }
+
+  User setDescription(String? description){
+    this.description=description;
+    return this;
+  }
+
+
 
   User setUsernameSuggestions(List? usernameSuggestions) {
     this.usernameSuggestions = usernameSuggestions;

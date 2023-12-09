@@ -68,7 +68,10 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ConfirmationCodeScreen(user: u),
+                  builder: (context) => ConfirmationCodeScreen(
+                    user: u,
+                    code: ConfirmationCodeType.password,
+                  ),
                 ),
               );
             } else {

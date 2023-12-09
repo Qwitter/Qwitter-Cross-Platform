@@ -21,11 +21,13 @@ class UnderlineTextFieldLabelOnly extends StatelessWidget {
   final bool readOnly;
   final void Function()? onTap;
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
       child: TextFormField(
+        
         onTap: onTap,
         readOnly: readOnly,
         enabled: true,
@@ -60,7 +62,7 @@ class UnderlineTextFieldLabelOnly extends StatelessWidget {
         ),
         style: const TextStyle(
           fontSize: 20,
-          color: Colors.black,
+          color: Colors.white,
         ),
       ),
     );
