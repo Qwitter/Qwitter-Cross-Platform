@@ -40,7 +40,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   final AppUser appUser = AppUser();
   List<int> pages = [1, 1, 1, 1];
 
-
   @override
   void initState() {
     super.initState();
@@ -48,21 +47,21 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
     _scrollController.addListener(_scrollListener);
     _tabController.addListener(_changeTab);
-    //
     TweetsServices.getTweetsPostedByUser(widget.username, pages[0])
         .then((list) {
       ref.read(profileTweetsProvider.notifier).updatePostedTweets(list);
       print(list);
       pages[0]++;
+      setState(() {});
     });
   }
 
   void _changeTab() {
-    print("changing tabs");
-    _fetchNewTweets(_tabController.index, pages[_tabController.index]);
-    pages[_tabController.index]++;
-    print(pages[_tabController.index]);
-    
+    // print("changing tabs");
+    if (pages[_tabController.index] == 1) {
+      _fetchNewTweets(_tabController.index, pages[_tabController.index]);
+      pages[_tabController.index]++;
+    }
   }
 
   Future<User?> _getUserData() async {
@@ -77,21 +76,22 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
     if (response.statusCode == 200) {
       final jsonBody = jsonDecode(response.body);
-      
-      User user= User.fromJson(jsonBody);
-      if(user.username==AppUser().username){
+
+      User user = User.fromJson(jsonBody);
+      if (user.username == AppUser().username) {
         //update the app user stored data
         AppUser().updataUserData(user);
       }
-        return user;
+      return user;
     }
     return null;
   }
 
-    String formatDate(String date) {
+  String formatDate(String date) {
     return DateFormat('MMMM dd, yyyy').format(DateTime.parse(date));
   }
-    String formatNumber(int number) {
+
+  String formatNumber(int number) {
     return NumberFormat.compact(explicitSign: false).format(number);
   }
 
@@ -114,9 +114,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
           await TweetsServices.getTweetsLikedByUser(user.username!, page);
       ref.read(profileTweetsProvider.notifier).updateLikedTweets(newTweets);
     }
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   @override
@@ -139,11 +137,8 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
       if (newPosition / 5 <= 20) _imgRaduis = 35 - newPosition / 5;
     });
 
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      print("max scroll");
-      // _scrollController.position.jumpTo(value)
-    }
+    print(
+        "max scroll extent : ${_scrollController.position.maxScrollExtent} and current scroll position : ${_scrollController.position.pixels}");
   }
 
   void _openSideDropDown() {
@@ -159,9 +154,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   @override
   Widget build(BuildContext context) {
     ProfileTweets profileTweets = ref.watch(profileTweetsProvider);
-
-    print("read profile tweets from the profile screen");
-    print(profileTweets.postedTweets);
     return FutureBuilder(
       future: _getUserData(),
       builder: (context, snapshot) {
@@ -186,8 +178,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
           return SafeArea(
             child: Scaffold(
               body: NestedScrollView(
-                floatHeaderSlivers: true,
+                // floatHeaderSlivers: true,
                 controller: _scrollController,
+                // physics: FixedExtentScrollPhysics(),
                 headerSliverBuilder: (
                   BuildContext context,
                   bool innerBoxIsScrolled,
@@ -200,9 +193,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                           pinned: true,
                           leading: IconButton(
                             onPressed: () {
-                              ////////////////////////////////////////////
-                             ref.read(profileTweetsProvider.notifier).reset();
-                              ///
+                              ref.read(profileTweetsProvider.notifier).reset();
                               Navigator.of(context).pop();
                             },
                             icon: const Icon(
@@ -322,9 +313,15 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 7, 7, 7),
                               image: DecorationImage(
-                                image: const NetworkImage(
-                                  'https://th.bing.com/th/id/R.954112b1d86c17e04f32710a9dfa624b?rik=%2bujOnc84tNbuEQ&riu=http%3a%2f%2f3.bp.blogspot.com%2f-OuRPhqkSc60%2fU2dbPYEHx1I%2fAAAAAAAAFq8%2fvOU3zTMXzH8%2fs1600%2f1500x500-Nature-Twitter-Header28.jpg&ehk=EwDVaeRMKrCyrHOksN8rJ5QGW8qzTtgbTZ9OqW9sSRM%3d&risl=&pid=ImgRaw&r=0',
-                                ),
+                                image: (user.profileBannerUrl!.path.isEmpty
+                                    ? const AssetImage(
+                                        "assets/images/def_banner.png")
+                                    : NetworkImage(user.profileBannerUrl!.path
+                                                .startsWith("http://")
+                                            ? user.profileBannerUrl!.path
+                                            : "http://" +
+                                                user.profileBannerUrl!.path)
+                                        as ImageProvider),
                                 fit: BoxFit.cover,
                                 opacity: _scrollingView ? 0.17 : 1.0,
                               ),
@@ -351,7 +348,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                         ? const AssetImage(
                                             "assets/images/def.jpg")
                                         : NetworkImage(user.profilePicture!.path
-                                                    .startsWith("http")
+                                                    .startsWith("http://")
                                                 ? user.profilePicture!.path
                                                 : "http://" +
                                                     user.profilePicture!.path)
@@ -601,8 +598,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                         decoration: BoxDecoration(color: Colors.black),
                         child: TabBar(
                           controller: _tabController,
-
-                          
                           isScrollable: true,
                           dividerColor: Colors.grey[900],
                           unselectedLabelStyle: TextStyle(
@@ -613,7 +608,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               fontSize: 18,
                               color: Colors.black,
                               fontWeight: FontWeight.w600),
-                              labelPadding:  EdgeInsets.symmetric(horizontal: 30),
+                          labelPadding: EdgeInsets.symmetric(horizontal: 30),
                           tabs: const [
                             Tab(
                               text: 'Posts',
@@ -651,10 +646,10 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                   },
                   child: TabBarView(
                     controller: _tabController,
-                    
                     children: [
                       ref.watch(profileTweetsProvider).postedTweets != null
                           ? ListView.builder(
+                              key: GlobalKey(),
                               itemBuilder: (context, index) {
                                 return TweetCard(
                                     tweet: profileTweets.postedTweets![index]);
@@ -670,6 +665,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             ),
                       profileTweets.repliedTweets != null
                           ? ListView.builder(
+                              key: GlobalKey(),
                               itemBuilder: (context, index) {
                                 return TweetCard(
                                     tweet: profileTweets.repliedTweets![index]);
@@ -685,6 +681,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             ),
                       profileTweets.mediaTweets != null
                           ? ListView.builder(
+                            key: GlobalKey(),
                               itemBuilder: (context, index) {
                                 return TweetCard(
                                     tweet: profileTweets.mediaTweets![index]);
@@ -700,6 +697,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             ),
                       profileTweets.likedTweets != null
                           ? ListView.builder(
+                            key: GlobalKey(),
                               itemBuilder: (context, index) {
                                 return TweetCard(
                                     tweet: profileTweets.likedTweets![index]);
@@ -713,9 +711,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                 child: CircularProgressIndicator(),
                               ),
                             ),
-                      
                     ],
-
                   ),
                 ),
               ),

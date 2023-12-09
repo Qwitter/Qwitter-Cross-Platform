@@ -1,16 +1,103 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:qwitter_flutter_app/screens/authentication/signup/confirmation_code_screen.dart';
 
-class ChangeEmailScreen extends StatelessWidget {
-  const ChangeEmailScreen({super.key, this.email = 'omarmahmoud@gmail.com'});
+class ChangeEmailScreen extends ConsumerStatefulWidget {
+  const ChangeEmailScreen({super.key, this.email});
 
-  final String email;
+  final String? email;
+
+  @override
+  ConsumerState<ChangeEmailScreen> createState() => _ChangeEmailScreenState();
+}
+
+class _ChangeEmailScreenState extends ConsumerState<ChangeEmailScreen> {
+  final TextEditingController emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+  }
+
+  Future<http.Response> sendVerificationEmail() async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/auth/send-verification-email');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'email': emailController.text,
+    };
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
+
+    // Successfully sent the data
+    return response;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(nextBarProvider.notifier).setNextBarFunction(null);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+    void Function(BuildContext)? buttonFunction;
+
+    emailController.addListener(() {
+      if (emailController.text.isNotEmpty) {
+        buttonFunction = (context) {
+          sendVerificationEmail().then((value) {
+            if (value.statusCode == 200) {
+              final User u = User(email: emailController.text);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConfirmationCodeScreen(
+                    user: u,
+                    code: ConfirmationCodeType.changeEmail,
+                  ),
+                ),
+              );
+            } else {
+              Fluttertoast.showToast(
+                msg: "Wrong Email",
+                backgroundColor: Colors.grey[700],
+              );
+            }
+          }).onError((error, stackTrace) {
+            Fluttertoast.showToast(
+              msg: "Error in sending",
+              backgroundColor: Colors.grey[700],
+            );
+          });
+        };
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+      } else {
+        buttonFunction = null;
+        ref.read(nextBarProvider.notifier).setNextBarFunction(buttonFunction);
+      }
+    });
+
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(75),
@@ -32,7 +119,7 @@ class ChangeEmailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Your current email address is $email. what would you like to update it to? Your email address is not displayed on your public profile on X.',
+            'Your current email address is ${widget.email}. what would you like to update it to? Your email address is not displayed on your public profile on X.',
             textAlign: TextAlign.start,
             style: const TextStyle(
               fontSize: 15,
@@ -54,9 +141,18 @@ class ChangeEmailScreen extends StatelessWidget {
           ),
         ]),
       ),
-      bottomNavigationBar: const QwitterNextBar(
-        buttonFunction: null,
-      ),
+      bottomNavigationBar: Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        buttonFunction = ref.watch(nextBarProvider);
+        return QwitterNextBar(
+          buttonFunction: buttonFunction == null
+              ? null
+              : () {
+                  buttonFunction!(context);
+                },
+          useProvider: true,
+        );
+      }),
     );
   }
 }

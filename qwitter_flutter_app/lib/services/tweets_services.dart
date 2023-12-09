@@ -270,6 +270,7 @@ class TweetsServices {
   }
 
   static Future<List<Tweet>> getTweetsPostedByUser(
+    
       String username, int page) async {
     AppUser appUser = AppUser();
     final url = Uri.parse(
@@ -280,7 +281,6 @@ class TweetsServices {
         'Accept': 'application/json',
         'authorization': 'Bearer ${appUser.token}',
       });
-      print(" token : ${appUser.token}");
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
         final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
@@ -334,6 +334,7 @@ class TweetsServices {
     });
 
     if (response.statusCode == 200) {
+      
       final jsonBody = jsonDecode(response.body);
       final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
 

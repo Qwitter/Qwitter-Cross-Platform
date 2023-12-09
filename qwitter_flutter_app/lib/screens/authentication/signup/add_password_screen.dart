@@ -65,14 +65,17 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
       final responseBody = json.decode(response.body);
       // //print(responseBody);
       User user = User.fromJson(responseBody["data"]);
-      user.token = responseBody['token'];
+      final String rawCookies = (response.headers['set-cookie']) ?? '';
+      final String token =
+          rawCookies.split(';')[0].split('=')[1].split('%20')[1];
+      user.token = token;
       // //print(responseBody["token"]);
       // user.printUserData();
       final appUser = AppUser().copyUserData(user);
       appUser.saveUserData();
       widget.user!.setUsername(responseBody['data']['userName']);
       widget.user!.setUsernameSuggestions(responseBody['suggestions']);
-      widget.user!.setToken(responseBody['token']);
+      widget.user!.setToken(token);
       //printresponseBody['data']['userName']);
       //printresponseBody['suggestions'][0]);
       return true;
@@ -108,18 +111,18 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
         buttonFunction = (context) {
           widget.user!.password = passwordController.text;
           sendData().then((value) {
-            if(value){
+            if (value) {
               Toast.show('Account created successfully!');
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProfilePictureScreen(
-                  user: widget.user,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfilePictureScreen(
+                    user: widget.user,
+                  ),
                 ),
-              ),
-            );
-            }else{
+              );
+            } else {
               //print("Failed to create account");
             }
           }).onError((error, stackTrace) {
