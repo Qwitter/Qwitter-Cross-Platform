@@ -60,8 +60,15 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
+
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer ${widget.user!.getToken}',
+    };
+
     Map<String, String> headers = {
-      "authorization": 'Bearer ${widget.user!.getToken}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
       "Content-Type": "multipart/form-data"
     };
 
@@ -91,11 +98,13 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
     if (response.statusCode == 200) {
       // Successfully sent the data
-      final responseFromStream= await http.Response.fromStream(response);// json.decode(response.stream.toString());
+      final responseFromStream = await http.Response.fromStream(
+          response); // json.decode(response.stream.toString());
       final responseBody = jsonDecode(responseFromStream.body);
       //print(responseBody);
       AppUser appUser = AppUser();
-      widget.user!.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      widget.user!
+          .setProfilePicture(File(responseBody['user']['profileImageUrl']));
       appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
       appUser.saveUserData();
       return true;
@@ -137,7 +146,6 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
         // Toast.show('Error sending data $error');
         //print('Error sending data $error');
         //print(stackTrace);
-
       });
     };
     widget.user!.setProfilePicture(imageFile);
