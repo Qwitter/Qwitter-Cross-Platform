@@ -40,9 +40,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _birthDateFieldController = TextEditingController(
         text: formatDate(DateTime.parse(appUser.birthDate!)));
     _nameFieldController = TextEditingController(text: appUser.fullName);
-    _bioFieldController = TextEditingController();
-    _websiteFieldController = TextEditingController();
-    _locationFieldController = TextEditingController();
+    _bioFieldController = TextEditingController(text: appUser.description);
+    _websiteFieldController = TextEditingController(text: appUser.url);
+    _locationFieldController = TextEditingController(text: appUser.location);
     _profileBanner = (appUser.profileBannerUrl!.path.isEmpty
         ? const AssetImage("assets/images/def_banner.png")
         : NetworkImage(appUser.profileBannerUrl!.path.startsWith("http")
@@ -89,44 +89,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _profilebannerFile != null ||
         DateTime.parse(appUser.birthDate!) != _birthDate ||
         _nameFieldController.text != appUser.fullName ||
-        _bioFieldController.text!= appUser.description||
+        _bioFieldController.text != appUser.description ||
         _locationFieldController.text != appUser.location ||
-        _websiteFieldController!= appUser.url) {
-
-          showDialog(context: context, builder: (context){ return AlertDialog(
-            title: Text("Do you want to discard the changes?"),
-            // content: Text("Do you want to discard the changes?",style: TextStyle(fontSize: 17),),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); 
-                  Navigator.of(context).pop(); 
-                },
-                child: Text("Discard"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); 
-                },
-                child: Text("Cancel"),
-              ),]
-          );});
-
-        }
-        else{
-          Navigator.of(context).pop();
-        }
+        _websiteFieldController != appUser.url) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+                title: Text("Do you want to discard the changes?"),
+                // content: Text("Do you want to discard the changes?",style: TextStyle(fontSize: 17),),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Discard"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                  ),
+                ]);
+          });
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _save(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       if (_profilePictureFile != null) {
         uploadProfilePicture(_profilePictureFile!);
-        appUser.setProfilePicture(_profilePictureFile);
       }
       if (_profilebannerFile != null) {
         uploadProfilebanner(_profilebannerFile!);
-        appUser.setProfileBanner(_profilebannerFile);
       }
       _updateUserProfile(
           _nameFieldController.text,
@@ -134,6 +133,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _locationFieldController.text,
           _websiteFieldController.text,
           _birthDate);
+
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return ProfileDetailsScreen(
@@ -156,15 +156,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'description': description,
         'location': location,
         'url': website,
-        'birth_date': birthData.toUtc().toIso8601String()
+        'birth_date': "${birthData.toIso8601String()}Z"
       };
-      print(body);
-      print(jsonEncode(body));
+      final Map<String, String> cookies = {
+        'qwitter_jwt': 'Bearer ${appUser.token}',
+      };
       http.Response response = await http.put(url,
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'authorization': 'Bearer ${appUser.token}',
+            'Cookie': cookies.entries
+                .map((entry) => '${entry.key}=${entry.value}')
+                .join('; '),
           },
           body: jsonEncode(body));
 
@@ -175,7 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             .setLocation(location)
             .setURL(website)
             .setDescription(description);
-        appUser.saveUserData();
+            appUser.saveUserData();
         print("saved successfully");
       } else {
         print(
@@ -186,16 +190,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<bool> uploadProfilePicture(File imageFile) async {
+  Future<void> uploadProfilePicture(File imageFile) async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/user/profile_picture');
-
+    final Map<String, String> cookies = {
+        'qwitter_jwt': 'Bearer ${appUser.token}',
+      };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "authorization": 'Bearer ${appUser.getToken}',
-      "Content-Type": "multipart/form-data"
+      "Content-Type": "multipart/form-data",
+       'Cookie': cookies.entries
+                .map((entry) => '${entry.key}=${entry.value}')
+                .join('; '),
+      
     };
 
     request.headers.addAll(headers);
@@ -228,29 +238,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           response); // json.decode(response.stream.toString());
       final responseBody = jsonDecode(responseFromStream.body);
       //print(responseBody);
-      AppUser appUser = AppUser();
-      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
       appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
       appUser.saveUserData();
-      return true;
     } else {
       // Handle errors
-      //print(response.statusCode);
+      print(response.statusCode);
       //print(response.reasonPhrase);
-      return false;
     }
   }
 
-  Future<bool> uploadProfilebanner(File imageFile) async {
+  Future<void> uploadProfilebanner(File imageFile) async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/user/profile_banner');
 
+    final Map<String, String> cookies = {
+        'qwitter_jwt': 'Bearer ${appUser.token}',
+      };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "authorization": 'Bearer ${appUser.getToken}',
-      "Content-Type": "multipart/form-data"
+      "Content-Type": "multipart/form-data",
+      'Cookie': cookies.entries
+                .map((entry) => '${entry.key}=${entry.value}')
+                .join('; '),
     };
 
     request.headers.addAll(headers);
@@ -283,16 +295,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           response); // json.decode(response.stream.toString());
       final responseBody = jsonDecode(responseFromStream.body);
       //print(responseBody);
-      AppUser appUser = AppUser();
-      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
-      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.setProfileBanner(File(responseBody['user']['profileBannerUrl']));
       appUser.saveUserData();
-      return true;
     } else {
       // Handle errors
-      //print(response.statusCode);
+      print(response.statusCode);
       //print(response.reasonPhrase);
-      return false;
     }
   }
 
