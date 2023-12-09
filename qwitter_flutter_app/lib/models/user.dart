@@ -20,6 +20,8 @@ class User {
   String? location;
   bool? isProtected;
   bool? isVerified;
+  bool? isMuted;
+  bool? isBlocked;
 
   User({
     this.id,
@@ -39,6 +41,8 @@ class User {
     this.description,
     this.isProtected,
     this.isVerified,
+    this.isMuted,
+    this.isBlocked
   });
 
   // Add all setters and return user
@@ -110,7 +114,7 @@ class User {
     this.usernameSuggestions = usernameSuggestions;
     return this;
   }
-
+  
   // Add all getters
 
   String? get getToken {
@@ -157,7 +161,7 @@ class User {
       fullName: json['name'],
       birthDate: json['birthDate'],
       password: json['password'],
-      isFollowed: false,
+      isFollowed: json['isFollowing'],
       profilePicture: File(
         json['profileImageUrl'] ?? "",
       ),
@@ -171,6 +175,8 @@ class User {
       description: json['description'],
       isProtected: json['isProtected'],
       isVerified: json['isVerified'],
+      isMuted: json['isMuted'],
+      isBlocked: json['isBlcoked']
     );
   }
 

@@ -59,13 +59,13 @@ class _ProfileCardState extends State<ProfileCard> {
               ),
             ),
           ),
-          Positioned(
-            top: 130,
-            right: 20,
-            child: Row(
-              children: [FollowButton(isFollowed: widget.isFollowed)],
-            ),
-          ),
+          // Positioned(
+          //   top: 130,
+          //   right: 20,
+          //   child: Row(
+          //     children: [FollowButton(isFollowed: widget.isFollowed)],
+          //   ),
+          // ),
           Positioned(
             top: 170,
             left: 15,
