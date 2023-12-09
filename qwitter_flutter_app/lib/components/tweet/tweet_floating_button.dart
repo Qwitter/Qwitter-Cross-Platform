@@ -29,7 +29,7 @@ class TweetFloatingButton extends StatelessWidget {
               )
             : Container(),
         Positioned(
-          bottom: 210,
+          bottom: 260,
           right: 30,
           child: Row(
             children: [
@@ -70,7 +70,7 @@ class TweetFloatingButton extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 155,
+          bottom: 205,
           right: 30,
           child: Row(
             children: [
@@ -111,7 +111,7 @@ class TweetFloatingButton extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 100,
+          bottom: 150,
           right: 30,
           child: Row(
             children: [
@@ -152,7 +152,7 @@ class TweetFloatingButton extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 30,
+          bottom: 80,
           right: 30,
           child: Row(
             children: [

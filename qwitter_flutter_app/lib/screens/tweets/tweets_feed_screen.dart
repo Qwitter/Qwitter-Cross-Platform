@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/Components/tweet_card.dart';
+import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/main_drawer.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_floating_button.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
@@ -196,6 +197,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
                 ),
               ],
             ),
+            bottomNavigationBar: QwitterBottomNavigationBar(),
           ),
           TweetFloatingButton(
               isVisible: _isVisible,

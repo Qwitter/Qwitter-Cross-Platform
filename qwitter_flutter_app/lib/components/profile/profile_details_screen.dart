@@ -68,10 +68,16 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
     /////// if(user.username==appUser.username) no need to request the data
     String _baseUrl = 'http://qwitterback.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/${widget.username}');
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer ${appUser.getToken}',
+    };
     http.Response response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'authorization': 'Bearer ${appUser.token}',
+      // 'authorization': 'Bearer ${appUser.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
 
     if (response.statusCode == 200) {
@@ -681,7 +687,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             ),
                       profileTweets.mediaTweets != null
                           ? ListView.builder(
-                            key: GlobalKey(),
+                              key: GlobalKey(),
                               itemBuilder: (context, index) {
                                 return TweetCard(
                                     tweet: profileTweets.mediaTweets![index]);
@@ -697,7 +703,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             ),
                       profileTweets.likedTweets != null
                           ? ListView.builder(
-                            key: GlobalKey(),
+                              key: GlobalKey(),
                               itemBuilder: (context, index) {
                                 return TweetCard(
                                     tweet: profileTweets.likedTweets![index]);
