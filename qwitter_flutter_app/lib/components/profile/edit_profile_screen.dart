@@ -40,9 +40,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _birthDateFieldController = TextEditingController(
         text: formatDate(DateTime.parse(appUser.birthDate!)));
     _nameFieldController = TextEditingController(text: appUser.fullName);
-    _bioFieldController = TextEditingController();
-    _websiteFieldController = TextEditingController();
-    _locationFieldController = TextEditingController();
+    _bioFieldController = TextEditingController(text: appUser.description);
+    _websiteFieldController = TextEditingController(text: appUser.url);
+    _locationFieldController = TextEditingController(text: appUser.location);
     _profileBanner = (appUser.profileBannerUrl!.path.isEmpty
         ? const AssetImage("assets/images/def_banner.png")
         : NetworkImage(appUser.profileBannerUrl!.path.startsWith("http")
@@ -89,33 +89,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _profilebannerFile != null ||
         DateTime.parse(appUser.birthDate!) != _birthDate ||
         _nameFieldController.text != appUser.fullName ||
-        _bioFieldController.text!= appUser.description||
+        _bioFieldController.text != appUser.description ||
         _locationFieldController.text != appUser.location ||
-        _websiteFieldController!= appUser.url) {
-
-          showDialog(context: context, builder: (context){ return AlertDialog(
-            title: Text("Do you want to discard the changes?"),
-            // content: Text("Do you want to discard the changes?",style: TextStyle(fontSize: 17),),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); 
-                  Navigator.of(context).pop(); 
-                },
-                child: Text("Discard"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); 
-                },
-                child: Text("Cancel"),
-              ),]
-          );});
-
-        }
-        else{
-          Navigator.of(context).pop();
-        }
+        _websiteFieldController != appUser.url) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+                title: Text("Do you want to discard the changes?"),
+                // content: Text("Do you want to discard the changes?",style: TextStyle(fontSize: 17),),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Discard"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                  ),
+                ]);
+          });
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _save(BuildContext context) async {
