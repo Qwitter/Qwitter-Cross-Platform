@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/components/account_information_screen.dart';
 import 'package:qwitter_flutter_app/components/account_settings_screen.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/accounts_widget.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/profile_picture.dart';

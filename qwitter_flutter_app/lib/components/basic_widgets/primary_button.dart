@@ -45,7 +45,11 @@ class PrimaryButton extends ConsumerWidget {
                   buttonFunctionProvider!(context);
                 }
           : onPressed,
-      child: Text(text),
+      child: Text(
+        text,
+        
+
+      ),
     );
   }
 }

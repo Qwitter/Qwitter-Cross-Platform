@@ -12,6 +12,7 @@ import 'package:qwitter_flutter_app/screens/authentication/login/forget_new_pass
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_password_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 enum ConfirmationCodeType { signup, password, changeEmail }
@@ -96,13 +97,19 @@ class _ConfirmationCodeScreenState
 
     final Map<String, String> data = {"email": widget.user!.email!};
 
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer ${AppUser().getToken}',
+    };
+
     final response = await http.post(
       url,
       body: jsonEncode(data),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'authorization': 'Bearer ${token}',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
       },
     );
 
@@ -217,6 +224,7 @@ class _ConfirmationCodeScreenState
                 changeEmail(AppUser().getToken!).then((value) {
                   if (value.statusCode == 200) {
                     AppUser().setEmail(widget.user!.email!);
+                    AppUser().saveUserData();
                     Toast.show('Email Changed Successfuly');
                     Navigator.push(
                       context,

@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 
   void clearSharedPreferences() {
     SharedPreferences.getInstance().then((prefs) {
-      prefs.clear().then((value) {
+      prefs.reload().then((value) {
         //print('SharedPreferences cleared!');
       });
     });

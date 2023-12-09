@@ -105,13 +105,18 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     token = jwt.sign(SecretKey(private));
 
     //print('Signed token: $token\n');
+    final Map<String, String> cookies = {
+      'qwitter_jwt': 'Bearer $token}',
+    };
 
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'authorization': 'Bearer $token',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
       },
     );
 
@@ -151,7 +156,11 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
               final userJson = jsonDecode(value.body);
               // //print(userJson);
               User user = User.fromJson(userJson["user"]);
-              user.token = userJson['token'];
+              final String rawCookies = (value.headers['set-cookie']) ?? '';
+              print("rawCookies: $rawCookies");
+              final String token =
+                  rawCookies.split(';')[0].split('=')[1].split('%20')[1];
+              user.token = token;
               // user.printUserData();
               final appUser = AppUser().copyUserData(user);
               appUser.saveUserData();

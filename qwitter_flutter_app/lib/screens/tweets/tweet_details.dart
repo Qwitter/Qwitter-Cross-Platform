@@ -655,8 +655,9 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                   ref,
                                                   tweetProvider,
                                                   textEditingController.text);
+                                              textEditingController.text = "";
                                             });
-                                          }
+                                            FocusScope.of(context).requestFocus(FocusNode());                                          }
                                         },
                                       ),
                                     ),

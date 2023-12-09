@@ -33,8 +33,7 @@ class ProfileTweetsNotifier extends StateNotifier<ProfileTweets> {
       currState.postedTweets?.addAll(tweets);
     }
     state = currState;
-    print("current state of posted tweets");
-    print(state.postedTweets);
+
   }
 
   void updateLikedTweets(List<Tweet> tweets) {
@@ -45,8 +44,7 @@ class ProfileTweetsNotifier extends StateNotifier<ProfileTweets> {
       currState.likedTweets?.addAll(tweets);
     }
     state = currState;
-    print("current state of liked tweets");
-    print(state.likedTweets);
+
   }
 
   void updateRepliedTweets(List<Tweet> tweets) {
@@ -57,8 +55,7 @@ class ProfileTweetsNotifier extends StateNotifier<ProfileTweets> {
       currState.repliedTweets?.addAll(tweets);
     }
     state = currState;
-    print("current state of replied tweets");
-    print(state.repliedTweets);
+
   }
 
   void updateMediaTweets(List<Tweet> tweets) {
@@ -69,8 +66,7 @@ class ProfileTweetsNotifier extends StateNotifier<ProfileTweets> {
       currState.mediaTweets?.addAll(tweets);
     }
     state = currState;
-    print("current state of media tweets");
-    print(state.mediaTweets);
+
   }
 }
 

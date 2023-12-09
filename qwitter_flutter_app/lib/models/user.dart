@@ -17,8 +17,11 @@ class User {
   File? profileBannerUrl;
   String? url;
   String? description;
+  String? location;
   bool? isProtected;
   bool? isVerified;
+  bool? isMuted;
+  bool? isBlocked;
 
   User({
     this.id,
@@ -38,6 +41,8 @@ class User {
     this.description,
     this.isProtected,
     this.isVerified,
+    this.isMuted,
+    this.isBlocked
   });
 
   // Add all setters and return user
@@ -83,11 +88,33 @@ class User {
     return this;
   }
 
+  User setProfileBanner(File? profileBannerUrl) {
+    this.profileBannerUrl = profileBannerUrl;
+    return this;
+  }
+
+  User setURL(String ? url){
+    this.url=url;
+    return this;
+  }
+
+  User setLocation(String? location){
+    this.location=location;
+    return this;
+  }
+
+  User setDescription(String? description){
+    this.description=description;
+    return this;
+  }
+
+
+
   User setUsernameSuggestions(List? usernameSuggestions) {
     this.usernameSuggestions = usernameSuggestions;
     return this;
   }
-
+  
   // Add all getters
 
   String? get getToken {
@@ -134,7 +161,7 @@ class User {
       fullName: json['name'],
       birthDate: json['birthDate'],
       password: json['password'],
-      isFollowed: false,
+      isFollowed: json['isFollowing'],
       profilePicture: File(
         json['profileImageUrl'] ?? "",
       ),
@@ -148,6 +175,8 @@ class User {
       description: json['description'],
       isProtected: json['isProtected'],
       isVerified: json['isVerified'],
+      isMuted: json['isMuted'],
+      isBlocked: json['isBlcoked']
     );
   }
 
