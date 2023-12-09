@@ -123,11 +123,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_formKey.currentState!.validate()) {
       if (_profilePictureFile != null) {
         uploadProfilePicture(_profilePictureFile!);
-        appUser.setProfilePicture(_profilePictureFile);
       }
       if (_profilebannerFile != null) {
         uploadProfilebanner(_profilebannerFile!);
-        appUser.setProfileBanner(_profilebannerFile);
       }
       _updateUserProfile(
           _nameFieldController.text,
@@ -135,6 +133,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _locationFieldController.text,
           _websiteFieldController.text,
           _birthDate);
+
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return ProfileDetailsScreen(
@@ -157,15 +156,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'description': description,
         'location': location,
         'url': website,
-        'birth_date': birthData.toUtc().toIso8601String()
+        'birth_date': "${birthData.toIso8601String()}Z"
       };
-      print(body);
-      print(jsonEncode(body));
+      final Map<String, String> cookies = {
+        'qwitter_jwt': 'Bearer ${appUser.token}',
+      };
       http.Response response = await http.put(url,
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'authorization': 'Bearer ${appUser.token}',
+            'Cookie': cookies.entries
+                .map((entry) => '${entry.key}=${entry.value}')
+                .join('; '),
           },
           body: jsonEncode(body));
 
@@ -176,7 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             .setLocation(location)
             .setURL(website)
             .setDescription(description);
-        appUser.saveUserData();
+            appUser.saveUserData();
         print("saved successfully");
       } else {
         print(
@@ -187,16 +190,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<bool> uploadProfilePicture(File imageFile) async {
+  Future<void> uploadProfilePicture(File imageFile) async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/user/profile_picture');
-
+    final Map<String, String> cookies = {
+        'qwitter_jwt': 'Bearer ${appUser.token}',
+      };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "authorization": 'Bearer ${appUser.getToken}',
-      "Content-Type": "multipart/form-data"
+      "Content-Type": "multipart/form-data",
+       'Cookie': cookies.entries
+                .map((entry) => '${entry.key}=${entry.value}')
+                .join('; '),
+      
     };
 
     request.headers.addAll(headers);
@@ -229,29 +238,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           response); // json.decode(response.stream.toString());
       final responseBody = jsonDecode(responseFromStream.body);
       //print(responseBody);
-      AppUser appUser = AppUser();
-      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
       appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
       appUser.saveUserData();
-      return true;
     } else {
       // Handle errors
-      //print(response.statusCode);
+      print(response.statusCode);
       //print(response.reasonPhrase);
-      return false;
     }
   }
 
-  Future<bool> uploadProfilebanner(File imageFile) async {
+  Future<void> uploadProfilebanner(File imageFile) async {
     final url = Uri.parse(
         'http://qwitterback.cloudns.org:3000/api/v1/user/profile_banner');
 
+    final Map<String, String> cookies = {
+        'qwitter_jwt': 'Bearer ${appUser.token}',
+      };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "authorization": 'Bearer ${appUser.getToken}',
-      "Content-Type": "multipart/form-data"
+      "Content-Type": "multipart/form-data",
+      'Cookie': cookies.entries
+                .map((entry) => '${entry.key}=${entry.value}')
+                .join('; '),
     };
 
     request.headers.addAll(headers);
@@ -284,16 +295,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           response); // json.decode(response.stream.toString());
       final responseBody = jsonDecode(responseFromStream.body);
       //print(responseBody);
-      AppUser appUser = AppUser();
-      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
-      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.setProfileBanner(File(responseBody['user']['profileBannerUrl']));
       appUser.saveUserData();
-      return true;
     } else {
       // Handle errors
-      //print(response.statusCode);
+      print(response.statusCode);
       //print(response.reasonPhrase);
-      return false;
     }
   }
 
