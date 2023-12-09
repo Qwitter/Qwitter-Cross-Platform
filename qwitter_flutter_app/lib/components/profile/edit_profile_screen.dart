@@ -1,10 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/underlined_text_field_label_only.dart';
 import 'package:intl/intl.dart';
+import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
-import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -15,51 +21,282 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late DateTime _birthDate;
-  late TextEditingController _birthDateFieldController;
   late AppUser appUser;
+  late TextEditingController _birthDateFieldController;
+  late TextEditingController _nameFieldController;
+  late TextEditingController _bioFieldController;
+  late TextEditingController _locationFieldController;
+  late TextEditingController _websiteFieldController;
+  late ImageProvider _profilePicture;
+  late ImageProvider _profileBanner;
+  File? _profilePictureFile;
+  File? _profilebannerFile;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _birthDate = DateTime.now();
     appUser = AppUser();
-    _birthDateFieldController =
-        TextEditingController(text: formatDate(_birthDate));
+    _birthDateFieldController = TextEditingController(
+        text: formatDate(DateTime.parse(appUser.birthDate!)));
+    _nameFieldController = TextEditingController(text: appUser.fullName);
+    _bioFieldController = TextEditingController();
+    _websiteFieldController = TextEditingController();
+    _locationFieldController = TextEditingController();
+    _profileBanner = (appUser.profileBannerUrl!.path.isEmpty
+        ? const AssetImage("assets/images/def_banner.png")
+        : NetworkImage(appUser.profileBannerUrl!.path.startsWith("http")
+            ? appUser.profileBannerUrl!.path
+            : "http://" + appUser.profileBannerUrl!.path) as ImageProvider);
+
+    _profilePicture = (appUser.profilePicture!.path.isEmpty
+        ? const AssetImage("assets/images/def.jpg")
+        : NetworkImage(appUser.profilePicture!.path.startsWith("http")
+            ? appUser.profilePicture!.path
+            : "http://" + appUser.profilePicture!.path) as ImageProvider);
+    _birthDate = DateTime.parse(appUser.birthDate!);
   }
 
   String formatDate(DateTime date) {
     return DateFormat('MMMM dd, yyyy').format(date);
   }
 
-  void _saveUserProfileData(String name,String description,String location,String url,String birthData) {}
-  Future<void> _updateUserProfile() async {
-    String _baseUrl = 'http://qwitterback.cloudns.org:3000';
-    Uri url = Uri.parse('$_baseUrl/api/v1/user/profile');
-    http.Response response = await http.put(url, headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'authorization': 'Bearer ${appUser.token}',
-    }, body: {
-      "name": "",
-      "description": "",
-      "location": "",
-      "url": "",
-      "birth_data": ""
-    });
+  Future<void> _pickImage(bool profilePicture) async {
+    XFile? pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if(response.statusCode==200){
-      print("saved successfully");
+    if (pickedFile != null) {
+      try {
+        File imageFile = File(pickedFile.path);
+        appUser.setProfilePicture(imageFile);
+        setState(() {
+          if (profilePicture) {
+            _profilePicture = FileImage(imageFile);
+            _profilePictureFile = imageFile;
+          } else {
+            _profileBanner = FileImage(imageFile);
+            _profilebannerFile = imageFile;
+          }
+        });
+      } catch (e) {
+        print("something went wrong");
+      }
     }
   }
-  Future<void> _uploadProfilePicture(String path)async{
 
+  void _exit(BuildContext context) {
+    if (_profilePictureFile != null ||
+        _profilebannerFile != null ||
+        DateTime.parse(appUser.birthDate!) != _birthDate ||
+        _nameFieldController.text != appUser.fullName ||
+        _bioFieldController.text!= appUser.description||
+        _locationFieldController.text != appUser.location ||
+        _websiteFieldController!= appUser.url) {
+
+          showDialog(context: context, builder: (context){ return AlertDialog(
+            title: Text("Do you want to discard the changes?"),
+            // content: Text("Do you want to discard the changes?",style: TextStyle(fontSize: 17),),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); 
+                  Navigator.of(context).pop(); 
+                },
+                child: Text("Discard"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); 
+                },
+                child: Text("Cancel"),
+              ),]
+          );});
+
+        }
+        else{
+          Navigator.of(context).pop();
+        }
   }
-  Future<void> _uploadProfilePBannericture(String path)async{
 
+  Future<void> _save(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      if (_profilePictureFile != null) {
+        uploadProfilePicture(_profilePictureFile!);
+        appUser.setProfilePicture(_profilePictureFile);
+      }
+      if (_profilebannerFile != null) {
+        uploadProfilebanner(_profilebannerFile!);
+        appUser.setProfileBanner(_profilebannerFile);
+      }
+      _updateUserProfile(
+          _nameFieldController.text,
+          _bioFieldController.text,
+          _locationFieldController.text,
+          _websiteFieldController.text,
+          _birthDate);
+      Navigator.of(context).pop();
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return ProfileDetailsScreen(
+          username: appUser.username!,
+        );
+      }));
+    } else {
+      print("invalid");
+    }
   }
-  
 
-  void changeBirthDate() {
+  Future<void> _updateUserProfile(String name, String description,
+      String location, String website, DateTime birthData) async {
+    String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+    Uri url = Uri.parse('$_baseUrl/api/v1/user/profile');
+
+    try {
+      final body = {
+        'name': name,
+        'description': description,
+        'location': location,
+        'url': website,
+        'birth_date': birthData.toUtc().toIso8601String()
+      };
+      print(body);
+      print(jsonEncode(body));
+      http.Response response = await http.put(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'authorization': 'Bearer ${appUser.token}',
+          },
+          body: jsonEncode(body));
+
+      if (response.statusCode == 200) {
+        appUser
+            .setBirthDate(birthData.toString())
+            .setFullName(name)
+            .setLocation(location)
+            .setURL(website)
+            .setDescription(description);
+        appUser.saveUserData();
+        print("saved successfully");
+      } else {
+        print(
+            "error occured while saving the data status code ${response.statusCode}");
+      }
+    } catch (e) {
+      print("an exception occured ${e.toString()}");
+    }
+  }
+
+  Future<bool> uploadProfilePicture(File imageFile) async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/user/profile_picture');
+
+    // Create a MultipartRequest
+    final request = http.MultipartRequest('POST', url);
+    //print('Token : ${widget.user!.getToken}');
+    Map<String, String> headers = {
+      "authorization": 'Bearer ${appUser.getToken}',
+      "Content-Type": "multipart/form-data"
+    };
+
+    request.headers.addAll(headers);
+
+    // Get the filename
+    final fileName = basename(imageFile.path);
+
+    // Add the image file
+    final stream = http.ByteStream(imageFile.openRead());
+    final length = await imageFile.length();
+    final imgType = lookupMimeType(imageFile.path);
+    final contentType = imgType!.split('/');
+    final multipartFile = http.MultipartFile(
+      'photo',
+      stream,
+      length,
+      filename: fileName,
+      contentType: MediaType(contentType[0], contentType[1]),
+    );
+
+    // Add the image file to the request
+    request.files.add(multipartFile);
+
+    // Send the request
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Successfully sent the data
+      final responseFromStream = await http.Response.fromStream(
+          response); // json.decode(response.stream.toString());
+      final responseBody = jsonDecode(responseFromStream.body);
+      //print(responseBody);
+      AppUser appUser = AppUser();
+      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.saveUserData();
+      return true;
+    } else {
+      // Handle errors
+      //print(response.statusCode);
+      //print(response.reasonPhrase);
+      return false;
+    }
+  }
+
+  Future<bool> uploadProfilebanner(File imageFile) async {
+    final url = Uri.parse(
+        'http://qwitterback.cloudns.org:3000/api/v1/user/profile_banner');
+
+    // Create a MultipartRequest
+    final request = http.MultipartRequest('POST', url);
+    //print('Token : ${widget.user!.getToken}');
+    Map<String, String> headers = {
+      "authorization": 'Bearer ${appUser.getToken}',
+      "Content-Type": "multipart/form-data"
+    };
+
+    request.headers.addAll(headers);
+
+    // Get the filename
+    final fileName = basename(imageFile.path);
+
+    // Add the image file
+    final stream = http.ByteStream(imageFile.openRead());
+    final length = await imageFile.length();
+    final imgType = lookupMimeType(imageFile.path);
+    final contentType = imgType!.split('/');
+    final multipartFile = http.MultipartFile(
+      'photo',
+      stream,
+      length,
+      filename: fileName,
+      contentType: MediaType(contentType[0], contentType[1]),
+    );
+
+    // Add the image file to the request
+    request.files.add(multipartFile);
+
+    // Send the request
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Successfully sent the data
+      final responseFromStream = await http.Response.fromStream(
+          response); // json.decode(response.stream.toString());
+      final responseBody = jsonDecode(responseFromStream.body);
+      //print(responseBody);
+      AppUser appUser = AppUser();
+      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.setProfilePicture(File(responseBody['user']['profileImageUrl']));
+      appUser.saveUserData();
+      return true;
+    } else {
+      // Handle errors
+      //print(response.statusCode);
+      //print(response.reasonPhrase);
+      return false;
+    }
+  }
+
+  void changeBirthDate(BuildContext context) {
     showModalBottomSheet(
         context: context,
         builder: (builder) {
@@ -72,12 +309,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   textTheme: CupertinoTextThemeData(
                       dateTimePickerTextStyle: TextStyle(
                 fontSize: 23,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w800,
                 color: Colors.white,
               ))),
               child: CupertinoDatePicker(
                 onDateTimeChanged: (value) {
                   _birthDate = value;
+                  print(_birthDate.toUtc().toIso8601String());
+
                   setState(() {
                     _birthDateFieldController.text = formatDate(_birthDate);
                   });
@@ -99,28 +338,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        surfaceTintColor: null,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
-            color: Colors.black,
+            color: Colors.white,
             size: 30,
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            _exit(context);
           },
         ),
         title: const Text(
           "Edit profile",
           style: TextStyle(
-              color: Colors.black, fontSize: 25, fontWeight: FontWeight.w600),
+              color: Colors.white, fontSize: 25, fontWeight: FontWeight.w600),
         ),
         actions: [
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                _save(context);
+              },
               child: const Text(
                 'Save',
-                style: TextStyle(color: Colors.black, fontSize: 20),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ))
         ],
         bottom: PreferredSize(
@@ -131,7 +373,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               height: 6,
             )),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(0),
         child: Column(
@@ -139,76 +381,72 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    print(1);
-                  },
-                  child: Container(
-                    height: 140,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(10),
-                    margin: const EdgeInsets.all(0),
-                    decoration: const BoxDecoration(
-                      color: Colors.black,
-                      image: DecorationImage(
-                          image: NetworkImage(
-                            'https://th.bing.com/th/id/R.954112b1d86c17e04f32710a9dfa624b?rik=%2bujOnc84tNbuEQ&riu=http%3a%2f%2f3.bp.blogspot.com%2f-OuRPhqkSc60%2fU2dbPYEHx1I%2fAAAAAAAAFq8%2fvOU3zTMXzH8%2fs1600%2f1500x500-Nature-Twitter-Header28.jpg&ehk=EwDVaeRMKrCyrHOksN8rJ5QGW8qzTtgbTZ9OqW9sSRM%3d&risl=&pid=ImgRaw&r=0',
-                          ),
+            SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      _pickImage(false);
+                    },
+                    child: Container(
+                      height: 140,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        image: DecorationImage(
+                          image: _profileBanner,
                           fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(
-                              Color.fromARGB(172, 0, 0, 0),
-                              BlendMode.multiply)),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 60,
-                      color: Colors.white,
+                        ),
+                      ),
+                      // child: const Icon(
+                      //   Icons.camera_alt_outlined,
+                      //   size: 60,
+                      //   color: Colors.white,
+                      // ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 100,
-                  child: GestureDetector(
-                    onTap: () {
-                      print(2);
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 41,
+                  Positioned(
+                    top: 100,
+                    child: GestureDetector(
+                      onTap: () {
+                        _pickImage(true);
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 20),
                         child: CircleAvatar(
-                          radius: 35,
-                          backgroundImage: NetworkImage(
-                            'https://hips.hearstapps.com/digitalspyuk.cdnds.net/17/13/1490989105-twitter1.jpg?resize=480:*',
-                          ),
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            size: 45,
-                            color: Colors.white,
+                          backgroundColor: Colors.black,
+                          radius: 41,
+                          child: CircleAvatar(
+                            radius: 35,
+                            backgroundImage: _profilePicture,
+                            // child: Icon(
+                            //   Icons.camera_alt_outlined,
+                            //   size: 45,
+                            //   color: Colors.black,
+                            // ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 50,
+                ],
+              ),
             ),
             Form(
               autovalidateMode: AutovalidateMode.always,
+              key: _formKey,
               child: Column(
                 children: [
                   UnderlineTextFieldLabelOnly(
                     keyboardType: TextInputType.text,
                     placeholder: 'Name',
                     maxLines: 1,
-                    controller: null,
+                    controller: _nameFieldController,
                     validator: (val) {
                       if (val == null || val == "") {
                         return "this field can't be empty";
@@ -216,7 +454,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         return null;
                       }
                     },
-                    intialValue: 'Amr Magdy',
+                    intialValue: null,
                     readOnly: false,
                     onTap: null,
                   ),
@@ -224,7 +462,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     keyboardType: TextInputType.text,
                     placeholder: 'Bio',
                     maxLines: 3,
-                    controller: TextEditingController(),
+                    controller: _bioFieldController,
                     validator: (val) {
                       return null;
                     },
@@ -236,13 +474,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     keyboardType: TextInputType.text,
                     placeholder: 'Website',
                     maxLines: 1,
-                    controller: TextEditingController(),
+                    controller: _websiteFieldController,
+                    validator: (val) {
+                      if (val!.isEmpty ||
+                          (val.isEmpty == false &&
+                              (val.startsWith("http://") ||
+                                  val.startsWith("https://")))) return null;
+                      return "the url must starts with http or https";
+                    },
+                    intialValue: null,
+                    readOnly: false,
+                    onTap: null,
+                  ),
+                  UnderlineTextFieldLabelOnly(
+                    keyboardType: TextInputType.text,
+                    placeholder: 'Location',
+                    maxLines: 1,
+                    controller: _locationFieldController,
                     validator: (val) {
                       return null;
                     },
                     intialValue: null,
                     readOnly: false,
-                    onTap: null,
+                    onTap: () {},
                   ),
                   UnderlineTextFieldLabelOnly(
                     keyboardType: TextInputType.text,
@@ -254,7 +508,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                     intialValue: null,
                     readOnly: true,
-                    onTap: changeBirthDate,
+                    onTap: () {
+                      changeBirthDate(context);
+                    },
                   ),
                 ],
               ),

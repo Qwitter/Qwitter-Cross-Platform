@@ -55,6 +55,9 @@ dependencies:
   visibility_detector: ^0.4.0+2
   chewie: ^1.7.4
   sliver_tools: ^0.2.12
+  location: ^5.0.3
+  geocoding: ^2.1.1
+  path: ^1.8.0
   
 
 dev_dependencies:
@@ -86,6 +89,7 @@ flutter:
     - assets/images/pfp.jpg
     - assets/images/x_logo.png
     - assets/images/def.jpg
+    - assets/images/def_banner.png
 
     # - assets/private.txt
 
