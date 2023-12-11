@@ -8,6 +8,7 @@ import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
+import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 
 class ConversationWidget extends ConsumerWidget {
   const ConversationWidget({super.key, required this.convo});
@@ -47,7 +48,7 @@ class ConversationWidget extends ConsumerWidget {
                     onTap: () {},
                     child: Ink.image(
                       image:
-                          AssetImage(convo.imgPath ?? "assets/images/def.jpg"),
+                          AssetImage( "assets/images/def.jpg"),
                       height: 60,
                       width: 60,
                     ),
@@ -60,32 +61,24 @@ class ConversationWidget extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        convo.name.substring(0, min(20, convo.name.length)),
-                        overflow: TextOverflow.clip,
-                        maxLines: 1,
-                        style: const TextStyle(
-                            overflow: TextOverflow.clip,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                  Text.rich(
+                    TextSpan(
+                      text: convo.name + " ",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
                       ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Expanded(
-                        child: Text(
-                          "@" + convo.name,
-                          overflow: TextOverflow.ellipsis,
+                      children: [
+                        TextSpan(
+                          text: "@" + convo.name,
                           style: const TextStyle(
-                            fontSize: 15,
                             color: Colors.grey,
+                            fontSize: 15,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(
                     height: 5,
