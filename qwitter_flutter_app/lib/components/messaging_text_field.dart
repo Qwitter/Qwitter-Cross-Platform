@@ -23,7 +23,7 @@ class MessagingTextField extends StatelessWidget {
                 color: Color.fromARGB(255, 204, 203, 203),
               ),
               contentPadding: const EdgeInsets.all(12),
-              hintText: 'Start a messeage',
+              hintText: 'Start a message',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
