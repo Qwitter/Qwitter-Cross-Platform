@@ -10,6 +10,8 @@ import 'package:qwitter_flutter_app/screens/authentication/login/login_main_scre
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/create_conversation_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/create_conversation_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
@@ -53,7 +55,7 @@ class MyApp extends StatelessWidget {
               );
             } else if (user.username != null) {
               // //print(snapshot.data);
-              return LoginChooseScreen();
+              return ConversationScreen();
             } else {
               return SignupChooseMethodScreen();
             }
