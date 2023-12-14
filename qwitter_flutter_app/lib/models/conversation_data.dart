@@ -4,9 +4,9 @@ class Conversation {
   Conversation({
     required this.id,
     required this.name,
-    required this.status,
-    required this.photo,
-    required this.lastMsg,
+    this.status,
+    this.photo,
+    // required this.lastMsg,
   });
 
   final String id;
@@ -21,7 +21,7 @@ class Conversation {
       name: json['name'],
       status: json['status'],
       photo: json['photo'],
-      lastMsg: MessageData.fromJson(json['lastMessage']),
+      // lastMsg: MessageData.fromJson(json['lastMessage']),
     );
   }
 }

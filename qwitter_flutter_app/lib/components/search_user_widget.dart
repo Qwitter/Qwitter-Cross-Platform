@@ -45,6 +45,7 @@ class _SearchUserState extends ConsumerState<SearchUserWidget> {
   @override
   Widget build(BuildContext context) {
     double radius = 20;
+    print(widget.user.profilePicture);
     return Container(
       height: 75,
       child: ElevatedButton(

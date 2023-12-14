@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
@@ -23,10 +24,12 @@ class ScrollableMessages extends ConsumerStatefulWidget {
 }
 
 class _ScrollableMessagesState extends ConsumerState<ScrollableMessages> {
+  AppUser user = AppUser();
   @override
   Widget build(context) {
     return Expanded(
       child: GroupedListView<MessageData, DateTime>(
+        reverse: true,
         controller: widget.scrollController,
         sort: false,
         padding: const EdgeInsets.all(8),
@@ -46,8 +49,9 @@ class _ScrollableMessagesState extends ConsumerState<ScrollableMessages> {
           ),
         ),
         itemBuilder: (context, MessageData message) => Align(
-          alignment:
-              message.byMe ? Alignment.centerRight : Alignment.centerLeft,
+          alignment: message.name == user.username
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
           child: Container(
             constraints: const BoxConstraints(maxWidth: 300),
             child: InkWell(
@@ -120,7 +124,7 @@ class _ScrollableMessagesState extends ConsumerState<ScrollableMessages> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
                 elevation: 0,
-                color: message.byMe
+                color: message.name == user.username
                     ? Colors.blue
                     : Color.fromARGB(255, 50, 57, 64),
                 child: Padding(
@@ -128,7 +132,7 @@ class _ScrollableMessagesState extends ConsumerState<ScrollableMessages> {
                   child: Text(
                     message.text,
                     style: TextStyle(
-                        color: message.byMe
+                        color: message.name == user.username
                             ? white
                             : Color.fromARGB(255, 232, 231, 231)),
                   ),

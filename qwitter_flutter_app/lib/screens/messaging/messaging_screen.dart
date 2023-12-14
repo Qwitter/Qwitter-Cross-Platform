@@ -18,103 +18,35 @@ import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
 class MessagingScreen extends ConsumerStatefulWidget {
-  const MessagingScreen({
+  MessagingScreen({
     super.key,
-    required this.converstaionID,
+    required this.convo,
   });
-  final String converstaionID;
+  Conversation convo;
 
   @override
   ConsumerState<MessagingScreen> createState() => _MessagingScreenState();
 }
 
-List<MessageData> msgsss = [
-  MessageData(
-      text: "hello",
-      date: DateTime.now().subtract(const Duration(days: 5, minutes: 10)),
-      byMe: true),
-  MessageData(
-      text: "hi how are ya?",
-      date: DateTime.now().subtract(const Duration(days: 5, minutes: 9)),
-      byMe: false),
-  MessageData(
-      text: "I am actually doing good",
-      date: DateTime.now().subtract(const Duration(days: 5, minutes: 8)),
-      byMe: true),
-  MessageData(
-      text: "how is your family",
-      date: DateTime.now().subtract(const Duration(days: 5, minutes: 8)),
-      byMe: true),
-  MessageData(
-      text: "they are doing well ",
-      date: DateTime.now().subtract(const Duration(days: 5, minutes: 7)),
-      byMe: false),
-  MessageData(
-      text: "how has school been",
-      date: DateTime.now().subtract(const Duration(days: 5, minutes: 7)),
-      byMe: false),
-  MessageData(
-      text: "nothing that exciting to be honest",
-      date: DateTime.now().subtract(const Duration(days: 5, minutes: 5)),
-      byMe: true),
-  MessageData(
-      text: "there's a quiz tomorrow don't forget",
-      date: DateTime.now().subtract(const Duration(days: 3, minutes: 2)),
-      byMe: false),
-  MessageData(
-      text: "thakn you for reminding me",
-      date: DateTime.now().subtract(const Duration(days: 2, hours: 20)),
-      byMe: true),
-  MessageData(
-      text: "are you going to school tomorrow ?",
-      date: DateTime.now()
-          .subtract(const Duration(days: 1, hours: 5, minutes: 8)),
-      byMe: true),
-  MessageData(
-      text:
-          "yeah, let's meet at 9 am\nyeah, let's meet at 9 am,yeah, let's meet at 9 am,yeah, let's meet at 9 am,yeah, let's meet at 9 am,yeah, let's meet at 9 am,yeah, let's meet at 9 am",
-      date: DateTime.now()
-          .subtract(const Duration(days: 1, hours: 3, minutes: 50)),
-      byMe: false),
-  MessageData(
-      text: "that looks great 1",
-      date: DateTime.now()
-          .subtract(const Duration(days: 1, hours: 1, minutes: 20)),
-      byMe: true),
-  MessageData(
-      text: "that looks great 2",
-      date: DateTime.now()
-          .subtract(const Duration(days: 1, hours: 1, minutes: 5)),
-      byMe: true),
-  MessageData(
-      text: "that looks great 3",
-      date: DateTime.now()
-          .subtract(const Duration(days: 1, hours: 1, minutes: 5)),
-      byMe: true),
-  MessageData(
-      text: "that looks great 4",
-      date: DateTime.now()
-          .subtract(const Duration(days: 1, hours: 1, minutes: 5)),
-      byMe: true),
-];
+List<MessageData> msgsss = [];
 
 class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   List<MessageData> msgs = [];
   final textController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-
+  bool _isFetching = false;
+  bool allFetched = false;
   @override
   void initState() {
     super.initState();
     scrollController.addListener(scrollListener);
+    fecthMessages();
     MessagingServices.socket.on('ROOM_MESSAGE', (data) {
       print(data);
       print(data['text']);
-      ref.watch(messagesProvider.notifier).addMessage(
-          MessageData(text: data['text'], date: DateTime.now(), byMe: false));
       WidgetsBinding.instance.addPostFrameCallback((_) {
         scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
+          scrollController.position.minScrollExtent,
           curve: Curves.easeOut,
           duration: const Duration(
             milliseconds: 50,
@@ -133,39 +65,55 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     super.dispose();
   }
 
-  scrollListener() {}
+  void fecthMessages() async {
+    _isFetching = true;
+    await MessagingServices.fetchMessages(
+            widget.convo.id, (msgs.length ~/ 15) + 1)
+        .then((value) {
+      if (value['statusCode'] == 200) {
+        print(msgs.length);
+        print('first');
+        ref.watch(messagesProvider.notifier).addList(value['messages']);
+        print(msgs.length);
+        allFetched = (value['messages'].length == 0);
+      }
+    });
+    _isFetching = false;
+  }
+
+  scrollListener() {
+    print(scrollController.offset);
+    if (scrollController.position.maxScrollExtent <=
+        scrollController.offset + 150) {
+      print(_isFetching);
+      print(allFetched);
+      if (_isFetching == false && allFetched == false) {
+        print("starting to fetch");
+        fecthMessages();
+      }
+    }
+  }
 
   void sendMessage() {
     if (textController.text == "") return;
 
-    // ref.read(messagesProvider.notifier).DeleteHistory();
-    MessagingServices.requestMessage(widget.converstaionID, textController.text)
+    MessagingServices.requestMessage(widget.convo.id, textController.text)
         .then((msg) {
       Map<String, dynamic> mp = {};
       mp['data'] = msg;
-      mp['conversationId'] = widget.converstaionID;
+      mp['conversationId'] = widget.convo.id;
       print(jsonEncode(mp));
+      ref
+          .watch(messagesProvider.notifier)
+          .addMessage(MessageData.fromJson(msg));
       MessagingServices.socket.emit(
         'SEND_ROOM_MESSAGE',
         jsonEncode(mp),
       );
     });
-
-    // ref.read(messagesProvider.notifier).insertOldMessages(msgsss);
-    final newMessage = MessageData(
-      text: textController.text,
-      date: DateTime.now(),
-      byMe: true,
-    );
-    print("first");
-    // print(scrollController.)
-    ref.read(messagesProvider.notifier).addMessage(newMessage);
-
-    // ref.read(messagesProvider.notifier).printState();
-    print(msgs[msgs.length - 1].text);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
+        scrollController.position.minScrollExtent,
         curve: Curves.easeOut,
         duration: const Duration(
           milliseconds: 50,
@@ -173,15 +121,18 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       );
     });
 
-    // setState(() => msgs.add(newMessage));
-    textController.text = "";
+    textController.clear();
+    print('clear');
   }
 
   @override
   Widget build(context) {
-    MessagingServices.connectToConversation(widget.converstaionID);
+    double radius = 17.5;
+    MessagingServices.connectToConversation(widget.convo.id);
     msgs = ref.watch(messagesProvider);
+    // msgs = msgsss;
     ref.listen(messagesProvider, (messagesProvider, messagesProvider2) {});
+    // widget.convo.name='asfklnhnaklfasklfnasklfnasklfnasklfnasklfnasaksfna';
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: PreferredSize(
@@ -191,21 +142,46 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
           automaticallyImplyLeading: true,
           title: Row(
             children: [
-              ClipOval(
-                child: Image.asset(
-                  "assets/images/abo.jpeg",
-                  width: 35,
-                ),
+              InkWell(
+                onTap: () {
+                  print('pic');
+                },
+                splashColor: Colors.red,
+                customBorder: CircleBorder(),
+                child: (widget.convo.photo != null)
+                    ? Container(
+                        width: radius * 2,
+                        child: CircleAvatar(
+                          radius: radius,
+                          backgroundImage:
+                              NetworkImage(widget.convo.photo ?? ""),
+                        ),
+                      )
+                    : ClipOval(
+                        child: Image.asset(
+                          "assets/images/def.jpg",
+                          width: 35,
+                        ),
+                      ),
               ),
               const SizedBox(
                 width: 15,
               ),
-              const SizedBox(
-                width: 175,
-                child: Text(
-                  "User Name sdfs d fsd f sd f sd ",
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.white),
+              InkWell(
+                onTap: () {
+                  print('name');
+                },
+                child: SizedBox(
+                  width: 200,
+                  height: 35,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.convo.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
             ],

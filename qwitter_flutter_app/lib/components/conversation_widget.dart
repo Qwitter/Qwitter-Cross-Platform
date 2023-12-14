@@ -23,11 +23,12 @@ class ConversationWidget extends ConsumerWidget {
       Navigator.of(context).push(
         MaterialPageRoute(
             builder: (context) => MessagingScreen(
-                  converstaionID: convo.id,
+                  convo: convo,
                 )),
       );
     }
 
+    double radius = 30;
     return SizedBox(
       height: 80,
       width: double.infinity,
@@ -41,18 +42,20 @@ class ConversationWidget extends ConsumerWidget {
           padding: const EdgeInsets.all(0.0),
           child: Row(
             children: [
-              Material(
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  child: InkWell(
-                    onTap: () {},
-                    child: Ink.image(
-                      image:
-                          AssetImage( "assets/images/def.jpg"),
-                      height: 60,
-                      width: 60,
+              (convo.photo != null&&false)
+                  ? Container(
+                      width: radius * 2,
+                      child: CircleAvatar(
+                        radius: radius,
+                      backgroundImage: NetworkImage(convo.photo ?? ""),
+                      ),
+                    )
+                  : ClipOval(
+                      child: Image.asset(
+                        "assets/images/def.jpg",
+                        width: 60,
+                      ),
                     ),
-                  )),
               const SizedBox(
                 width: 10,
               ),

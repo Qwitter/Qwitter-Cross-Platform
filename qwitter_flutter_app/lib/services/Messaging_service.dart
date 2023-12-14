@@ -16,7 +16,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MessagingServices {
-  static const String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+  static const String _baseUrl = 'http://qwitter.cloudns.org:3000';
   static IO.Socket socket = IO.io(
     _baseUrl,
     IO.OptionBuilder().setTransports(['websocket']).build(),
@@ -42,8 +42,8 @@ class MessagingServices {
 
   static Future<http.Response> requestMessageResponse(
       String conversationId, String Message) async {
-    final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/conversation/$conversationId/message');
+    final url =
+        Uri.parse('$_baseUrl/api/v1/conversation/$conversationId/message');
 
     Map<String, dynamic> fields = {
       'text': Message,
@@ -78,6 +78,53 @@ class MessagingServices {
     } catch (e) {
       print("gettingConversationError");
       return {};
+    }
+  }
+
+  static Future<http.Response> fetchMessagesResponse(
+      String conversationId, int page) async {
+    final url =
+        Uri.parse('$_baseUrl/api/v1/conversation/$conversationId?page=$page&limit=15');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization': 'Bearer ${AppUser().getToken}',
+      },
+    );
+
+    return response;
+  }
+
+  static Future<Map<String, dynamic>> fetchMessages(
+      String converstaionID, int page) async {
+    try {
+      final response = await fetchMessagesResponse(converstaionID, page);
+      // print(response.statusCode);
+      // print(jsonDecode(response.body)['messages']);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonBody = jsonDecode(response.body)['messages'];
+        List<MessageData> msgs =
+            jsonBody.map((msg) => MessageData.fromJson(msg)).toList();
+        return {
+          'statusCode': response.statusCode,
+          'messages': msgs,
+        };
+      } else {
+        return {
+          'statusCode': response.statusCode,
+          'messages': [],
+        };
+      }
+    } catch (e) {
+      print("fetching Messages Error");
+      return {
+        'statusCode': 'error',
+        'messages': [],
+      };
     }
   }
 
