@@ -3,6 +3,8 @@ import 'package:qwitter_flutter_app/components/account_settings_screen.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/accounts_widget.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/profile_picture.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/theme_changing_widget.dart';
+import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -29,6 +31,10 @@ class MainDrawer extends StatelessWidget {
         builder: (context) {
           return AccountsWidget();
         });
+  }
+  void onTap(BuildContext context) {
+    Navigator.of(context).pop();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileDetailsScreen(username: AppUser().username!),));
   }
 
   @override
@@ -160,7 +166,7 @@ class MainDrawer extends StatelessWidget {
               ),
               children: [
                 ListTile(
-                  onTap: () {},
+                  onTap: () {onTap(context);},
                   leading: const Icon(Icons.person_2_outlined,
                       size: 40, color: Colors.white),
                   title: const Text(
