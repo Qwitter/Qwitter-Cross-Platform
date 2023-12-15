@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -7,9 +10,12 @@ import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/messaging_text_field.dart';
 import 'package:qwitter_flutter_app/components/scrollable_messages.dart';
+import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/services/Messaging_service.dart';
+import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
 class MessagingScreen extends ConsumerStatefulWidget {
   const MessagingScreen({
@@ -101,20 +107,50 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   void initState() {
     super.initState();
     scrollController.addListener(scrollListener);
+    MessagingServices.socket.on('ROOM_MESSAGE', (data) {
+      print(data);
+      print(data['text']);
+      ref.watch(messagesProvider.notifier).addMessage(
+          MessageData(text: data['text'], date: DateTime.now(), byMe: false));
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          curve: Curves.easeOut,
+          duration: const Duration(
+            milliseconds: 50,
+          ),
+        );
+      });
+    });
     //call messaging api get latest page;
   }
 
   @override
   void dispose() {
     scrollController.dispose();
-
+    textController.dispose();
+    MessagingServices.socket.off('ROOM_MESSAGE');
     super.dispose();
   }
 
   scrollListener() {}
+
   void sendMessage() {
-    // ref.read(messagesProvider.notifier).DeleteHistory();
     if (textController.text == "") return;
+
+    // ref.read(messagesProvider.notifier).DeleteHistory();
+    MessagingServices.requestMessage(widget.converstaionID, textController.text)
+        .then((msg) {
+      Map<String, dynamic> mp = {};
+      mp['data'] = msg;
+      mp['conversationId'] = widget.converstaionID;
+      print(jsonEncode(mp));
+      MessagingServices.socket.emit(
+        'SEND_ROOM_MESSAGE',
+        jsonEncode(mp),
+      );
+    });
+
     // ref.read(messagesProvider.notifier).insertOldMessages(msgsss);
     final newMessage = MessageData(
       text: textController.text,
@@ -143,6 +179,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
 
   @override
   Widget build(context) {
+    MessagingServices.connectToConversation(widget.converstaionID);
     msgs = ref.watch(messagesProvider);
     ref.listen(messagesProvider, (messagesProvider, messagesProvider2) {});
     return Scaffold(

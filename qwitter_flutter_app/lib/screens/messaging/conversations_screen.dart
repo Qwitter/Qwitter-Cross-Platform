@@ -10,6 +10,7 @@ import 'package:qwitter_flutter_app/providers/user_search_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/create_conversation_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ConversationScreen extends ConsumerStatefulWidget {
   const ConversationScreen({super.key});
@@ -25,7 +26,6 @@ class ConversationScreenState extends ConsumerState<ConversationScreen> {
   void initState() {
     super.initState();
     // MessagingServices.connect("47a89388-ebc8-4e2f-af2f-b2c075b540ac");
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       MessagingServices.getConversations().then((list) {
         ref.read(ConversationProvider.notifier).InitConversations(list);
@@ -36,7 +36,6 @@ class ConversationScreenState extends ConsumerState<ConversationScreen> {
   }
 
   Future<void> refresh() async {
-    MessagingServices.test();
     MessagingServices.getConversations().then((list) {
       ref.read(ConversationProvider.notifier).InitConversations(list);
     }).onError((error, stackTrace) {

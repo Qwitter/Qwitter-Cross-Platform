@@ -27,7 +27,7 @@ class CreateConversationScreen extends ConsumerStatefulWidget {
 
 class _CreateConversationScreenState
     extends ConsumerState<CreateConversationScreen> {
-  List<User> selectedUsers = [User(fullName: "marwan"), User(fullName: "hell")];
+  List<User> selectedUsers = [];
   List<User> users = [];
   String fetching = "";
   bool isFetching = false;
@@ -132,7 +132,6 @@ class _CreateConversationScreenState
       );
       return;
     }
-    ;
     try {
       final response = await createConversationResponse();
       print(response.statusCode);
@@ -181,7 +180,7 @@ class _CreateConversationScreenState
         child: AppBar(
             backgroundColor: Colors.black,
             automaticallyImplyLeading: true,
-            title: Text("Driect Message"),
+            title: const Text("Create a conversation"),
             actions: [
               ElevatedButton(
                 onPressed: createConverstaion,
