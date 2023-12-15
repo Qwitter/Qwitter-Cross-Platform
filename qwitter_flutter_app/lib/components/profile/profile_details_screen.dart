@@ -63,7 +63,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
   Future<User?> _getUserData() async {
     /////// if(user.username==appUser.username) no need to request the data
-    String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+    String _baseUrl = 'http://qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/${widget.username}');
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
@@ -138,8 +138,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
       }
       if (newPosition / 5 <= 20) _imgRaduis = 35 - newPosition / 5;
     });
-
-
   }
 
   void _openSideDropDown() {
@@ -151,7 +149,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   }
 
   Future<void> _toggleFollowState() async {
-    String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+    String _baseUrl = 'http://qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/follow/${widget.username}');
 
     final Map<String, String> cookies = {
@@ -170,10 +168,11 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
       if (response.statusCode == 200) {
         print("follow done successfully");
         setState(() {
-        user.isFollowed = true;
+          user.isFollowed = true;
         });
       } else {
-        print("an error occured when trying to follow ${user.username} and the status code : ${response.statusCode}");
+        print(
+            "an error occured when trying to follow ${user.username} and the status code : ${response.statusCode}");
       }
     } else {
       http.Response response = await http.delete(url, headers: {
@@ -187,12 +186,12 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
       if (response.statusCode == 200) {
         print("unfollow done");
-          setState(() {
+        setState(() {
           user.isFollowed = false;
-          });
+        });
       } else {
-         print("an error occured when trying to unfollow ${user.username} and the status code : ${response.statusCode}");
-
+        print(
+            "an error occured when trying to unfollow ${user.username} and the status code : ${response.statusCode}");
       }
     }
   }
@@ -291,9 +290,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               ),
                             if (user.username == appUser.username ||
                                 (user.username != appUser.username &&
-                                    user.isFollowed==true) ||
+                                    user.isFollowed == true) ||
                                 (user.username != appUser.username &&
-                                    user.isFollowed==false &&
+                                    user.isFollowed == false &&
                                     !_scrollingView))
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,18 +357,20 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                           flexibleSpace: Container(
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 7, 7, 7),
-                              image: DecorationImage(onError: (exception, stackTrace) {
-                                print("error in loading the picture");
-                              },
+                              image: DecorationImage(
+                                onError: (exception, stackTrace) {
+                                  print("error in loading the picture");
+                                },
                                 image: (user.profileBannerUrl!.path.isEmpty
                                     ? const AssetImage(
                                         "assets/images/def_banner.png")
-                                    : NetworkImage(user.profileBannerUrl!.path
+                                    : NetworkImage(
+                                        user.profileBannerUrl!.path
                                                 .startsWith("http://")
                                             ? user.profileBannerUrl!.path
                                             : "http://" +
-                                                user.profileBannerUrl!.path,)
-                                        as ImageProvider),
+                                                user.profileBannerUrl!.path,
+                                      ) as ImageProvider),
                                 fit: BoxFit.cover,
                                 opacity: _scrollingView ? 0.17 : 1.0,
                               ),
@@ -391,7 +392,8 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   radius: _imgRaduis + 5,
                                   child: CircleAvatar(
                                     radius: _imgRaduis,
-                                    onBackgroundImageError: (exception, stackTrace) {
+                                    onBackgroundImageError:
+                                        (exception, stackTrace) {
                                       print("error when loading picture");
                                     },
                                     backgroundImage: (user
@@ -659,9 +661,10 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               color: Colors.grey.shade800,
                               fontWeight: FontWeight.w600),
                           labelStyle: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,),
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
                           labelPadding: EdgeInsets.symmetric(horizontal: 20),
                           // indicatorPadding: EdgeInsets.symmetric(horizontal: 0),
                           tabs: const [

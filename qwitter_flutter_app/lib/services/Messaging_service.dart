@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class MessagingServices {
-  static const String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+  static const String _baseUrl = 'http://qwitter.cloudns.org:3000';
   static IO.Socket socket = IO.io(_baseUrl);
 
   static Future<http.Response> getConversationsRespone() async {

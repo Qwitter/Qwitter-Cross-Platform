@@ -28,8 +28,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
   final TextEditingController emailController = TextEditingController();
 
   Future<http.Response> login() async {
-    final url =
-        Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/auth/login');
+    final url = Uri.parse('http://qwitter.cloudns.org:3000/api/v1/auth/login');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

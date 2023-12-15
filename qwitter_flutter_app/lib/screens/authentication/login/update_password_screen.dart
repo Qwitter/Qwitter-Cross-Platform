@@ -30,7 +30,7 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
 
   Future<http.Response> UpdatePassword() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/update-password');
+        'http://qwitter.cloudns.org:3000/api/v1/auth/update-password');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

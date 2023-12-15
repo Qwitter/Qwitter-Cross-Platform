@@ -419,7 +419,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) {
-            return TweetDetailsScreen(tweet: tweetProvider, pushMediaViewerFunc: pushMediaViewer);
+            return TweetDetailsScreen(
+                tweet: tweetProvider, pushMediaViewerFunc: pushMediaViewer);
           }),
         ).then((t) {
           if (t == null) return;
@@ -454,9 +455,14 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                           width: 5,
                         ),
                         Text(
-                           (tweetProvider.retweetUser!.fullName == user.fullName ? "You" : tweetProvider.retweetUser!.fullName.toString()) +
+                          (tweetProvider.retweetUser!.fullName == user.fullName
+                                  ? "You"
+                                  : tweetProvider.retweetUser!.fullName
+                                      .toString()) +
                               " reposted",
-                          style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.w800),
                         ),
                       ],
                     ),
@@ -466,7 +472,13 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TweetAvatar(avatar: tweetProvider.user!.profilePicture!.path.startsWith("http") ? tweetProvider.user!.profilePicture!.path : "http://" + tweetProvider.user!.profilePicture!.path, username: tweetProvider.user!.username!,),
+                  TweetAvatar(
+                    avatar: tweetProvider.user!.profilePicture!.path
+                            .startsWith("http")
+                        ? tweetProvider.user!.profilePicture!.path
+                        : "http://" + tweetProvider.user!.profilePicture!.path,
+                    username: tweetProvider.user!.username!,
+                  ),
                   const SizedBox(
                     width: 3,
                   ),
@@ -501,7 +513,9 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                       tweetProvider.replyToId.toString() == "null"
                           ? Container()
                           : TweetReply(
-                              tweetReplyTo: tweetProvider.replyToId!, tweetReplytoUsername: tweetProvider.user!.username!),
+                              tweetReplyTo: tweetProvider.replyToId!,
+                              tweetReplytoUsername:
+                                  tweetProvider.user!.username!),
                       TweetBody(
                         tweet: tweetProvider,
                         pushMediaViewerFunc: pushMediaViewer,

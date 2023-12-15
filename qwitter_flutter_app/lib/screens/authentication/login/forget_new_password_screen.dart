@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 
 class ForgetNewPasswordScreen extends ConsumerStatefulWidget {
-  const ForgetNewPasswordScreen({super.key , this.token});
+  const ForgetNewPasswordScreen({super.key, this.token});
   final String? token;
 
   @override
@@ -64,7 +64,7 @@ class _ForgetNewPasswordScreenState
 
   Future changePassword() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/change-password');
+        'http://qwitter.cloudns.org:3000/api/v1/auth/change-password');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

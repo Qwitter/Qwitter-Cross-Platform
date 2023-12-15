@@ -10,7 +10,6 @@ import 'package:qwitter_flutter_app/components/scrollable_messages.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
-import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
 class MessagingScreen extends ConsumerStatefulWidget {
   const MessagingScreen({
@@ -151,7 +150,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
         child: AppBar(
-          backgroundColor: black,
+          backgroundColor: Colors.black,
           automaticallyImplyLeading: true,
           title: Row(
             children: [
