@@ -15,7 +15,7 @@ import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+// import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
               );
             } else if (user.username != null) {
               // //print(snapshot.data);
-              return ConversationScreen();
+              return TweetFeedScreen();
             } else {
               return SignupChooseMethodScreen();
             }

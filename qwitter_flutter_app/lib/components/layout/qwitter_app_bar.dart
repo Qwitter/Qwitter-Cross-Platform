@@ -11,6 +11,7 @@ class QwitterAppBar extends StatelessWidget {
   final TabBar? bottomWidget;
   final bool includeActions;
   final Widget actionButton;
+  final GlobalKey<ScaffoldState>? scaffoldKey;
   const QwitterAppBar({
     super.key,
     this.bottomWidget,
@@ -22,6 +23,7 @@ class QwitterAppBar extends StatelessWidget {
     this.showLogo = true,
     this.includeActions = false,
     this.actionButton = const SizedBox(width: 1),
+    this.scaffoldKey 
   });
 
   @override
@@ -40,6 +42,7 @@ class QwitterAppBar extends StatelessWidget {
             child: includeActions ? actionButton : const SizedBox(width: 1),
           )
         ],
+
         title: Stack(
           children: [
             showLogoOnly
@@ -47,16 +50,25 @@ class QwitterAppBar extends StatelessWidget {
                     width: 1,
                   )
                 : !isButton
-                    ? CircleAvatar(
-                        radius: 13,
-                        backgroundImage: (user.profilePicture!.path.isEmpty
-                            ? const AssetImage("assets/images/def.jpg")
-                            : NetworkImage(
-                                    user.profilePicture!.path.startsWith("http")
-                                        ? user.profilePicture!.path
-                                        : "http://" + user.profilePicture!.path)
-                                as ImageProvider),
-                      )
+                    ? GestureDetector(
+                      onTap: () {
+
+                        if(scaffoldKey!=null && scaffoldKey!.currentState!=null)
+                        {
+                          scaffoldKey!.currentState!.openDrawer();
+                        }
+                      },
+                      child: CircleAvatar(
+                          radius: 13,
+                          backgroundImage: (user.profilePicture!.path.isEmpty
+                              ? const AssetImage("assets/images/def.jpg")
+                              : NetworkImage(
+                                      user.profilePicture!.path.startsWith("http")
+                                          ? user.profilePicture!.path
+                                          : "http://" + user.profilePicture!.path)
+                                  as ImageProvider),
+                        ),
+                    )
                     : IconButton(
                         onPressed: onPressed,
                         icon: Icon(

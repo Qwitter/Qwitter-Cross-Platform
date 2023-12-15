@@ -8,11 +8,6 @@ class ProfilePicture extends StatelessWidget {
   const ProfilePicture(
       {super.key});
   void onTap(BuildContext context) {
-    AppUser appUser = AppUser();
-    print(appUser.birthDate);
-    print(appUser.createdAt);
-    print(appUser.followersCount);
-    print(appUser.followingCount);
     Navigator.of(context).pop();
     Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileDetailsScreen(username: AppUser().username!),));
   }
@@ -44,7 +39,7 @@ class ProfilePicture extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: (){},
+          onTap: (){onTap(context);},
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
