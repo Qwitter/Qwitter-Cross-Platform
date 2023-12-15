@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bootstrap_icons/bootstrap_icons.dart';
+import 'package:qwitter_flutter_app/models/conversation_data.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
 class QwitterBottomNavigationBar extends StatefulWidget {
   const QwitterBottomNavigationBar({super.key});
@@ -37,6 +40,18 @@ class _QwitterBottomNavigationBarState
           setState(() {
             _currentIndex = index;
           });
+          if (index == 0) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const TweetFeedScreen()));
+          }
+          if (index == 4) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ConversationScreen()));
+          }
         },
         items: [
           BottomNavigationBarItem(

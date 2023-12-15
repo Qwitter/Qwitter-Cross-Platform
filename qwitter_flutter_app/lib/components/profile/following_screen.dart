@@ -4,8 +4,8 @@ import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/components/user_card.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
-class SuggestedFollowsScreen extends StatelessWidget {
-  const SuggestedFollowsScreen({super.key});
+class FollowingScreen extends StatelessWidget {
+  const FollowingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,7 @@ class SuggestedFollowsScreen extends StatelessWidget {
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
-            showLogoOnly: true,
-            autoImplyLeading: true,
+            showLogo: false,
           ),
         ),
         body: Container(

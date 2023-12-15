@@ -248,21 +248,20 @@ class MainDrawer extends StatelessWidget {
                         const EdgeInsets.only(top: 20, right: 30, left: 30),
                     childrenPadding: const EdgeInsets.only(left: 20),
                     iconColor: Colors.white,
-
                     title: const Text(
                       'Settings & Privacy',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.w500),
-                        
                     ),
                     children: [
                       ListTile(
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const AccountSettingsScreen(),
+                              builder: (context) =>
+                                  const AccountSettingsScreen(),
                             ),
                           );
                         },

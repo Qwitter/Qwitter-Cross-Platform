@@ -24,7 +24,7 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
   // 192.168.1.106
   Future<http.Response> sendEmail() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
+        'http://qwitter.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

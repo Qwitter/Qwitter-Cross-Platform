@@ -147,7 +147,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _updateUserProfile(String name, String description,
       String location, String website, DateTime birthData) async {
-    String _baseUrl = 'http://qwitterback.cloudns.org:3000';
+    String _baseUrl = 'http://qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/profile');
 
     try {
@@ -179,7 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             .setLocation(location)
             .setURL(website)
             .setDescription(description);
-            appUser.saveUserData();
+        appUser.saveUserData();
         print("saved successfully");
       } else {
         print(
@@ -192,20 +192,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> uploadProfilePicture(File imageFile) async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/user/profile_picture');
+        'http://qwitter.cloudns.org:3000/api/v1/user/profile_picture');
     final Map<String, String> cookies = {
-        'qwitter_jwt': 'Bearer ${appUser.token}',
-      };
+      'qwitter_jwt': 'Bearer ${appUser.token}',
+    };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "authorization": 'Bearer ${appUser.getToken}',
       "Content-Type": "multipart/form-data",
-       'Cookie': cookies.entries
-                .map((entry) => '${entry.key}=${entry.value}')
-                .join('; '),
-      
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     };
 
     request.headers.addAll(headers);
@@ -248,12 +247,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> uploadProfilebanner(File imageFile) async {
-    final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/user/profile_banner');
+    final url =
+        Uri.parse('http://qwitter.cloudns.org:3000/api/v1/user/profile_banner');
 
     final Map<String, String> cookies = {
-        'qwitter_jwt': 'Bearer ${appUser.token}',
-      };
+      'qwitter_jwt': 'Bearer ${appUser.token}',
+    };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
@@ -261,8 +260,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       "authorization": 'Bearer ${appUser.getToken}',
       "Content-Type": "multipart/form-data",
       'Cookie': cookies.entries
-                .map((entry) => '${entry.key}=${entry.value}')
-                .join('; '),
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     };
 
     request.headers.addAll(headers);

@@ -31,7 +31,7 @@ class _ChangeEmailScreenState extends ConsumerState<ChangeEmailScreen> {
 
   Future<http.Response> sendVerificationEmail() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/send-verification-email');
+        'http://qwitter.cloudns.org:3000/api/v1/auth/send-verification-email');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

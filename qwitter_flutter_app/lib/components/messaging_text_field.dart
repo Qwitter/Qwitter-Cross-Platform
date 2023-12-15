@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
 class MessagingTextField extends StatelessWidget {
   const MessagingTextField({super.key, required this.textController});

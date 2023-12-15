@@ -187,7 +187,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
         child: AppBar(
-          backgroundColor: black,
+          backgroundColor: Colors.black,
           automaticallyImplyLeading: true,
           title: Row(
             children: [
