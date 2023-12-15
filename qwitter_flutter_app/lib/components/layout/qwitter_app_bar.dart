@@ -14,6 +14,7 @@ class QwitterAppBar extends StatelessWidget {
   final GlobalKey<ScaffoldState>? scaffoldKey;
   final bool showHeading;
   final String headingText;
+
   const QwitterAppBar({
     super.key,
     this.bottomWidget,
@@ -46,6 +47,7 @@ class QwitterAppBar extends StatelessWidget {
             child: includeActions ? actionButton : const SizedBox(width: 1),
           )
         ],
+
         title: Stack(
           children: [
             showLogoOnly
