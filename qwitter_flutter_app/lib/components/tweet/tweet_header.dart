@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
 class TweetHeader extends StatelessWidget {
@@ -48,6 +49,7 @@ class TweetHeader extends StatelessWidget {
   }
 
   List<Widget> headerRowWidgets(width, context) {
+    final appUser = AppUser();
     return [
       TextButton(
         onPressed: () {},
@@ -149,6 +151,8 @@ class TweetHeader extends StatelessWidget {
   }
 
   List<Widget> headerColumnWidgets(goToProfile) {
+    final appUser = AppUser();
+
     return [
       Column(
           mainAxisSize: MainAxisSize.min,
@@ -209,7 +213,7 @@ class TweetHeader extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  Container(
+                  if (appUser.username != tweetUserHandle) Container(
                     height: 35,
                     padding: !stretchedMenu
                         ? EdgeInsets.fromLTRB(0, 0, 15, 0)
