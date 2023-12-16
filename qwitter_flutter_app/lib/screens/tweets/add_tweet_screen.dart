@@ -27,7 +27,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
   final TextEditingController _tweetController = TextEditingController();
 
   Future<bool> addTweet(List<File>? imageFiles) async {
-    final url = Uri.parse('http://qwitter.cloudns.org:3000/api/v1/tweets');
+    final url = Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/tweets');
 
     final request = http.MultipartRequest('POST', url);
     final Map<String, String> cookies = {

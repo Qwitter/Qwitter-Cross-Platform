@@ -8,7 +8,7 @@ import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:path_provider/path_provider.dart';
 
 class TweetsServices {
-  static String _baseUrl = 'http://qwitter.cloudns.org:3000';
+  static String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
   static AppUser user = AppUser();
   static Map<String, String> cookies = {
     'qwitter_jwt': 'Bearer ${user.getToken}',

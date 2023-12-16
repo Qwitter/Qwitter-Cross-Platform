@@ -5,6 +5,8 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_body.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/screens/tweets/likers_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/retweeters_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
@@ -219,11 +221,14 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                   Row(
                                     children: [
                                       TweetAvatar(
-                                          avatar: widget.tweet.user!
-                                              .profilePicture!.path, username: widget.tweet.user!.username!,),
+                                        avatar: widget
+                                            .tweet.user!.profilePicture!.path,
+                                        username: widget.tweet.user!.username!,
+                                      ),
                                       Expanded(
                                         child: TweetHeader.stretched(
-                                          tweetUserHandle: widget.tweet.user!.username!,
+                                          tweetUserHandle:
+                                              widget.tweet.user!.username!,
                                           tweetUserName:
                                               widget.tweet.user!.fullName!,
                                           tweetUserVerified: true,
@@ -325,7 +330,17 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                                 .length)
                                                             .toDouble(),
                                                 child: TextButton(
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            RetweetersScreen(
+                                                                tweetId:
+                                                                    tweetProvider
+                                                                        .id!),
+                                                      ),
+                                                    );
+                                                  },
                                                   child: Text(
                                                     tweetProvider.retweetsCount
                                                         .toString(),
@@ -391,7 +406,17 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                                 .length)
                                                             .toDouble(),
                                                 child: TextButton(
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            LikersScreen(
+                                                                tweetId:
+                                                                    tweetProvider
+                                                                        .id!),
+                                                      ),
+                                                    );
+                                                  },
                                                   child: Text(
                                                     tweetProvider.likesCount
                                                         .toString(),
@@ -544,7 +569,11 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                             ),
                           ],
                         )
-                      : index == tweetProvider.replies.length + 1 ? SizedBox(height: focusNode.hasFocus ? 150 :80,) : TweetCard(tweet: tweetProvider.replies[index - 1]);
+                      : index == tweetProvider.replies.length + 1
+                          ? SizedBox(
+                              height: focusNode.hasFocus ? 150 : 80,
+                            )
+                          : TweetCard(tweet: tweetProvider.replies[index - 1]);
                 },
                 itemCount: tweetProvider.replies.length + 2,
               ),
@@ -657,7 +686,9 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                   textEditingController.text);
                                               textEditingController.text = "";
                                             });
-                                            FocusScope.of(context).requestFocus(FocusNode());                                          }
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
+                                          }
                                         },
                                       ),
                                     ),

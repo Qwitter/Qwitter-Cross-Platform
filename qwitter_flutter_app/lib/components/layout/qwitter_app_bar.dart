@@ -14,7 +14,6 @@ class QwitterAppBar extends StatelessWidget {
   final GlobalKey<ScaffoldState>? scaffoldKey;
   final bool showHeading;
   final String headingText;
-
   const QwitterAppBar({
     super.key,
     this.bottomWidget,
@@ -73,6 +72,7 @@ class QwitterAppBar extends StatelessWidget {
                                   as ImageProvider),
                         ),
                       )
+
                     : IconButton(
                         onPressed: onPressed,
                         icon: Icon(

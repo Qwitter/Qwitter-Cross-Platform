@@ -9,20 +9,18 @@ import 'package:qwitter_flutter_app/components/user_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
-class FollowersScreen extends StatefulWidget {
-  const FollowersScreen({super.key});
-
+class RetweetersScreen extends StatefulWidget {
+  const RetweetersScreen({super.key, required this.tweetId});
+  final String tweetId;
   @override
-  State<FollowersScreen> createState() => _FollowersScreenState();
+  State<RetweetersScreen> createState() => _RetweetersScreenState();
 }
 
-class _FollowersScreenState extends State<FollowersScreen> {
-  List followersList = [];
-  Future<http.Response> getListOfFollowers() async {
-    final username = AppUser().getUsername;
-
+class _RetweetersScreenState extends State<RetweetersScreen> {
+  List retweetersList = [];
+  Future<http.Response> getListOfRetweeters() async {
     final url = Uri.parse(
-        'http://back.qwitter.cloudns.org:3000/api/v1/user/followers/$username');
+        'http://back.qwitter.cloudns.org:3000/api/v1/tweets/${widget.tweetId}/retweets');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -46,11 +44,11 @@ class _FollowersScreenState extends State<FollowersScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getListOfFollowers().then((value) {
+      getListOfRetweeters().then((value) {
         print(value.reasonPhrase);
         print(value.body);
         setState(() {
-          followersList = jsonDecode(value.body);
+          retweetersList = jsonDecode(value.body)['retweeters'];
         });
       });
     });
@@ -70,7 +68,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
             showLogoOnly: true,
             showLogo: false,
             showHeading: true,
-            headingText: 'Followers',
+            headingText: 'Retweeters',
           ),
         ),
         body: Container(
@@ -84,13 +82,13 @@ class _FollowersScreenState extends State<FollowersScreen> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: followersList.length,
+                itemCount: retweetersList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return followersList.isEmpty
+                  return retweetersList.isEmpty
                       ? Container()
                       : UserCard(
-                          userData: followersList[index],
-                          isFollowed: followersList[index]['isFollowing'],
+                          userData: retweetersList[index],
+                          isFollowed: false,
                         );
                 },
               ),

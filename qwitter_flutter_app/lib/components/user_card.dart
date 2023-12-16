@@ -18,8 +18,7 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   Future<http.Response> followUser() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
-
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
     };
@@ -41,7 +40,7 @@ class _UserCardState extends State<UserCard> {
 
   Future<http.Response> unFollowUser() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -106,43 +105,45 @@ class _UserCardState extends State<UserCard> {
           ),
           trailing: Transform.translate(
             offset: const Offset(0, -5),
-            child: widget.isFollowed
-                ? SecondaryButtonOutlined(
-                    text: 'Following',
-                    onPressed: () {
-                      unFollowUser().then((value) {
-                        print(value.reasonPhrase);
-                        print(value.body);
-                      });
-                      setState(() {
-                        widget.isFollowed = false;
-                      });
-                    },
-                    paddingValue:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 35),
-                    textStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                : SecondaryButton(
-                    text: 'Follow',
-                    onPressed: () {
-                      followUser().then((value) {
-                        print(value.reasonPhrase);
-                        print(value.body);
-                      });
-                      setState(() {
-                        widget.isFollowed = true;
-                      });
-                    },
-                    paddingValue:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 35),
-                    textStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+            child: widget.userData?['userName'] == AppUser().username
+                ? const SizedBox(width: 1)
+                : widget.isFollowed
+                    ? SecondaryButtonOutlined(
+                        text: 'Following',
+                        onPressed: () {
+                          unFollowUser().then((value) {
+                            print(value.reasonPhrase);
+                            print(value.body);
+                          });
+                          setState(() {
+                            widget.isFollowed = false;
+                          });
+                        },
+                        paddingValue: const EdgeInsets.symmetric(
+                            vertical: 0, horizontal: 35),
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
+                    : SecondaryButton(
+                        text: 'Follow',
+                        onPressed: () {
+                          followUser().then((value) {
+                            print(value.reasonPhrase);
+                            print(value.body);
+                          });
+                          setState(() {
+                            widget.isFollowed = true;
+                          });
+                        },
+                        paddingValue: const EdgeInsets.symmetric(
+                            vertical: 0, horizontal: 35),
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
           ),
         ),
       ),
