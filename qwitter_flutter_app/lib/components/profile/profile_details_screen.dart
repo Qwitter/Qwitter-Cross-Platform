@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/profile/edit_profile_button.dart';
 import 'package:qwitter_flutter_app/components/profile/follow_button.dart';
+import 'package:qwitter_flutter_app/components/profile/followers_screen.dart';
+import 'package:qwitter_flutter_app/components/profile/following_screen.dart';
 import 'package:qwitter_flutter_app/components/profile/notifications_button.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
@@ -588,7 +590,14 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             child: Row(
                               children: [
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const FollowingScreen(),
+                                      ),
+                                    );
+                                  },
                                   style: const ButtonStyle(
                                       overlayColor: MaterialStatePropertyAll(
                                           Colors.transparent)),
@@ -601,7 +610,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       Text(
@@ -615,7 +624,14 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const FollowersScreen(),
+                                      ),
+                                    );
+                                  },
                                   style: const ButtonStyle(
                                       overlayColor: MaterialStatePropertyAll(
                                           Colors.transparent),
@@ -630,7 +646,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       Text(
