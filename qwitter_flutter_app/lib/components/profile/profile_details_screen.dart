@@ -65,7 +65,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
   Future<User?> _getUserData() async {
     /////// if(user.username==appUser.username) no need to request the data
-    String _baseUrl = 'http://qwitter.cloudns.org:3000';
+    String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/${widget.username}');
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
@@ -151,7 +151,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   }
 
   Future<void> _toggleFollowState() async {
-    String _baseUrl = 'http://qwitter.cloudns.org:3000';
+    String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/follow/${widget.username}');
 
     final Map<String, String> cookies = {

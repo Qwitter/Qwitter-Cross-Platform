@@ -18,7 +18,7 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   Future<http.Response> followUser() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -41,7 +41,7 @@ class _UserCardState extends State<UserCard> {
 
   Future<http.Response> unFollowUser() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/follow/${widget.userData?['userName']}');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',

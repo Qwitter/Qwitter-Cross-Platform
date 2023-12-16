@@ -20,7 +20,7 @@ class _RetweetersScreenState extends State<RetweetersScreen> {
   List retweetersList = [];
   Future<http.Response> getListOfRetweeters() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/tweets/${widget.tweetId}/retweets');
+        'http://back.qwitter.cloudns.org:3000/api/v1/tweets/${widget.tweetId}/retweets');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',

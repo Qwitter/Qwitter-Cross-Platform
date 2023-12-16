@@ -55,7 +55,7 @@ class _ProfilePictureScreenState extends ConsumerState<ProfilePictureScreen> {
 
   Future<bool> uploadProfilePicture(File imageFile) async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/user/profile_picture');
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/profile_picture');
 
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);

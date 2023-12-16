@@ -22,7 +22,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     final username = AppUser().getUsername;
 
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/user/follow/$username');
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/follow/$username');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
