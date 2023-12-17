@@ -87,6 +87,7 @@ class _LikersScreenState extends State<LikersScreen> {
                       isFollowed: false,
                     );
             },
+
           ),
         ),
       ),
