@@ -46,6 +46,7 @@ class QwitterAppBar extends StatelessWidget {
             child: includeActions ? actionButton : const SizedBox(width: 1),
           )
         ],
+
         title: Stack(
           children: [
             showLogoOnly
@@ -71,6 +72,7 @@ class QwitterAppBar extends StatelessWidget {
                                   as ImageProvider),
                         ),
                       )
+
                     : IconButton(
                         onPressed: onPressed,
                         icon: Icon(

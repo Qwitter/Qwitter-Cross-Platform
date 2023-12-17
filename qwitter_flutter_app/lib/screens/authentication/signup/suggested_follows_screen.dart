@@ -22,6 +22,7 @@ class _SuggestedFollowsScreenState extends State<SuggestedFollowsScreen> {
     final url = Uri.parse(
         'http://back.qwitter.cloudns.org:3000/api/v1/user/suggestions');
 
+
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
     };
