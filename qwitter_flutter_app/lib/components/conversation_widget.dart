@@ -3,8 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
+import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
@@ -20,6 +22,7 @@ class ConversationWidget extends ConsumerWidget {
     void switchToMessagingScreen() {
       print("hello world");
       ref.read(messagesProvider.notifier).DeleteHistory();
+      ref.read(imageProvider.notifier).setImage(null);
       Navigator.of(context).push(
         MaterialPageRoute(
             builder: (context) => MessagingScreen(
@@ -28,6 +31,12 @@ class ConversationWidget extends ConsumerWidget {
       );
     }
 
+    String imageUrl = "";
+    if (convo.isGroup) {
+      imageUrl = convo.photo ?? "";
+    } else if (convo.users.isNotEmpty) {
+      imageUrl = convo.users.first.profilePicture?.path ?? "";
+    }
     double radius = 30;
     return SizedBox(
       height: 80,
@@ -42,20 +51,37 @@ class ConversationWidget extends ConsumerWidget {
           padding: const EdgeInsets.all(0.0),
           child: Row(
             children: [
-              (convo.photo != null&&false)
-                  ? Container(
-                      width: radius * 2,
-                      child: CircleAvatar(
-                        radius: radius,
-                      backgroundImage: NetworkImage(convo.photo ?? ""),
+              InkWell(
+                onTap: convo.isGroup
+                    ? () {}
+                    : () {
+                        if (convo.users.isNotEmpty &&
+                            convo.users.first.username != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfileDetailsScreen(
+                                  username: convo.users.first.username!),
+                            ),
+                          );
+                        }
+                      },
+                customBorder: const CircleBorder(),
+                child: (imageUrl != "")
+                    ? Container(
+                        width: radius * 2,
+                        child: CircleAvatar(
+                          radius: radius,
+                          backgroundImage: NetworkImage(imageUrl),
+                        ),
+                      )
+                    : ClipOval(
+                        child: Image.asset(
+                          "assets/images/def.jpg",
+                          width: 60,
+                        ),
                       ),
-                    )
-                  : ClipOval(
-                      child: Image.asset(
-                        "assets/images/def.jpg",
-                        width: 60,
-                      ),
-                    ),
+              ),
               const SizedBox(
                 width: 10,
               ),

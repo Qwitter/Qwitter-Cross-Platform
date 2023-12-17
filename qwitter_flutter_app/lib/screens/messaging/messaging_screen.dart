@@ -9,10 +9,12 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/messaging_text_field.dart';
+import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/components/scrollable_messages.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
@@ -36,6 +38,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   final ScrollController scrollController = ScrollController();
   bool _isFetching = false;
   bool allFetched = false;
+  File? imageFile;
   @override
   void initState() {
     super.initState();
@@ -44,6 +47,9 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     MessagingServices.socket.on('ROOM_MESSAGE', (data) {
       print(data);
       print(data['text']);
+      ref
+          .read(messagesProvider.notifier)
+          .addMessage(MessageData.fromJson(data));
       WidgetsBinding.instance.addPostFrameCallback((_) {
         scrollController.animateTo(
           scrollController.position.minScrollExtent,
@@ -82,11 +88,11 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   }
 
   scrollListener() {
-    print(scrollController.offset);
+    // print(scrollController.offset);
     if (scrollController.position.maxScrollExtent <=
         scrollController.offset + 150) {
-      print(_isFetching);
-      print(allFetched);
+      // print(_isFetching);
+      // print(allFetched);
       if (_isFetching == false && allFetched == false) {
         print("starting to fetch");
         fecthMessages();
@@ -96,8 +102,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
 
   void sendMessage() {
     if (textController.text == "") return;
-
-    MessagingServices.requestMessage(widget.convo.id, textController.text)
+    MessagingServices.requestMessage(
+            widget.convo.id, textController.text, imageFile)
         .then((msg) {
       Map<String, dynamic> mp = {};
       mp['data'] = msg;
@@ -106,11 +112,14 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       ref
           .watch(messagesProvider.notifier)
           .addMessage(MessageData.fromJson(msg));
+      print(MessagingServices.socket.connected);
       MessagingServices.socket.emit(
         'SEND_ROOM_MESSAGE',
         jsonEncode(mp),
       );
     });
+
+    ref.read(imageProvider.notifier).setImage(null);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollController.animateTo(
         scrollController.position.minScrollExtent,
@@ -128,33 +137,51 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   @override
   Widget build(context) {
     double radius = 17.5;
+    imageFile = ref.watch(imageProvider);
     MessagingServices.connectToConversation(widget.convo.id);
     msgs = ref.watch(messagesProvider);
     // msgs = msgsss;
     ref.listen(messagesProvider, (messagesProvider, messagesProvider2) {});
     // widget.convo.name='asfklnhnaklfasklfnasklfnasklfnasklfnasklfnasaksfna';
+    String imageUrl = "";
+    if (widget.convo.isGroup) {
+      imageUrl = widget.convo.photo ?? "";
+    } else if (widget.convo.users.isNotEmpty) {
+      imageUrl = widget.convo.users.first.profilePicture?.path ?? "";
+    }
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
         child: AppBar(
           backgroundColor: black,
+          surfaceTintColor: black,
           automaticallyImplyLeading: true,
           title: Row(
             children: [
               InkWell(
-                onTap: () {
-                  print('pic');
-                },
+                onTap: widget.convo.isGroup == false
+                    ? () {
+                        if (widget.convo.users.isNotEmpty &&
+                            widget.convo.users.first.username != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfileDetailsScreen(
+                                  username: widget.convo.users.first.username!),
+                            ),
+                          );
+                        }
+                      }
+                    : null,
                 splashColor: Colors.red,
                 customBorder: CircleBorder(),
-                child: (widget.convo.photo != null)
+                child: (imageUrl != '')
                     ? Container(
                         width: radius * 2,
                         child: CircleAvatar(
                           radius: radius,
-                          backgroundImage:
-                              NetworkImage(widget.convo.photo ?? ""),
+                          backgroundImage: NetworkImage(imageUrl),
                         ),
                       )
                     : ClipOval(
@@ -199,34 +226,12 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
           ScrollableMessages(
             msgs: msgs,
             scrollController: scrollController,
+            isGroup: widget.convo.isGroup,
           ),
-          Container(
-            constraints: const BoxConstraints(maxHeight: 300),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  MessagingTextField(textController: textController),
-                  const SizedBox(
-                    width: 10,
-                  ), // Add some spacing between the TextField and the button
-
-                  Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue,
-                    ),
-                    child: IconButton(
-                      color: Colors.white,
-                      icon: const Icon(Icons.send),
-                      onPressed: sendMessage,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
+          MessagingTextField(
+            textController: textController,
+            sendMessage: sendMessage,
+          ),
         ],
       ),
     );

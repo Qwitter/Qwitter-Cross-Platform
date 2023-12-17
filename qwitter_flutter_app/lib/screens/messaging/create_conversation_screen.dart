@@ -56,7 +56,7 @@ class _CreateConversationScreenState
 
   static Future<http.Response> searchUserRespone(String data) async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/conversation/user?q=$data');
+        'http://back.qwitter.cloudns.org:3000/api/v1/conversation/user?q=$data');
 
     AppUser user = AppUser();
 
@@ -110,7 +110,7 @@ class _CreateConversationScreenState
 
   Future<http.Response> createConversationResponse() async {
     final url =
-        Uri.parse('http://qwitter.cloudns.org:3000/api/v1/conversation');
+        Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/conversation');
 
     Map<String, dynamic> fields = {
       'conversation_name': 'name',

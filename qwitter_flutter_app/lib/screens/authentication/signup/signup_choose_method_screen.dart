@@ -65,7 +65,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
 
   Future<http.Response> checkEmailAvailability() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/check-existence');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
     //print('Email: ${user.email}');
@@ -88,7 +88,7 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
 
   Future<http.Response> googleSignIn() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/google/login');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/google/login');
 
     String token;
 

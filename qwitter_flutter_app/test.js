@@ -27,7 +27,7 @@ export function MessagesConversation() {
 
 
     // const SOCKET_URL:string = process.env.VITE_BACKEND_URL as string ;
-    const SOCKET_URL = "http://qwitterback.cloudns.org:3000";
+    const SOCKET_URL = "http://back.qwitter.cloudns.org:3000";
     const socket = io(SOCKET_URL);
     const queryClient = useQueryClient()
 

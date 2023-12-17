@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
           }),
     );
   }
-}
+} 
 
 // Home Screen depending on if user is logged in or not
 // FutureBuilder(

@@ -35,7 +35,7 @@ class _ConfirmationCodeScreenState
 
   Future<http.Response> sendVerificationEmail() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/send-verification-email');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/send-verification-email');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
@@ -57,7 +57,7 @@ class _ConfirmationCodeScreenState
 
   Future verifyEmail() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/verify-email/${codeController.text}');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/verify-email/${codeController.text}');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
@@ -78,7 +78,7 @@ class _ConfirmationCodeScreenState
 
   Future resetPassword() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/reset-password/${codeController.text}');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/reset-password/${codeController.text}');
 
     final response = await http.post(
       url,
@@ -93,7 +93,7 @@ class _ConfirmationCodeScreenState
 
   Future changeEmail(String token) async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/change-email');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/change-email');
 
     final Map<String, String> data = {"email": widget.user!.email!};
 
@@ -118,7 +118,7 @@ class _ConfirmationCodeScreenState
 
   Future<http.Response> sendEmail() async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/auth/forgot-password');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/forgot-password');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

@@ -40,7 +40,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
 
   Future<Response> updateUsername(String username) async {
     final url =
-        Uri.parse('http://qwitterback.cloudns.org:3000/api/v1/user/username');
+        Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/user/username');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

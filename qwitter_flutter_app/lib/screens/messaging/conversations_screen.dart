@@ -37,7 +37,7 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
   }
 
   Future<void> refresh() async {
-    MessagingServices.getConversations().then((list) {
+    await MessagingServices.getConversations().then((list) {
       ref.read(ConversationProvider.notifier).InitConversations(list);
     }).onError((error, stackTrace) {
       //print(error);
@@ -59,89 +59,86 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
   @override
   Widget build(context) {
     conversations = ref.watch(ConversationProvider);
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          elevation: 0,
-          leading: SizedBox(
-            width: double.infinity,
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                InkWell(
-                  onTap: () {
-                    print("hello world");
-                  },
-                  customBorder: CircleBorder(),
-                  child: (user.profilePicture != null &&
-                          user.profilePicture?.path != '')
-                      ? Container(
-                          width: radius * 2,
-                          child: CircleAvatar(
-                            radius: radius,
-                            backgroundImage:
-                                NetworkImage(user.profilePicture?.path ?? ""),
-                          ),
-                        )
-                      : ClipOval(
-                          child: Image.asset(
-                            "assets/images/def.jpg",
-                            width: 35,
-                          ),
-                        ),
-                )
-              ],
-            ),
-          ),
-          title: Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(20)),
-              width: 300,
-              child: TextButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 44, 43, 43),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "  Search Driect Messages",
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Color.fromARGB(255, 197, 193, 193)),
-                    )),
-              )),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.settings,
-                color: Colors.black,
-              ),
-            )
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: refresh,
-          child: ListView.builder(
-            itemCount: conversations.length,
-            itemBuilder: (ctx, idx) {
-              return ConversationWidget(convo: conversations[idx]);
-            },
-          ),
-        ),
-        bottomNavigationBar: const QwitterBottomNavigationBar(),
+    return Scaffold(
+      appBar: AppBar(
         backgroundColor: Colors.black,
-        floatingActionButton: FloatingActionButton(
-          onPressed: goToCreateConversationScreen,
-          child: const Icon(Icons.add),
+        elevation: 0,
+        leading: SizedBox(
+          width: double.infinity,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 10,
+              ),
+              InkWell(
+                onTap: () {
+                  print("hello world");
+                },
+                customBorder: CircleBorder(),
+                child: (user.profilePicture != null &&
+                        user.profilePicture?.path != '')
+                    ? Container(
+                        width: radius * 2,
+                        child: CircleAvatar(
+                          radius: radius,
+                          backgroundImage:
+                              NetworkImage(user.profilePicture?.path ?? ""),
+                        ),
+                      )
+                    : ClipOval(
+                        child: Image.asset(
+                          "assets/images/def.jpg",
+                          width: 35,
+                        ),
+                      ),
+              )
+            ],
+          ),
         ),
+        title: Container(
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+            width: 300,
+            child: TextButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 44, 43, 43),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "  Search Driect Messages",
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Color.fromARGB(255, 197, 193, 193)),
+                  )),
+            )),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.settings,
+              color: Colors.black,
+            ),
+          )
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: ListView.builder(
+          itemCount: conversations.length,
+          itemBuilder: (ctx, idx) {
+            return ConversationWidget(convo: conversations[idx]);
+          },
+        ),
+      ),
+      bottomNavigationBar: const QwitterBottomNavigationBar(),
+      backgroundColor: Colors.black,
+      floatingActionButton: FloatingActionButton(
+        onPressed: goToCreateConversationScreen,
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -34,17 +34,6 @@ class MessageNotifier extends StateNotifier<List<MessageData>> {
 
     for (var msg in msgs) {
       if (!state.contains(msg)) {
-        print(msg.text);
-        print(msg.date);
-        print(msg.id);
-        print(msg.name);
-        if (state.isNotEmpty) {
-          print(state.last == msg);
-          print(state.last.text);
-          print(state.last.date);
-          print(state.last.id);
-          print(state.last.name);
-        }
         added = true;
         state = [...state, msg];
       }

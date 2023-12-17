@@ -48,7 +48,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
 
   Future<http.Response> checkEmailAvailability() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/auth/check-existence');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
     //print('Email: ${user.email}');
@@ -70,7 +70,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
   }
 
   Future<http.Response> googleSignIn() async {
-    final url = Uri.parse('http://qwitter.cloudns.org:3000/api/v1/auth/google/login');
+    final url = Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/auth/google/login');
 
     String token;
 
@@ -144,7 +144,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
 
   Future<http.Response> sendEmail() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/auth/check-existence');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/check-existence');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
