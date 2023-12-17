@@ -76,23 +76,17 @@ class _RetweetersScreenState extends State<RetweetersScreen> {
           height: double.infinity,
           color: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-          child: SingleChildScrollView(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: retweetersList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return retweetersList.isEmpty
-                      ? Container()
-                      : UserCard(
-                          userData: retweetersList[index],
-                          isFollowed: false,
-                        );
-                },
-              ),
-            ]),
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: retweetersList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return retweetersList.isEmpty
+                  ? Container()
+                  : UserCard(
+                      userData: retweetersList[index],
+                      isFollowed: false,
+                    );
+            },
           ),
         ),
       ),
