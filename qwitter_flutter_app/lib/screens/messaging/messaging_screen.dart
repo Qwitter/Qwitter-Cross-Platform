@@ -101,7 +101,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   }
 
   void sendMessage() {
-    if (textController.text == "") return;
+    if (textController.text == "" && imageFile == null) return;
     MessagingServices.requestMessage(
             widget.convo.id, textController.text, imageFile)
         .then((msg) {

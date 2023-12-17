@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
+import 'package:qwitter_flutter_app/screens/messaging/messaging_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
@@ -35,16 +36,16 @@ class MessageCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
               child: isGroup == true
-                  ? InkWell(
+                  ? GestureDetector(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProfileDetailsScreen(username: msg.name),
-                            ));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProfileDetailsScreen(username: msg.name),
+                          ),
+                        );
                       },
-                      customBorder: const CircleBorder(),
                       child: msg.byMe == false
                           ? (msg.profileImageUrl != null &&
                                   user.profilePicture?.path != '')
@@ -78,32 +79,47 @@ class MessageCard extends StatelessWidget {
                 children: [
                   msg.media != null
                       ? (msg.media!.type == 'image'
-                          ? InkWell(
+                          ? GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        MessagingMediaViewerScreen(
+                                      imageUrl: msg.media!.value,
+                                      tag: tag,
+                                    ),
+                                  ),
+                                );
+                              },
                               child: Container(
                                 padding: const EdgeInsets.all(5),
                                 constraints: const BoxConstraints(
-                                    maxHeight: 300, maxWidth: 300),
-                                child: Hero(
-                                  tag: tag,
-                                  child: Image.network(msg.media!.value,
-                                      loadingBuilder: (BuildContext context,
-                                          Widget child,
-                                          ImageChunkEvent? loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      // Image has successfully loaded
-                                      return child;
-                                    } else {
-                                      // Image is still loading
-                                      return CircularProgressIndicator();
-                                    }
-                                  }, errorBuilder: (BuildContext context,
-                                          Object error,
-                                          StackTrace? stackTrace) {
-                                    // Handle image loading errors
-                                    return const SizedBox(
-                                      height: 0,
-                                    );
-                                  }),
+                                    maxHeight: 800, maxWidth: 300),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Hero(
+                                    tag: tag,
+                                    child: Image.network(msg.media!.value,
+                                        loadingBuilder: (BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        // Image has successfully loaded
+                                        return child;
+                                      } else {
+                                        // Image is still loading
+                                        return CircularProgressIndicator();
+                                      }
+                                    }, errorBuilder: (BuildContext context,
+                                            Object error,
+                                            StackTrace? stackTrace) {
+                                      // Handle image loading errors
+                                      return const SizedBox(
+                                        height: 0,
+                                      );
+                                    }),
+                                  ),
                                 ),
                               ),
                             )
@@ -119,7 +135,7 @@ class MessageCard extends StatelessWidget {
                         : CrossAxisAlignment.start,
                     children: [
                       msg.text != ""
-                          ? InkWell(
+                          ? GestureDetector(
                               onLongPress: () {
                                 longHold(msg);
                               },
@@ -164,11 +180,14 @@ class MessageCard extends StatelessWidget {
             ),
           ],
         ),
-        Text(
-          (msg.byMe ? "" : msg.name + ' . ') +
-              DateFormat('h:mm a').format(msg.date),
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: Colors.grey, fontSize: 12),
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Text(
+            (msg.byMe || isGroup == false ? "" : msg.name + ' . ') +
+                DateFormat('h:mm a').format(msg.date),
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
         ),
       ],
     );
