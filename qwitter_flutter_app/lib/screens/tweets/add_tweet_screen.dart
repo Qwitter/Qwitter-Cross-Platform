@@ -17,7 +17,10 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 
 class AddTweetScreen extends ConsumerStatefulWidget {
-  const AddTweetScreen({super.key});
+  const AddTweetScreen({super.key, this.replyToTweetId, this.tweetText});
+
+  final String? replyToTweetId;
+  final String? tweetText;
 
   @override
   ConsumerState<AddTweetScreen> createState() => _AddTweetScreenState();
@@ -49,6 +52,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
       "text": _tweetController.text.toString(),
       "source": Platform.isAndroid ? "Android" : "iOS",
       "coordinates": "0,0",
+      "replyToTweetId": widget.replyToTweetId ?? "",
       "sensitive": "false",
     };
 
@@ -103,6 +107,9 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
   @override
   void initState() {
     super.initState();
+    _tweetController.text = widget.tweetText ?? "";
+    print("Tweet text: ${widget.tweetText}");
+    print("replyToTweetId: ${widget.replyToTweetId}");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(tweetProgressProvider.notifier).setTweetProgress(1);
     });
