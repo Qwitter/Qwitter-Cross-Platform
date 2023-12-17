@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_body.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/screens/tweets/add_tweet_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/likers_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/retweeters_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
@@ -25,7 +27,7 @@ class TweetDetailsScreen extends ConsumerStatefulWidget {
 class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
   TextEditingController textEditingController = TextEditingController();
   final focusNode = FocusNode();
-
+  VoidCallback? buttonFunction;
   bool isImage(String filePath) {
     final imageExtensions = [
       'jpg',
@@ -186,6 +188,21 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
 
   Widget build(BuildContext context) {
     final tweetProvider = ref.watch(widget.tweet.provider);
+    textEditingController.addListener(() {
+      if (textEditingController.text.isEmpty) {
+        setState(() {
+          buttonFunction = null;
+        });
+      } else {
+        setState(() {
+          buttonFunction = () {
+            TweetsServices.makeReply(
+                ref, tweetProvider, textEditingController.text);
+            textEditingController.text = "";
+          };
+        });
+      }
+    });
     print(tweetProvider.id);
     return WillPopScope(
       onWillPop: () async {
@@ -648,14 +665,46 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                     child: Row(
                                       children: [
                                         IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            focusNode.unfocus();
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddTweetScreen(
+                                                  replyToTweetId:
+                                                      widget.tweet.id!,
+                                                  tweetText:
+                                                      textEditingController
+                                                          .text,
+                                                ),
+                                              ),
+                                            );
+                                          },
                                           icon: const Icon(
                                             Icons.camera_alt_outlined,
                                             color: Colors.blue,
                                           ),
                                         ),
                                         IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            print(
+                                                "tweetID:  ${widget.tweet.id}");
+
+                                            print(
+                                                "text:  ${textEditingController.text}");
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddTweetScreen(
+                                                  replyToTweetId:
+                                                      widget.tweet.id!,
+                                                  tweetText:
+                                                      textEditingController
+                                                          .text,
+                                                ),
+                                              ),
+                                            );
+                                          },
                                           icon: const Icon(
                                             Icons.image_outlined,
                                             color: Colors.blue,
@@ -667,29 +716,10 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                   Expanded(
                                     child: Container(
                                       alignment: Alignment.centerRight,
-                                      child: FilledButton(
-                                        style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateColor.resolveWith(
-                                                    (states) => Colors.blue)),
-                                        child: Text(
-                                          "Reply",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        onPressed: () {
-                                          if (textEditingController
-                                              .text.isNotEmpty) {
-                                            setState(() {
-                                              TweetsServices.makeReply(
-                                                  ref,
-                                                  tweetProvider,
-                                                  textEditingController.text);
-                                              textEditingController.text = "";
-                                            });
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
-                                          }
-                                        },
+                                      child: PrimaryButton(
+                                        buttonSize: Size(90, 30),
+                                        onPressed: buttonFunction,
+                                        text: 'Reply',
                                       ),
                                     ),
                                   )
