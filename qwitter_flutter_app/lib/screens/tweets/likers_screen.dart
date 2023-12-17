@@ -76,23 +76,18 @@ class _LikersScreenState extends State<LikersScreen> {
           height: double.infinity,
           color: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-          child: SingleChildScrollView(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: likersList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return likersList.isEmpty
-                      ? Container()
-                      : UserCard(
-                          userData: likersList[index],
-                          isFollowed: false,
-                        );
-                },
-              ),
-            ]),
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: likersList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return likersList.isEmpty
+                  ? Container()
+                  : UserCard(
+                      userData: likersList[index],
+                      isFollowed: false,
+                    );
+            },
+
           ),
         ),
       ),

@@ -91,23 +91,17 @@ class _FollowingScreenState extends State<FollowingScreen> {
           height: double.infinity,
           color: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-          child: SingleChildScrollView(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: followersList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return followersList.isEmpty
-                      ? Container()
-                      : UserCard(
-                          userData: followersList[index],
-                          isFollowed: true,
-                        );
-                },
-              ),
-            ]),
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: followersList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return followersList.isEmpty
+                  ? Container()
+                  : UserCard(
+                      userData: followersList[index],
+                      isFollowed: true,
+                    );
+            },
           ),
         ),
       ),
