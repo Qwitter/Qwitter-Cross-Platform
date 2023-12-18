@@ -9,21 +9,18 @@ import 'package:qwitter_flutter_app/components/user_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
-class FollowingScreen extends StatefulWidget {
-  const FollowingScreen({super.key});
-
+class LikersScreen extends StatefulWidget {
+  const LikersScreen({super.key, required this.tweetId});
+  final String tweetId;
   @override
-  State<FollowingScreen> createState() => _FollowingScreenState();
+  State<LikersScreen> createState() => _LikersScreenState();
 }
 
-class _FollowingScreenState extends State<FollowingScreen> {
-  List followersList = [];
-  Future<http.Response> getListOfFollowing() async {
-    final username = AppUser().getUsername;
-
+class _LikersScreenState extends State<LikersScreen> {
+  List likersList = [];
+  Future<http.Response> getListOfLikers() async {
     final url = Uri.parse(
-        'http://back.qwitter.cloudns.org:3000/api/v1/user/follow/$username');
-
+        'http://back.qwitter.cloudns.org:3000/api/v1/tweets/${widget.tweetId}/like');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -47,11 +44,11 @@ class _FollowingScreenState extends State<FollowingScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getListOfFollowing().then((value) {
-        // print(value.reasonPhrase);
-        // print(value.body);
+      getListOfLikers().then((value) {
+        print(value.reasonPhrase);
+        print(value.body);
         setState(() {
-          followersList = jsonDecode(value.body);
+          likersList = jsonDecode(value.body)['likers'];
         });
       });
     });
@@ -65,25 +62,13 @@ class _FollowingScreenState extends State<FollowingScreen> {
         return true;
       },
       child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(75),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
             showLogo: false,
             showHeading: true,
-            headingText: 'Following',
-            includeActions: true,
-            actionButton: IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SuggestedFollowsScreen(
-                        parent: 'followScreen',
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(BootstrapIcons.person_add)),
+            headingText: 'Lovers',
           ),
         ),
         body: Container(
@@ -93,15 +78,16 @@ class _FollowingScreenState extends State<FollowingScreen> {
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
           child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: followersList.length,
+            itemCount: likersList.length,
             itemBuilder: (BuildContext context, int index) {
-              return followersList.isEmpty
+              return likersList.isEmpty
                   ? Container()
                   : UserCard(
-                      userData: followersList[index],
-                      isFollowed: true,
+                      userData: likersList[index],
+                      isFollowed: false,
                     );
             },
+
           ),
         ),
       ),

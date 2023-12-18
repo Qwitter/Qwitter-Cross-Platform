@@ -39,7 +39,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   }
 
   Future<bool> sendData() async {
-    final url = Uri.parse('http://qwitter.cloudns.org:3000/api/v1/auth/signup');
+    final url =
+        Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/auth/signup');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {

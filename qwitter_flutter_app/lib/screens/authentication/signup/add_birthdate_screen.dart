@@ -49,8 +49,8 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
 
   Future<http.Response> googleSignUp() async {
     //print('Signing up with Google');
-    final url =
-        Uri.parse('http://qwitter.cloudns.org:3000/api/v1/auth/google/signup');
+    final url = Uri.parse(
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/google/signup');
 
     // Define the data you want to send as a map
     final Map<String, String?> data = {
@@ -174,7 +174,9 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
                                     widget.user.setBirthDate(userBirthDate);
 
                                     googleSignUp().then((value) {
-                                      //print('Response: ${value.statusCode}S');
+                                      print('Response: ${value.statusCode}');
+                                      print('Response: ${value.body}');
+
                                       if (value.statusCode == 200) {
                                         // user.printUserData();
                                         final userJson = jsonDecode(value.body);

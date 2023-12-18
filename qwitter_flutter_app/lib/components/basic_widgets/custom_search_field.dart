@@ -24,7 +24,7 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
 
   void searchUser(String data) async {
     final url = Uri.parse(
-        'http://qwitterback.cloudns.org:3000/api/v1/user/search?q=$data');
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/search?q=$data');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',

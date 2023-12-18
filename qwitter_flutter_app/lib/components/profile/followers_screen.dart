@@ -9,21 +9,20 @@ import 'package:qwitter_flutter_app/components/user_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
-class FollowingScreen extends StatefulWidget {
-  const FollowingScreen({super.key});
+class FollowersScreen extends StatefulWidget {
+  const FollowersScreen({super.key});
 
   @override
-  State<FollowingScreen> createState() => _FollowingScreenState();
+  State<FollowersScreen> createState() => _FollowersScreenState();
 }
 
-class _FollowingScreenState extends State<FollowingScreen> {
+class _FollowersScreenState extends State<FollowersScreen> {
   List followersList = [];
-  Future<http.Response> getListOfFollowing() async {
+  Future<http.Response> getListOfFollowers() async {
     final username = AppUser().getUsername;
 
     final url = Uri.parse(
-        'http://back.qwitter.cloudns.org:3000/api/v1/user/follow/$username');
-
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/followers/$username');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -47,9 +46,9 @@ class _FollowingScreenState extends State<FollowingScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getListOfFollowing().then((value) {
-        // print(value.reasonPhrase);
-        // print(value.body);
+      getListOfFollowers().then((value) {
+        print(value.reasonPhrase);
+        print(value.body);
         setState(() {
           followersList = jsonDecode(value.body);
         });
@@ -65,25 +64,13 @@ class _FollowingScreenState extends State<FollowingScreen> {
         return true;
       },
       child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(75),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
             showLogo: false,
             showHeading: true,
-            headingText: 'Following',
-            includeActions: true,
-            actionButton: IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SuggestedFollowsScreen(
-                        parent: 'followScreen',
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(BootstrapIcons.person_add)),
+            headingText: 'Followers',
           ),
         ),
         body: Container(
@@ -99,7 +86,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                   ? Container()
                   : UserCard(
                       userData: followersList[index],
-                      isFollowed: true,
+                      isFollowed: followersList[index]['isFollowing'],
                     );
             },
           ),

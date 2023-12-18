@@ -10,8 +10,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/search_user_widget.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/providers/user_search_provider.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
@@ -31,6 +34,7 @@ class _CreateConversationScreenState
   List<User> users = [];
   String fetching = "";
   bool isFetching = false;
+  bool createPushed = false;
   final textController = TextEditingController();
 
   @override
@@ -51,7 +55,7 @@ class _CreateConversationScreenState
 
   static Future<http.Response> searchUserRespone(String data) async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/conversation/user?q=$data');
+        'http://back.qwitter.cloudns.org:3000/api/v1/conversation/user?q=$data');
 
     AppUser user = AppUser();
 
@@ -105,7 +109,7 @@ class _CreateConversationScreenState
 
   Future<http.Response> createConversationResponse() async {
     final url =
-        Uri.parse('http://qwitter.cloudns.org:3000/api/v1/conversation');
+        Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/conversation');
 
     Map<String, dynamic> fields = {
       'conversation_name': 'name',
@@ -124,6 +128,8 @@ class _CreateConversationScreenState
   }
 
   Future<void> createConverstaion() async {
+    if (createPushed == true) return;
+    print(createPushed);
     print(selectedUsers.length);
     if (selectedUsers.isEmpty) {
       Fluttertoast.showToast(
@@ -133,23 +139,23 @@ class _CreateConversationScreenState
       return;
     }
     try {
+      createPushed = true;
       final response = await createConversationResponse();
       print(response.statusCode);
       print(response.body);
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
-        String id = jsonBody['id'];
+        Conversation convo = Conversation.fromJson(jsonBody);
+
+        Navigator.of(context).pop();
+        ref.watch(messagesProvider.notifier).DeleteHistory();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => MessagingScreen(convo: convo)),
+        );
         Fluttertoast.showToast(
           msg: "conversation Created successfully",
           backgroundColor: Colors.grey[700],
-        );
-        Navigator.of(context).pop();
-
-        Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) => MessagingScreen(
-                    converstaionID: id,
-                  )),
         );
       } else if (response.statusCode == 400) {
         Fluttertoast.showToast(
@@ -165,6 +171,7 @@ class _CreateConversationScreenState
     } catch (e) {
       print("creating converstaion error");
     }
+    createPushed = false;
   }
 
   @override

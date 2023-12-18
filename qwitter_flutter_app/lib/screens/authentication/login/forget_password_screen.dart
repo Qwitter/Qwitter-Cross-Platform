@@ -32,7 +32,7 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreenEmail> {
 
   Future<http.Response> sendEmail() async {
     final url = Uri.parse(
-        'http://qwitter.cloudns.org:3000/api/v1/auth/forgot-password');
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/forgot-password');
 
     // Define the data you want to send as a map
     final Map<String, String> data = {
