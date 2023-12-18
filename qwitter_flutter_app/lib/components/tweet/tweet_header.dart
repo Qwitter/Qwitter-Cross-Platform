@@ -1,24 +1,26 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
+import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
-class TweetHeader extends StatelessWidget {
-  final String tweetUserHandle;
-  final String tweetUserName;
-  final bool tweetUserVerified;
+class TweetHeader extends ConsumerStatefulWidget {
   final String tweetTime;
   final bool followed;
   final bool stretched;
   final bool stretchedMenu;
+  final opentweetMenuModal;
+  final Tweet tweet;
 
   const TweetHeader({
     Key? key,
-    required this.tweetUserHandle,
-    required this.tweetUserName,
-    required this.tweetUserVerified,
+    required this.opentweetMenuModal,
+    required this.tweet,
     this.tweetTime = "",
     this.followed = false,
     this.stretched = false,
@@ -28,15 +30,19 @@ class TweetHeader extends StatelessWidget {
 
   const TweetHeader.stretched({
     Key? key,
-    required this.tweetUserHandle,
-    required this.tweetUserName,
-    required this.tweetUserVerified,
+    required this.opentweetMenuModal,
+    required this.tweet,
     this.stretchedMenu = true,
     this.tweetTime = "",
     this.followed = false,
   })  : stretched = true,
         super(key: key);
 
+  @override
+  ConsumerState<TweetHeader> createState() => _TweetHeaderState();
+}
+
+class _TweetHeaderState extends ConsumerState<TweetHeader> {
   List<Widget> tweetVerifiedIcon() {
     return [
       SizedBox(width: 5),
@@ -48,7 +54,7 @@ class TweetHeader extends StatelessWidget {
     ];
   }
 
-  List<Widget> headerRowWidgets(width, context) {
+  List<Widget> headerRowWidgets(width, context, Tweet tweetProvider) {
     final appUser = AppUser();
     return [
       TextButton(
@@ -67,13 +73,13 @@ class TweetHeader extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          ProfileDetailsScreen(username: tweetUserHandle),
+                          ProfileDetailsScreen(username: tweetProvider.user!.username!),
                     ));
               },
               child: Text(
-                tweetUserName.length > 15
-                    ? tweetUserName.substring(0, 15)
-                    : tweetUserName,
+                tweetProvider.user!.fullName!.length > 15
+                    ? tweetProvider.user!.fullName!.substring(0, 15)
+                    : tweetProvider.user!.fullName!,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -84,13 +90,13 @@ class TweetHeader extends StatelessWidget {
           ),
         ),
       ),
-      ...tweetUserVerified ? tweetVerifiedIcon() : [Container()],
+      ...tweetProvider.user!.isVerified ?? false ? tweetVerifiedIcon() : [Container()],
       Padding(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
         child: SizedBox(
           width: width * 0.15,
           child: Text(
-            "@" + tweetUserHandle,
+            "@" + tweetProvider.user!.username!,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(
@@ -112,7 +118,7 @@ class TweetHeader extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
         child: FittedBox(
           child: Text(
-            DateHelper.formatDateString(tweetTime),
+            DateHelper.formatDateString(tweetProvider.createdAt!),
             style: TextStyle(
                 fontSize: 13,
                 color: Colors.grey[600],
@@ -150,7 +156,7 @@ class TweetHeader extends StatelessWidget {
     ];
   }
 
-  List<Widget> headerColumnWidgets(goToProfile) {
+  List<Widget> headerColumnWidgets(goToProfile, Tweet tweetProvider) {
     final appUser = AppUser();
 
     return [
@@ -177,9 +183,9 @@ class TweetHeader extends StatelessWidget {
                         child: GestureDetector(
                           onTap: goToProfile,
                           child: Text(
-                            tweetUserName.length > 15
-                                ? tweetUserName.substring(0, 15)
-                                : tweetUserName,
+                            tweetProvider.user!.fullName!.length > 15
+                                ? tweetProvider.user!.fullName!.substring(0, 15)
+                                : tweetProvider.user!.fullName!,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -191,12 +197,12 @@ class TweetHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-                ...tweetUserVerified ? tweetVerifiedIcon() : [Container()],
+                ...tweetProvider.user!.isVerified! ? tweetVerifiedIcon() : [Container()],
               ],
             ),
             FittedBox(
               child: Text(
-                "@" + tweetUserHandle,
+                "@" + tweetProvider.user!.username!,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: TextStyle(
@@ -213,9 +219,9 @@ class TweetHeader extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  if (appUser.username != tweetUserHandle) Container(
+                  if (appUser.username != tweetProvider.user!.username!) Container(
                     height: 35,
-                    padding: !stretchedMenu
+                    padding: !widget.stretchedMenu
                         ? EdgeInsets.fromLTRB(0, 0, 15, 0)
                         : EdgeInsets.zero,
                     child: OutlinedButton(
@@ -231,29 +237,8 @@ class TweetHeader extends StatelessWidget {
                       ),
                     ),
                   ),
-                  stretchedMenu
-                      ? Container(
-                          alignment: Alignment.centerRight,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              SizedBox(
-                                child: IconButton(
-                                  style: ButtonStyle(
-                                      padding: MaterialStateProperty.all(
-                                          EdgeInsets.zero),
-                                      alignment: Alignment.center),
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.grey[600],
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
+                  widget.stretchedMenu
+                      ? TweetMenu(opentweetMenuModal: widget.opentweetMenuModal)
                       : Container()
                 ],
               ),
@@ -264,30 +249,31 @@ class TweetHeader extends StatelessWidget {
     ];
   }
 
-
   @override
   Widget build(BuildContext context) {
+    
+    final tweetProvider = ref.watch(widget.tweet.provider);
     return SizedBox(
-      height: stretched ? 90 : 30,
-      child: stretched
+      height: widget.stretched ? 90 : 30,
+      child: widget.stretched
           ? Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: headerColumnWidgets((){
-                print("handle : " + tweetUserHandle);
+                print("handle : " + tweetProvider.user!.username!);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          ProfileDetailsScreen(username: tweetUserHandle),
+                          ProfileDetailsScreen(username: tweetProvider.user!.username!),
                     ));
-              }),
+              }, tweetProvider),
             )
           : Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               children:
-                  headerRowWidgets(MediaQuery.of(context).size.width, context),
+                  headerRowWidgets(MediaQuery.of(context).size.width, context, tweetProvider),
             ),
     );
   }

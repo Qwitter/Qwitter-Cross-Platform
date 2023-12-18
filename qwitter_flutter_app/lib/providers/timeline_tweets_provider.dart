@@ -7,11 +7,18 @@ class TimelineTweetsProvider extends StateNotifier<List<Tweet>> {
 
   void setTimelineTweets(List<Tweet> tweets) {
     for (var tweet in tweets) {
-      // bool prevLoaded = state.contains(tweet);
+      bool prevLoaded = state.contains(tweet);
       if (true) {
         state = [...state, tweet];
       }
     }
+  }
+  void resetTimelineTweets(List<Tweet> tweets) {
+    state = tweets;
+  }
+
+  void removeTweet(Tweet tweet) {
+    state = state.where((t) => t.id != tweet.id).toList();
   }
 }
 

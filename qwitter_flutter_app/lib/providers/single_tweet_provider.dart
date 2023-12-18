@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/utils/enums.dart';
 
 class SingleTweetProvider extends StateNotifier<Tweet> {
   SingleTweetProvider(Tweet tweetInstance) : super(tweetInstance);
@@ -32,6 +33,10 @@ class SingleTweetProvider extends StateNotifier<Tweet> {
     Tweet tweet = state;
     tweet.replies = [...tweet.replies, ...replies];
     state = tweet;
+  }
+
+  void removeTweet(Tweet tweet) {
+    state.replies = state.replies.where((t) => t.id != tweet.id).toList();
   }
 
   
