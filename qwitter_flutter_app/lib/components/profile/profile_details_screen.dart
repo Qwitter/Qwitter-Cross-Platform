@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/profile/edit_profile_button.dart';
 import 'package:qwitter_flutter_app/components/profile/follow_button.dart';
+import 'package:qwitter_flutter_app/components/profile/followers_screen.dart';
+import 'package:qwitter_flutter_app/components/profile/following_screen.dart';
 import 'package:qwitter_flutter_app/components/profile/notifications_button.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
@@ -138,8 +140,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
       }
       if (newPosition / 5 <= 20) _imgRaduis = 35 - newPosition / 5;
     });
-
-
   }
 
   void _openSideDropDown() {
@@ -170,10 +170,11 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
       if (response.statusCode == 200) {
         print("follow done successfully");
         setState(() {
-        user.isFollowed = true;
+          user.isFollowed = true;
         });
       } else {
-        print("an error occured when trying to follow ${user.username} and the status code : ${response.statusCode}");
+        print(
+            "an error occured when trying to follow ${user.username} and the status code : ${response.statusCode}");
       }
     } else {
       http.Response response = await http.delete(url, headers: {
@@ -187,12 +188,12 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
       if (response.statusCode == 200) {
         print("unfollow done");
-          setState(() {
+        setState(() {
           user.isFollowed = false;
-          });
+        });
       } else {
-         print("an error occured when trying to unfollow ${user.username} and the status code : ${response.statusCode}");
-
+        print(
+            "an error occured when trying to unfollow ${user.username} and the status code : ${response.statusCode}");
       }
     }
   }
@@ -291,9 +292,9 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               ),
                             if (user.username == appUser.username ||
                                 (user.username != appUser.username &&
-                                    user.isFollowed==true) ||
+                                    user.isFollowed == true) ||
                                 (user.username != appUser.username &&
-                                    user.isFollowed==false &&
+                                    user.isFollowed == false &&
                                     !_scrollingView))
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,18 +359,20 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                           flexibleSpace: Container(
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 7, 7, 7),
-                              image: DecorationImage(onError: (exception, stackTrace) {
-                                print("error in loading the picture");
-                              },
+                              image: DecorationImage(
+                                onError: (exception, stackTrace) {
+                                  print("error in loading the picture");
+                                },
                                 image: (user.profileBannerUrl!.path.isEmpty
                                     ? const AssetImage(
                                         "assets/images/def_banner.png")
-                                    : NetworkImage(user.profileBannerUrl!.path
+                                    : NetworkImage(
+                                        user.profileBannerUrl!.path
                                                 .startsWith("http://")
                                             ? user.profileBannerUrl!.path
                                             : "http://" +
-                                                user.profileBannerUrl!.path,)
-                                        as ImageProvider),
+                                                user.profileBannerUrl!.path,
+                                      ) as ImageProvider),
                                 fit: BoxFit.cover,
                                 opacity: _scrollingView ? 0.17 : 1.0,
                               ),
@@ -391,7 +394,8 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   radius: _imgRaduis + 5,
                                   child: CircleAvatar(
                                     radius: _imgRaduis,
-                                    onBackgroundImageError: (exception, stackTrace) {
+                                    onBackgroundImageError:
+                                        (exception, stackTrace) {
                                       print("error when loading picture");
                                     },
                                     backgroundImage: (user
@@ -586,7 +590,14 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             child: Row(
                               children: [
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const FollowingScreen(),
+                                      ),
+                                    );
+                                  },
                                   style: const ButtonStyle(
                                       overlayColor: MaterialStatePropertyAll(
                                           Colors.transparent)),
@@ -599,7 +610,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       Text(
@@ -613,7 +624,14 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const FollowersScreen(),
+                                      ),
+                                    );
+                                  },
                                   style: const ButtonStyle(
                                       overlayColor: MaterialStatePropertyAll(
                                           Colors.transparent),
@@ -628,7 +646,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       Text(
@@ -659,9 +677,10 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                               color: Colors.grey.shade800,
                               fontWeight: FontWeight.w600),
                           labelStyle: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,),
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
                           labelPadding: EdgeInsets.symmetric(horizontal: 20),
                           // indicatorPadding: EdgeInsets.symmetric(horizontal: 0),
                           tabs: const [

@@ -179,7 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             .setLocation(location)
             .setURL(website)
             .setDescription(description);
-            appUser.saveUserData();
+        appUser.saveUserData();
         print("saved successfully");
       } else {
         print(
@@ -194,18 +194,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final url = Uri.parse(
         'http://back.qwitter.cloudns.org:3000/api/v1/user/profile_picture');
     final Map<String, String> cookies = {
-        'qwitter_jwt': 'Bearer ${appUser.token}',
-      };
+      'qwitter_jwt': 'Bearer ${appUser.token}',
+    };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
     Map<String, String> headers = {
       "authorization": 'Bearer ${appUser.getToken}',
       "Content-Type": "multipart/form-data",
-       'Cookie': cookies.entries
-                .map((entry) => '${entry.key}=${entry.value}')
-                .join('; '),
-      
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     };
 
     request.headers.addAll(headers);
@@ -252,8 +251,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'http://back.qwitter.cloudns.org:3000/api/v1/user/profile_banner');
 
     final Map<String, String> cookies = {
-        'qwitter_jwt': 'Bearer ${appUser.token}',
-      };
+      'qwitter_jwt': 'Bearer ${appUser.token}',
+    };
     // Create a MultipartRequest
     final request = http.MultipartRequest('POST', url);
     //print('Token : ${widget.user!.getToken}');
@@ -261,8 +260,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       "authorization": 'Bearer ${appUser.getToken}',
       "Content-Type": "multipart/form-data",
       'Cookie': cookies.entries
-                .map((entry) => '${entry.key}=${entry.value}')
-                .join('; '),
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     };
 
     request.headers.addAll(headers);

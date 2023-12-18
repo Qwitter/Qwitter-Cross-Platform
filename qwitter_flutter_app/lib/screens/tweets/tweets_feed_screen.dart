@@ -23,13 +23,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   List<Tweet> tweets = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _openDrawer() {
-    if(_scaffoldKey.currentState!=null&&_scaffoldKey.currentState!.hasDrawer!=null) {
-      _scaffoldKey.currentState!.openDrawer();
-    }
-    
-    print(1);
-}
+
 
   @override
   void initState() {
@@ -110,11 +104,13 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
       child: Scaffold(
         body: Stack(children: [
           Scaffold(
+            key: _scaffoldKey,
             drawer: const MainDrawer(),
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(100),
               child: QwitterAppBar(
-                onPressed: _openDrawer,
+                autoImplyLeading: false,
+                scaffoldKey: _scaffoldKey,
                 bottomWidget: const TabBar(
                   tabs: [
                     Tab(

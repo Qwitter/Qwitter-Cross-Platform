@@ -90,9 +90,12 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
           usernameValidations(usernameController.text) == null) {
         buttonFunction = (context) {
           updateUsername(usernameController.text).then((value) {
+            print(value.reasonPhrase);
+            print(value.body);
             if (value.statusCode == 200) {
               Toast.show('Username updated successfully.');
               widget.user!.setUsername(usernameController.text);
+              print(widget.user!.username);
               // Perform Sign Up Logic
               AppUser appUser = AppUser();
               appUser.copyUserData(widget.user!);

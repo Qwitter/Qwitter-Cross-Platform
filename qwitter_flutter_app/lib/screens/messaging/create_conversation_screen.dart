@@ -16,7 +16,6 @@ import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/providers/user_search_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
-import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 
@@ -186,16 +185,16 @@ class _CreateConversationScreenState
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
         child: AppBar(
-            backgroundColor: black,
+            backgroundColor: Colors.black,
             automaticallyImplyLeading: true,
             title: const Text("Create a conversation"),
             actions: [
               ElevatedButton(
                 onPressed: createConverstaion,
-                style: ElevatedButton.styleFrom(backgroundColor: black),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 child: const Text(
                   "Create",
-                  style: TextStyle(color: white),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ]),

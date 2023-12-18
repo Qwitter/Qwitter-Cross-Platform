@@ -68,6 +68,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     scrollController.dispose();
     textController.dispose();
     MessagingServices.socket.off('ROOM_MESSAGE');
+    textController.dispose();
+    MessagingServices.socket.off('ROOM_MESSAGE');
     super.dispose();
   }
 

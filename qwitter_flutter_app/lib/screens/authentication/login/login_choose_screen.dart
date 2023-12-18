@@ -70,7 +70,8 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
   }
 
   Future<http.Response> googleSignIn() async {
-    final url = Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/auth/google/login');
+    final url = Uri.parse(
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/google/login');
 
     String token;
 
@@ -162,7 +163,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
 
     return response;
   }
-  
+
   bool isActive = false;
   void hello() {
     setState(() {
@@ -199,6 +200,8 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
       if (emailController.text.isNotEmpty) {
         buttonFunction = () {
           sendEmail().then((value) {
+            print(value.statusCode);
+            print(value.body);
             if (value.statusCode == 404) {
               Navigator.push(
                 context,

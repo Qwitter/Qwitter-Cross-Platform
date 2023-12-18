@@ -139,9 +139,9 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
       final email = authUser.email;
       user.setEmail(email).setFullName(username).setId(gid);
       checkEmailAvailability().then((value) {
-        //print('Response: ${value.statusCode}');
+        print('Response: ${value.statusCode}');
         if (value.statusCode == 200) {
-          //print('email not found go add birthdate');
+          print('email not found go add birthdate');
           // ignore: use_build_context_synchronously
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -151,7 +151,10 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
           // New token should be recieved here
           //print('email found go to suggested follows');
           googleSignIn().then((value) {
-            //print(value.statusCode.toString());
+            print("response : ${value.statusCode}");
+            print("response : ${value.body}");
+            print("reason : ${value.reasonPhrase}");
+
             if (value.statusCode == 200) {
               final userJson = jsonDecode(value.body);
               // //print(userJson);

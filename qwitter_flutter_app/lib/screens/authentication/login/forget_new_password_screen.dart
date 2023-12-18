@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 
 class ForgetNewPasswordScreen extends ConsumerStatefulWidget {
-  const ForgetNewPasswordScreen({super.key , this.token});
+  const ForgetNewPasswordScreen({super.key, this.token});
   final String? token;
 
   @override

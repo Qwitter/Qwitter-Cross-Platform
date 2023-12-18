@@ -174,7 +174,9 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
                                     widget.user.setBirthDate(userBirthDate);
 
                                     googleSignUp().then((value) {
-                                      //print('Response: ${value.statusCode}S');
+                                      print('Response: ${value.statusCode}');
+                                      print('Response: ${value.body}');
+
                                       if (value.statusCode == 200) {
                                         // user.printUserData();
                                         final userJson = jsonDecode(value.body);
