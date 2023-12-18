@@ -5,11 +5,13 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_body.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/screens/tweets/add_tweet_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/likers_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/retweeters_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
+import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
@@ -100,6 +102,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
   void initState() {
     super.initState();
 
+    print("Token : " + AppUser().token.toString());
     TweetsServices.getTweetReplies(widget.tweet).then((replies) {
       print("reppp: " + replies.length.toString());
       setState(() {
@@ -186,6 +189,104 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     );
   }
 
+  void _makeFollow(tweetProvider) {
+    setState(() {
+      TweetsServices.makeFollow(ref, tweetProvider);
+    });
+  }
+
+  void _opentweetMenuModal(Tweet tweetProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                  bottom: Radius.zero)), // Set the height of the bottom sheet
+          height: 100,
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: Colors.grey[500],
+                      borderRadius: BorderRadius.circular(20)),
+                ),
+              ),
+              Expanded(
+                  child: ListView(
+                children: <Widget>[
+                  AppUser().username != tweetProvider.user!.username!
+                      ? Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              _makeFollow(tweetProvider);
+                            },
+                            icon: Icon(
+                              Icons.person_add_alt_outlined,
+                              size: 25,
+                              color: Colors.grey[600],
+                            ),
+                            label: Text(
+                              (tweetProvider.user!.isFollowed!
+                                      ? "Unfollow"
+                                      : "Follow") +
+                                  " @abdallah_aali",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        )
+                      : Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              setState(() {
+                                TweetsServices.deleteTweet(
+                                    ref, context, tweetProvider);
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TweetFeedScreen()));
+
+                              });
+                            },
+                            icon: Icon(
+                              Icons.delete,
+                              size: 25,
+                              color: Colors.grey[600],
+                            ),
+                            label: Text(
+                              "Delete Tweet",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+
+                  // Add more menu items as needed
+                ],
+              )),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
     final tweetProvider = ref.watch(widget.tweet.provider);
     textEditingController.addListener(() {
@@ -244,11 +345,11 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                       ),
                                       Expanded(
                                         child: TweetHeader.stretched(
-                                          tweetUserHandle:
-                                              widget.tweet.user!.username!,
-                                          tweetUserName:
-                                              widget.tweet.user!.fullName!,
-                                          tweetUserVerified: true,
+                                          tweet: tweetProvider,
+                                          opentweetMenuModal: () {
+                                            _opentweetMenuModal(tweetProvider);
+                                          },
+
                                         ),
                                       ),
                                     ],
@@ -590,7 +691,15 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                           ? SizedBox(
                               height: focusNode.hasFocus ? 150 : 80,
                             )
-                          : TweetCard(tweet: tweetProvider.replies[index - 1]);
+                          : TweetCard(tweet: tweetProvider.replies[index - 1], removeReply: (){
+                            Navigator.pop(context);
+                            setState(() {
+                              TweetsServices.deleteTweet(
+                                  ref, context, tweetProvider);
+                              ref.read(tweetProvider.provider.notifier).removeTweet(tweetProvider);
+                            });
+                          } );
+
                 },
                 itemCount: tweetProvider.replies.length + 2,
               ),

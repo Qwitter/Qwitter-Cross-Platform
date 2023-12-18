@@ -161,7 +161,7 @@ class User {
       fullName: json['name'],
       birthDate: json['birthDate'],
       password: json['password'],
-      isFollowed: json['isFollowing'],
+      isFollowed: json['isFollowing'] ?? false,
       profilePicture: File(
         json['profileImageUrl'] ?? "",
       ),
@@ -173,10 +173,10 @@ class User {
       ),
       url: json['url'],
       description: json['description'],
-      isProtected: json['isProtected'],
-      isVerified: json['isVerified'],
+      isProtected: json['protected'],
+      isVerified: json['verified'],
       isMuted: json['isMuted'],
-      isBlocked: json['isBlcoked']
+      isBlocked: json['isBlcoked'],
     );
   }
 

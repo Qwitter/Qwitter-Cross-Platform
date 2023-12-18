@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -45,6 +46,24 @@ class TweetsServices {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       // 'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
+    });
+
+    return response;
+  }
+
+  static Future<http.Response> deleteTweetResponse(Tweet tweet) async {
+    AppUser user = AppUser();
+
+    final url = Uri.parse('$_baseUrl/api/v1/tweets/${tweet.id!}');
+
+    print(user.token);
+
+    final response = await http.delete(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
       'Cookie': cookies.entries
           .map((entry) => '${entry.key}=${entry.value}')
           .join('; '),
@@ -173,23 +192,28 @@ class TweetsServices {
   static Future<List<Tweet>> getTimeline(int page) async {
     try {
       final response = await getTimelineResponse(page);
-
+      print('${page} page fetched');
+      print("scode: " + response.statusCode.toString());
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
         final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+
+        print('List ${tweetList}');
         List<Tweet> tweets =
             tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
 
-        // print(tweets.length);
-        //print('${tweets.length} tweets fetched');
+
+        print('${tweets.length} - ${tweetList.length} tweets fetched');
+
+
         return tweets;
       } else {
         //print('Failed to fetch tweets: ${response.statusCode}');
         return [];
       }
-    } catch (error) {
-      //print('Error fetching tweets: $error');
-      //print('StackTrace: $stackTrace');
+    } catch (error, stackTrace) {
+      print('Error fetching tweets: $error');
+      print('StackTrace: $stackTrace');
       return [];
     }
   }
@@ -263,6 +287,19 @@ class TweetsServices {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return TweetDetailsScreen(tweet: tweet);
     }));
+  }
+
+
+  static void deleteTweet(ref, context, Tweet tweet) {
+    try {
+      final response = deleteTweetResponse(tweet);
+      ref.read(timelineTweetsProvider.notifier).removeTweet(tweet);
+      Navigator.pop(context);
+    } catch (error, stackTrace) {
+      print('Error deleting tweets: $error');
+      print('StackTrace: $stackTrace');
+      return;
+    }
   }
 
   static Future<List<Tweet>> getTweetsLikedByUser(
@@ -375,4 +412,5 @@ class TweetsServices {
       return [];
     }
   }
+  
 }

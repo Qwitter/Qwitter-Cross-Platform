@@ -17,8 +17,9 @@ import 'package:qwitter_flutter_app/services/tweets_services.dart';
 // ignore: must_be_immutable
 class TweetCard extends ConsumerStatefulWidget {
   final Tweet tweet;
+  dynamic? removeReply;
 
-  TweetCard({required this.tweet});
+  TweetCard({required this.tweet, this.removeReply});
 
   @override
   ConsumerState<TweetCard> createState() => _TweetCardState();
@@ -27,8 +28,6 @@ class TweetCard extends ConsumerStatefulWidget {
 class _TweetCardState extends ConsumerState<TweetCard> {
   // bool _reposted = false;
   // bool _liked = false;
-  bool _followed = false;
-
   void _makeRepost(tweetProvider) {
     setState(() {
       // ref.read(tweetProvider.provider.notifier).toggleRetweet();
@@ -120,17 +119,18 @@ class _TweetCardState extends ConsumerState<TweetCard> {
     );
   }
 
-  void _opentweetMenuModal(tweetProvider) {
+  void _opentweetMenuModal(Tweet tweetProvider) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
           decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.vertical(
                   top: Radius.circular(20),
                   bottom: Radius.zero)), // Set the height of the bottom sheet
-          height: 900,
+          height: 100,
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -149,7 +149,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
               Expanded(
                   child: ListView(
                 children: <Widget>[
-                  Align(
+                  AppUser().username != tweetProvider.user!.username! ? Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
                       onPressed: () {
@@ -162,7 +162,28 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                         color: Colors.grey[600],
                       ),
                       label: Text(
-                        (_followed ? "Unfollow" : "Follow") + " @abdallah_aali",
+                        (tweetProvider.user!.isFollowed!? "Unfollow" : "Follow") + " @abdallah_aali",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  ) : Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: widget.removeReply ?? () {
+                        setState(() {
+                          TweetsServices.deleteTweet(ref, context, tweetProvider);
+                        });
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        size: 25,
+                        color: Colors.grey[600],
+                      ),
+                      label: Text(
+                        "Delete Tweet",
                         style: TextStyle(
                             fontSize: 20,
                             color: Colors.white,
@@ -170,166 +191,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.post_add_outlined,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "Add/remove from Lists",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.volume_off,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "Mute @abdaallah_aali",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.volume_off,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "Mute this conversation",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.visibility_outlined,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "View Hidden Replies",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.favorite_outline,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "Add to Circle",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.block_outlined,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "Block @abdallah_aali",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.flag_outlined,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "Report post",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.thumb_down_outlined,
-                        size: 25,
-                        color: Colors.grey[600],
-                      ),
-                      label: Text(
-                        "Not interested in this post",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  )
+                  
                   // Add more menu items as needed
                 ],
               )),
@@ -498,10 +360,9 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TweetHeader(
-                              tweetUserHandle: tweetProvider.user!.username!,
-                              tweetUserName: tweetProvider.user!.fullName!,
-                              tweetUserVerified: true,
+                              tweet: tweetProvider,
                               tweetTime: tweetProvider.createdAt!,
+                              opentweetMenuModal: _openRepostModal,
                               // tweet_edited: tweetProvider_edited,
                             ),
                             TweetMenu(

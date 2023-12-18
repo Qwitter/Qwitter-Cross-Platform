@@ -5,6 +5,7 @@ import 'package:qwitter_flutter_app/Components/tweet_card.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
 import 'package:qwitter_flutter_app/components/layout/sidebar/main_drawer.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_floating_button.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
@@ -23,14 +24,12 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   List<Tweet> tweets = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
     TweetsServices.getTimeline(page).then((list) {
-      //print(list.length);
+      print(list.length);
       ref.read(timelineTweetsProvider.notifier).setTimelineTweets(list);
     }).onError((error, stackTrace) {
       //print(error);
@@ -94,11 +93,21 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    // Simulating a refresh action with a delay
+    final List<Tweet> newTweets = await TweetsServices.getTimeline(page);
+    print(newTweets.length);
+    ref.read(timelineTweetsProvider.notifier).resetTimelineTweets(newTweets);
+    setState(() {
+      _isFetching = false;
+    });
+    print('Refreshed!');
+  }
+
   @override
   Widget build(BuildContext context) {
     // ref.watch(timelineTweetsProvider.notifier).setTimelineTweets(tweets);
     tweets = ref.watch(timelineTweetsProvider);
-    //print(tweets.length);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -139,28 +148,35 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
               children: [
                 Stack(
                   children: [
-                    Container(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemBuilder: (ctx, index) {
-                          return Container(
-                            child: (index == tweets.length)
-                                ? Container(
-                                    height: 100,
-                                    width: double.infinity,
-                                    child: Center(
-                                        child: _isFetching
-                                            ? CircularProgressIndicator(
-                                                color: Colors.white,
-                                                backgroundColor: Colors.blue,
-                                              )
-                                            : Container()))
-                                : TweetCard(tweet: tweets[index]),
-                          );
-                        },
-                        itemCount: tweets.length + 1,
+                    RefreshIndicator(
+                      onRefresh: _onRefresh,
+                      color: Colors.blue,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: ListView.builder(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          controller: _scrollController,
+                          itemBuilder: (ctx, index) {
+                            return Container(
+                              child: (index == tweets.length)
+                                  ? Container(
+                                      height: 100,
+                                      width: double.infinity,
+                                      child: Center(
+                                          child: _isFetching
+                                              ? CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                  backgroundColor: Colors.blue,
+                                                )
+                                              : Container()))
+                                  : TweetCard(tweet: tweets[index]),
+                            );
+                          },
+                          itemCount: tweets.length + 1,
+                        ),
                       ),
-                    ),
+                    )
+
                     // _scrollPressed
                     //     ? Container()
                     //     : TweetScrolUpButton(
@@ -169,26 +185,33 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
                     //       ),
                   ],
                 ),
-                Container(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemBuilder: (ctx, index) {
-                      return Container(
-                        child: (index == tweets.length)
-                            ? Container(
-                                height: 100,
-                                width: double.infinity,
-                                child: Center(
-                                    child: _isFetching
-                                        ? CircularProgressIndicator(
-                                            color: Colors.white,
-                                            backgroundColor: Colors.blue,
-                                          )
-                                        : Container()))
-                            : TweetCard(tweet: tweets[index]),
-                      );
-                    },
-                    itemCount: tweets.length + 1,
+                RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  color: Colors.blue,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
+                
+                      controller: _scrollController,
+                      itemBuilder: (ctx, index) {
+                        return Container(
+                          child: (index == tweets.length)
+                              ? Container(
+                                  height: 100,
+                                  width: double.infinity,
+                                  child: Center(
+                                      child: _isFetching
+                                          ? CircularProgressIndicator(
+                                              color: Colors.white,
+                                              backgroundColor: Colors.blue,
+                                            )
+                                          : Container()))
+                              : TweetCard(tweet: tweets[index]),
+                        );
+                      },
+                      itemCount: tweets.length + 1,
+                    ),
                   ),
                 ),
               ],

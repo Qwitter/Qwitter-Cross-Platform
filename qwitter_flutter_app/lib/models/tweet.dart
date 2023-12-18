@@ -152,12 +152,16 @@ class Tweet {
                   Media(media['value'] as String, media['type'] as String))
               : []),
       isLiked: json["liked"],
-      isRetweeted: false,
+      isRetweeted: json['isRetweeted'],
       isQuoted: false,
       isBookmarked: false,
+
     );
 
     // //print(tweet.id);
     return tweet;
   }
+
+
+  
 }
