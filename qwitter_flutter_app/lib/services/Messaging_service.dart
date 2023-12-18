@@ -25,9 +25,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MessagingServices {
-  static const String _baseUrl = 'http://qwitterback.cloudns.org:3000';
-  static IO.Socket socket = IO.io(_baseUrl);
-
+  static const String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
+  static IO.Socket socket = IO.io(
+    _baseUrl,
+    IO.OptionBuilder().setTransports(['websocket']).build(),
+  );
   static Future<http.Response> getConversationsRespone() async {
     AppUser user = AppUser();
     final url = Uri.parse('$_baseUrl/api/v1/conversation/');
