@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/conversation_widget.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
@@ -17,26 +18,26 @@ class ConversationScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConversationScreen> createState() {
-    return ConversationScreenState();
+    return conversationScreenState();
   }
 }
 
-class ConversationScreenState extends ConsumerState<ConversationScreen> {
+class conversationScreenState extends ConsumerState<ConversationScreen> {
+  AppUser user = AppUser();
   @override
   void initState() {
     super.initState();
     // MessagingServices.connect("47a89388-ebc8-4e2f-af2f-b2c075b540ac");
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      MessagingServices.getConversations().then((list) {
-        ref.read(ConversationProvider.notifier).InitConversations(list);
-      }).onError((error, stackTrace) {
-        //print(error);
-      });
+    MessagingServices.initSocket();
+    MessagingServices.getConversations().then((list) {
+      ref.read(ConversationProvider.notifier).InitConversations(list);
+    }).onError((error, stackTrace) {
+      //print(error);
     });
   }
 
   Future<void> refresh() async {
-    MessagingServices.getConversations().then((list) {
+    await MessagingServices.getConversations().then((list) {
       ref.read(ConversationProvider.notifier).InitConversations(list);
     }).onError((error, stackTrace) {
       //print(error);
@@ -54,6 +55,7 @@ class ConversationScreenState extends ConsumerState<ConversationScreen> {
   }
 
   List<Conversation> conversations = [];
+  double radius = 15;
   @override
   Widget build(context) {
     conversations = ref.watch(ConversationProvider);
@@ -65,15 +67,31 @@ class ConversationScreenState extends ConsumerState<ConversationScreen> {
           width: double.infinity,
           child: Row(
             children: [
-              IconButton(
-                onPressed: () {},
-                icon: ClipOval(
-                  child: Image.asset(
-                    "assets/images/abo.jpeg",
-                    width: 35,
-                  ),
-                ),
+              SizedBox(
+                width: 10,
               ),
+              InkWell(
+                onTap: () {
+                  print("hello world");
+                },
+                customBorder: CircleBorder(),
+                child: (user.profilePicture != null &&
+                        user.profilePicture?.path != '')
+                    ? Container(
+                        width: radius * 2,
+                        child: CircleAvatar(
+                          radius: radius,
+                          backgroundImage:
+                              NetworkImage(user.profilePicture?.path ?? ""),
+                        ),
+                      )
+                    : ClipOval(
+                        child: Image.asset(
+                          "assets/images/def.jpg",
+                          width: 35,
+                        ),
+                      ),
+              )
             ],
           ),
         ),

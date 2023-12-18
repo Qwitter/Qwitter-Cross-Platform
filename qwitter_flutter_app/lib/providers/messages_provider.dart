@@ -29,8 +29,20 @@ class MessageNotifier extends StateNotifier<List<MessageData>> {
     state = [];
   }
 
+  bool addList(List<MessageData> msgs) {
+    bool added = false;
+
+    for (var msg in msgs) {
+      if (!state.contains(msg)) {
+        added = true;
+        state = [...state, msg];
+      }
+    }
+    return added;
+  }
+
   void addMessage(MessageData msg) {
-    state = [...state, msg];
+    state = [msg, ...state];
   }
 }
 
