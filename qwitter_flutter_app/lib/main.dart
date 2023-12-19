@@ -3,15 +3,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/conversation_data.dart';
+import 'package:qwitter_flutter_app/models/message_data.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/user_search_provider.dart';
-<<<<<<< HEAD
 import 'package:qwitter_flutter_app/screens/authentication/complements/forget_password_screen.dart';
-=======
->>>>>>> main
+
 import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_email_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_main_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversation_info_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/create_conversation_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/create_conversation_screen.dart';
@@ -19,11 +21,7 @@ import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
-<<<<<<< HEAD
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-=======
-// import 'package:socket_io_client/socket_io_client.dart' as IO;
->>>>>>> main
 
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,7 +61,7 @@ class MyApp extends StatelessWidget {
               );
             } else if (user.username != null) {
               // //print(snapshot.data);
-              return TweetFeedScreen();
+              return ConversationScreen();
             } else {
               return SignupChooseMethodScreen();
             }

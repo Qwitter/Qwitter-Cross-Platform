@@ -32,7 +32,7 @@ class MessagingServices {
   );
   static Future<http.Response> getConversationsRespone() async {
     AppUser user = AppUser();
-    final url = Uri.parse('$_baseUrl/api/v1/conversation/');
+    final url = Uri.parse('$_baseUrl/api/v1/conversation/?limit=50');
 
     //print(user.token);
 
@@ -133,7 +133,7 @@ class MessagingServices {
     return response;
   }
 
-  static Future<Map<String, dynamic>> fetchMessages(  
+  static Future<Map<String, dynamic>> fetchMessages(
       String converstaionID, int page) async {
     try {
       final response = await fetchMessagesResponse(converstaionID, page);
@@ -142,8 +142,10 @@ class MessagingServices {
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonBody = jsonDecode(response.body)['messages'];
+        print(jsonBody);
         List<MessageData> msgs =
             jsonBody.map((msg) => MessageData.fromJson(msg)).toList();
+        print(msgs.length);
         return {
           'statusCode': response.statusCode,
           'messages': msgs,

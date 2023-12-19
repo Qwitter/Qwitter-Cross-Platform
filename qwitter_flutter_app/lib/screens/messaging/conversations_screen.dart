@@ -49,7 +49,7 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
     ref.watch(userSearchProvider.notifier).deleteHistory();
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => CreateConversationScreen(),
+        builder: (context) => CreateConversationScreen(onUpdate: () {}),
       ),
     );
   }

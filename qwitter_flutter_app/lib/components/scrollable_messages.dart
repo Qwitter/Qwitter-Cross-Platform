@@ -8,6 +8,7 @@ import 'package:qwitter_flutter_app/components/message_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
 class ScrollableMessages extends ConsumerStatefulWidget {
@@ -73,7 +74,7 @@ class _ScrollableMessagesState extends ConsumerState<ScrollableMessages> {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: () {
-                    ref.watch(messagesProvider.notifier).DeleteMessage(message);
+                    // ref.watch(messagesProvider.notifier).DeleteMessage(message);
                     Navigator.of(context).pop();
                   },
                   child: const Text(

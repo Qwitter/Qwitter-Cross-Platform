@@ -22,7 +22,11 @@ import 'package:toast/toast.dart';
 class CreateConversationScreen extends ConsumerStatefulWidget {
   const CreateConversationScreen({
     super.key,
+    this.convo,
+    required this.onUpdate,
   });
+  final Function onUpdate;
+  final Conversation? convo;
   @override
   ConsumerState<CreateConversationScreen> createState() =>
       _CreateConversationScreenState();
@@ -41,7 +45,7 @@ class _CreateConversationScreenState
   void initState() {
     super.initState();
     textController.addListener(textLisetner);
-    searchUser("").then(
+    searchUser("", widget.convo).then(
       (users) => {ref.watch(userSearchProvider.notifier).initData(users)},
     );
     //call CreateConversation api get latest page;
@@ -53,10 +57,12 @@ class _CreateConversationScreenState
     super.dispose();
   }
 
-  static Future<http.Response> searchUserRespone(String data) async {
-    final url = Uri.parse(
-        'http://back.qwitter.cloudns.org:3000/api/v1/conversation/user?q=$data');
-
+  static Future<http.Response> searchUserRespone(
+      String data, Conversation? convo) async {
+    String convoId = convo?.id ?? "";
+    final url = Uri.parse(convo?.isGroup ?? false
+        ? 'http://back.qwitter.cloudns.org:3000/api/v1/conversation/$convoId/user?q=$data'
+        : 'http://back.qwitter.cloudns.org:3000/api/v1/conversation/user?q=$data');
     AppUser user = AppUser();
 
     final response = await http.get(url, headers: {
@@ -68,9 +74,9 @@ class _CreateConversationScreenState
     return response;
   }
 
-  static Future<List<User>> searchUser(String data) async {
+  static Future<List<User>> searchUser(String data, Conversation? convo) async {
     try {
-      final response = await searchUserRespone(data);
+      final response = await searchUserRespone(data, convo);
       print(response.statusCode);
       if (response.statusCode == 200) {
         print(response.body);
@@ -93,7 +99,7 @@ class _CreateConversationScreenState
   Future<void> getUsers(String data) async {
     fetching = textController.text;
     isFetching = true;
-    List<User> users = await searchUser(data);
+    List<User> users = await searchUser(data, widget.convo);
     ref.watch(userSearchProvider.notifier).initData(users);
     isFetching = false;
   }
@@ -108,9 +114,11 @@ class _CreateConversationScreenState
   }
 
   Future<http.Response> createConversationResponse() async {
-    final url =
-        Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/conversation');
-
+    String convoId = widget.convo?.id ?? "";
+    final url = Uri.parse(widget.convo?.isGroup ?? false
+        ? 'http://back.qwitter.cloudns.org:3000/api/v1/conversation/$convoId/user/'
+        : 'http://back.qwitter.cloudns.org:3000/api/v1/conversation');
+    // assert(false);
     Map<String, dynamic> fields = {
       'conversation_name': 'name',
       'users': selectedUsers.map((user) => user.username ?? "").toList()
@@ -128,9 +136,8 @@ class _CreateConversationScreenState
   }
 
   Future<void> createConverstaion() async {
-    if (createPushed == true) return;
     print(createPushed);
-    print(selectedUsers.length);
+    if (createPushed == true) return;
     if (selectedUsers.isEmpty) {
       Fluttertoast.showToast(
         msg: "You didn't select any user",
@@ -141,22 +148,33 @@ class _CreateConversationScreenState
     try {
       createPushed = true;
       final response = await createConversationResponse();
-      print(response.statusCode);
-      print(response.body);
-      if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        Conversation convo = Conversation.fromJson(jsonBody);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (widget.convo == null) {
+          final jsonBody = jsonDecode(response.body);
+          Conversation convo = Conversation.fromJson(jsonBody);
+          ref.read(selectedUserProvider.notifier).deleteHistory();
+          Navigator.of(context).pop();
+          // ref.watch(messagesProvider.notifier).DeleteHistory();
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => MessagingScreen(convo: convo)),
+          );
+          Fluttertoast.showToast(
+            msg: "conversation Created successfully",
+            backgroundColor: Colors.grey[700],
+          );
+        } else {
+          Fluttertoast.showToast(
+            msg: "Users added successfully",
+            backgroundColor: Colors.grey[700],
+          );
+          print("added");
+          print(widget.convo!.users.length);
 
-        Navigator.of(context).pop();
-        ref.watch(messagesProvider.notifier).DeleteHistory();
-        Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) => MessagingScreen(convo: convo)),
-        );
-        Fluttertoast.showToast(
-          msg: "conversation Created successfully",
-          backgroundColor: Colors.grey[700],
-        );
+          widget.onUpdate(selectedUsers);
+          ref.read(selectedUserProvider.notifier).deleteHistory();
+          Navigator.of(context).pop();
+        }
       } else if (response.statusCode == 400) {
         Fluttertoast.showToast(
           msg: "Bad request",
@@ -167,9 +185,15 @@ class _CreateConversationScreenState
           msg: "conflict",
           backgroundColor: Colors.grey[700],
         );
+      }else {
+        print(response.body);
+        Fluttertoast.showToast(
+          msg: "error adding user",
+          backgroundColor: Colors.grey[700],
+        );
       }
     } catch (e) {
-      print("creating converstaion error");
+      print("creating/adding converstaion error");
     }
     createPushed = false;
   }
@@ -178,80 +202,88 @@ class _CreateConversationScreenState
   Widget build(context) {
     selectedUsers = ref.watch(selectedUserProvider);
     users = ref.watch(userSearchProvider);
-
     // selectedUsers = ref.watch(selectedUserProvider);
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50),
-        child: AppBar(
-            backgroundColor: Colors.black,
-            automaticallyImplyLeading: true,
-            title: const Text("Create a conversation"),
-            actions: [
-              ElevatedButton(
-                onPressed: createConverstaion,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                child: const Text(
-                  "Create",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ]),
-      ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        child: Column(children: [
-          // Divider(R
-          TextField(
-            controller: textController,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-            ),
-          ),
-          Container(
-            height: 50,
-            decoration: BoxDecoration(color: Colors.black),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: selectedUsers.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    cardButtonFunction(selectedUsers[index]);
-                  },
-                  child: Card(
-                    color: const Color.fromARGB(255, 56, 56, 56),
-                    child: Center(
-                      widthFactor: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Text(selectedUsers[index].fullName ?? ""),
-                      ),
+    return WillPopScope(
+      onWillPop: () {
+        ref.read(selectedUserProvider.notifier).deleteHistory();
+        return Future(() => true);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: AppBar(
+              backgroundColor: Colors.black,
+              automaticallyImplyLeading: true,
+              title: const Text("Create a conversation"),
+              actions: [
+                ElevatedButton(
+                  onPressed: createConverstaion,
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  child: Text(
+                    widget.convo == null ? "Create" : "Done",
+                    style: TextStyle(
+                      color: widget.convo == null ? Colors.white : Colors.blue,
                     ),
                   ),
-                );
-              },
+                ),
+              ]),
+        ),
+        body: Container(
+          height: double.infinity,
+          width: double.infinity,
+          child: Column(children: [
+            // Divider(R
+            TextField(
+              controller: textController,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+              ),
             ),
-          ),
-          Divider(
-            height: 5,
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                return SearchUserWidget(
-                    user: users[index],
-                    selected: selectedUsers
-                        .where((element) =>
-                            element.username == users[index].username)
-                        .isNotEmpty);
-              },
+            Container(
+              height: 50,
+              decoration: BoxDecoration(color: Colors.black),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: selectedUsers.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      cardButtonFunction(selectedUsers[index]);
+                    },
+                    child: Card(
+                      color: const Color.fromARGB(255, 56, 56, 56),
+                      child: Center(
+                        widthFactor: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(selectedUsers[index].fullName ?? ""),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          )
-        ]),
+            Divider(
+              height: 5,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  return SearchUserWidget(
+                      user: users[index],
+                      selected: selectedUsers
+                          .where((element) =>
+                              element.username == users[index].username)
+                          .isNotEmpty);
+                },
+              ),
+            )
+          ]),
+        ),
       ),
     );
   }

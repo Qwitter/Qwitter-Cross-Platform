@@ -192,7 +192,7 @@ class MessageCard extends StatelessWidget {
               ),
             ],
           ),
-          Padding(
+         msg.text!=""||msg.media!=null? Padding(
             padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: Text(
               (msg.byMe || isGroup == false ? "" : msg.name + ' . ') +
@@ -200,7 +200,7 @@ class MessageCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
-          ),
+          ):Container(),
         ],
       ),
     );

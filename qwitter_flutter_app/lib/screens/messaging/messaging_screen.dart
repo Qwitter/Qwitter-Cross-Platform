@@ -16,6 +16,8 @@ import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversation_info_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
@@ -39,8 +41,12 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   bool _isFetching = false;
   bool allFetched = false;
   File? imageFile;
+  final messagesProvider = messagesProviderFamily(id);
+  static int id = 0;
   @override
   void initState() {
+    id += 1;
+    print(id);
     super.initState();
     scrollController.addListener(scrollListener);
     fecthMessages();
@@ -68,9 +74,9 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     scrollController.dispose();
     textController.dispose();
     MessagingServices.socket.off('ROOM_MESSAGE');
-    textController.dispose();
-    MessagingServices.socket.off('ROOM_MESSAGE');
     super.dispose();
+
+    // ref.read(messagesProvider.notifier).DeleteHistory();
   }
 
   void fecthMessages() async {
@@ -81,6 +87,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       if (value['statusCode'] == 200) {
         print(msgs.length);
         print('first');
+
+        print(value['messages'].length);
         ref.watch(messagesProvider.notifier).addList(value['messages']);
         print(msgs.length);
         allFetched = (value['messages'].length == 0);
@@ -103,6 +111,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   }
 
   void sendMessage() {
+    print('widget length');
+    print(msgs.length);
     if (textController.text == "" && imageFile == null) return;
     MessagingServices.requestMessage(
             widget.convo.id, textController.text, imageFile)
@@ -141,9 +151,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     double radius = 17.5;
     imageFile = ref.watch(imageProvider);
     MessagingServices.connectToConversation(widget.convo.id);
+
     msgs = ref.watch(messagesProvider);
-    // msgs = msgsss;
-    ref.listen(messagesProvider, (messagesProvider, messagesProvider2) {});
     // widget.convo.name='asfklnhnaklfasklfnasklfnasklfnasklfnasklfnasaksfna';
     String imageUrl = "";
     if (widget.convo.isGroup) {
@@ -151,90 +160,110 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     } else if (widget.convo.users.isNotEmpty) {
       imageUrl = widget.convo.users.first.profilePicture?.path ?? "";
     }
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50),
-        child: AppBar(
-          backgroundColor: black,
-          surfaceTintColor: black,
-          automaticallyImplyLeading: true,
-          title: Row(
-            children: [
-              InkWell(
-                onTap: widget.convo.isGroup == false
-                    ? () {
-                        if (widget.convo.users.isNotEmpty &&
-                            widget.convo.users.first.username != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProfileDetailsScreen(
-                                  username: widget.convo.users.first.username!),
+
+    return ProviderScope(
+      child: WillPopScope(
+        onWillPop: () {
+          // ref.read(messagesProvider.notifier).DeleteHistory();
+          ref.read(imageProvider.notifier).setImage(null);
+          return Future(() => true);
+        },
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(50),
+            child: AppBar(
+              backgroundColor: black,
+              surfaceTintColor: black,
+              automaticallyImplyLeading: true,
+              title: Row(
+                children: [
+                  InkWell(
+                    onTap: widget.convo.isGroup == false
+                        ? () {
+                            if (widget.convo.users.isNotEmpty &&
+                                widget.convo.users.first.username != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfileDetailsScreen(
+                                      username:
+                                          widget.convo.users.first.username!),
+                                ),
+                              );
+                            }
+                          }
+                        : null,
+                    splashColor: Colors.red,
+                    customBorder: CircleBorder(),
+                    child: (imageUrl != '')
+                        ? Container(
+                            width: radius * 2,
+                            child: CircleAvatar(
+                              radius: radius,
+                              backgroundImage: NetworkImage(imageUrl),
                             ),
-                          );
-                        }
-                      }
-                    : null,
-                splashColor: Colors.red,
-                customBorder: CircleBorder(),
-                child: (imageUrl != '')
-                    ? Container(
-                        width: radius * 2,
-                        child: CircleAvatar(
-                          radius: radius,
-                          backgroundImage: NetworkImage(imageUrl),
-                        ),
-                      )
-                    : ClipOval(
-                        child: Image.asset(
-                          "assets/images/def.jpg",
-                          width: 35,
+                          )
+                        : ClipOval(
+                            child: Image.asset(
+                              "assets/images/def.jpg",
+                              width: 35,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      print('name');
+                    },
+                    child: SizedBox(
+                      width: 200,
+                      height: 35,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.convo.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-              InkWell(
-                onTap: () {
-                  print('name');
-                },
-                child: SizedBox(
-                  width: 200,
-                  height: 35,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      widget.convo.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.white),
                     ),
                   ),
-                ),
+                ],
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.info),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConversationInfoScreen(
+                          convo: widget.convo,
+                        ),
+                      ),
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+          body: Column(
+            children: [
+              ScrollableMessages(
+                msgs: msgs,
+                scrollController: scrollController,
+                isGroup: widget.convo.isGroup,
+              ),
+              MessagingTextField(
+                textController: textController,
+                sendMessage: sendMessage,
               ),
             ],
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.info),
-              onPressed: () {},
-            )
-          ],
         ),
-      ),
-      body: Column(
-        children: [
-          ScrollableMessages(
-            msgs: msgs,
-            scrollController: scrollController,
-            isGroup: widget.convo.isGroup,
-          ),
-          MessagingTextField(
-            textController: textController,
-            sendMessage: sendMessage,
-          ),
-        ],
       ),
     );
   }

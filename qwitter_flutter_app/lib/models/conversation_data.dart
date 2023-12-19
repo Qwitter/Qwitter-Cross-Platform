@@ -6,6 +6,7 @@ class Conversation {
     required this.id,
     required this.isGroup,
     required this.name,
+    required this.fullName,
     this.status,
     this.photo,
     required this.lastMsg,
@@ -14,6 +15,7 @@ class Conversation {
   final String id;
   final bool isGroup;
   String name;
+  String fullName;
   String? status;
   String? photo;
   MessageData? lastMsg;
@@ -24,6 +26,7 @@ class Conversation {
       id: json['id'],
       isGroup: json['isGroup'],
       name: json['name'],
+      fullName: json['name'],
       status: json['status'],
       photo: json['photo'],
       lastMsg: json['lastMessage'] != null
