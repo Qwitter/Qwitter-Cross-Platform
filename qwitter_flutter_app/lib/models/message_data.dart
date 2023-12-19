@@ -27,7 +27,6 @@ class MessageData {
         (media) => Media(media['value'] as String, media['type'] as String),
       ),
     );
-    print(list.isNotEmpty ? list.first.value : 'no media');
     var d = MessageData(
         id: json['id'],
         text: json['text'],

@@ -6,6 +6,7 @@ import 'package:qwitter_flutter_app/components/profile/profile_details_screen.da
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/profile_tweets_provider.dart';
+import 'package:qwitter_flutter_app/providers/user_profile_search_provider.dart';
 
 class ConversationUserCard extends StatefulWidget {
   const ConversationUserCard({
@@ -37,7 +38,6 @@ class _UserCardState extends State<ConversationUserCard> {
       },
     );
 
-    print('username: ${widget.userData.username}');
 
     return response;
   }
@@ -60,13 +60,18 @@ class _UserCardState extends State<ConversationUserCard> {
       },
     );
 
-    print('username: ${widget.userData?.username}');
 
     return response;
   }
 
   @override
   Widget build(BuildContext context) {
+    String url = widget.userData.profilePicture?.path ??
+        "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
+    if (url == "") {
+      url = widget.userData.profilePicture?.path ??
+          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
+    }
     return Column(children: [
       GestureDetector(
         onTap: () {
@@ -83,7 +88,7 @@ class _UserCardState extends State<ConversationUserCard> {
           leading: ClipOval(
             // borderRadius: BorderRadius.circular(30),
             child: Image.network(
-              widget.userData.profilePicture?.path ?? "",
+              url,
               width: 40,
               height: 40,
               fit: BoxFit.cover,
@@ -101,8 +106,8 @@ class _UserCardState extends State<ConversationUserCard> {
                   (BuildContext context, Object error, StackTrace? stackTrace) {
                 // Handle image loading errors
                 return ClipOval(
-                  child: Image.asset(
-                    "assets/images/def.jpg",
+                  child: Image.network(
+                    'https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg',
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
@@ -142,8 +147,6 @@ class _UserCardState extends State<ConversationUserCard> {
                         text: 'Following',
                         onPressed: () {
                           unFollowUser().then((value) {
-                            print(value.reasonPhrase);
-                            print(value.body);
                           });
                           setState(() {
                             widget.userData.isFollowed = false;
@@ -160,8 +163,6 @@ class _UserCardState extends State<ConversationUserCard> {
                         text: 'Follow',
                         onPressed: () {
                           followUser().then((value) {
-                            print(value.reasonPhrase);
-                            print(value.body);
                           });
                           setState(() {
                             widget.userData.isFollowed = true;
@@ -184,7 +185,7 @@ class _UserCardState extends State<ConversationUserCard> {
             const SizedBox(width: 57),
             Expanded(
               child: Text(
-                widget.userData.description ??'',
+                widget.userData.description ?? '',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 style: const TextStyle(

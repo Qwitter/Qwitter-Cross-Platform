@@ -34,8 +34,6 @@ class MessagingServices {
     AppUser user = AppUser();
     final url = Uri.parse('$_baseUrl/api/v1/conversation/?limit=50');
 
-    //print(user.token);
-
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -58,7 +56,6 @@ class MessagingServices {
       'text': Message,
       'replyId': "",
     };
-    print(jsonEncode(fields));
 
     final request = http.MultipartRequest('POST', url);
     request.headers.addAll({
@@ -84,10 +81,8 @@ class MessagingServices {
       );
 
       request.files.add(multipartFile);
-      print(request.files.first);
     }
     final response = await request.send();
-    print("message request done");
     return response;
   }
 
@@ -101,9 +96,6 @@ class MessagingServices {
           imageFile,
         ),
       );
-      print(response.statusCode);
-      print(response.body);
-
       if (response.statusCode == 201) {
         final jsonBody = jsonDecode(response.body);
         return jsonBody['createdMessage'];
@@ -137,15 +129,11 @@ class MessagingServices {
       String converstaionID, int page) async {
     try {
       final response = await fetchMessagesResponse(converstaionID, page);
-      // print(response.statusCode);
-      // print(jsonDecode(response.body)['messages']);
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonBody = jsonDecode(response.body)['messages'];
-        print(jsonBody);
         List<MessageData> msgs =
             jsonBody.map((msg) => MessageData.fromJson(msg)).toList();
-        print(msgs.length);
         return {
           'statusCode': response.statusCode,
           'messages': msgs,
@@ -172,38 +160,19 @@ class MessagingServices {
 
   static void connectToConversation(String conversationId) {
     socket.emit('JOIN_ROOM', conversationId);
-
-    // socket.emit(
-    //   'ROOM_MESSAGE',
-    //   (data) {
-    //     // print(data);
-    //     // final container = ProviderContainer();
-    //     // container.read(messagesProvider.notifier).addMessage(
-    //     //     MessageData(byMe: false, text: data['text'], date: DateTime.now()));
-    //   },
-    // );
-  }
-
-  static void test() {
-    print(socket.connected);
   }
 
   static Future<List<Conversation>> getConversations() async {
     try {
+      print("getting convo");
       final response = await getConversationsRespone();
-      print(response.statusCode);
-      print(response.body);
+      // print(response.body);
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
-        // int unseen = jsonBody['unseen'];
         final List<dynamic> ConversationList = jsonBody as List<dynamic>;
-        // for (var v in ConversationList) {
-        //   print(v);
-        // }
-
         List<Conversation> conversations = ConversationList.map(
             (conversation) => Conversation.fromJson(conversation)).toList();
-        print("doneS");
+        print("done");
         return conversations;
       } else {
         return [];

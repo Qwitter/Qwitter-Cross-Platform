@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
 
 class ConversationNotifier extends StateNotifier<List<Conversation>> {
   ConversationNotifier() : super([]);

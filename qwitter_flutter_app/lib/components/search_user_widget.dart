@@ -27,16 +27,11 @@ class SearchUserWidget extends ConsumerStatefulWidget {
 
 class _SearchUserState extends ConsumerState<SearchUserWidget> {
   void searchButtonFunction() {
-    print("hello world");
-    print(widget.selected);
     if (widget.selected) {
-      print("rem");
       ref.watch(selectedUserProvider.notifier).removeUser(widget.user);
     } else {
       ref.watch(selectedUserProvider.notifier).addUser(widget.user);
     }
-    print(widget.selected);
-
     setState(() {
       widget.selected = !widget.selected;
     });
@@ -45,8 +40,6 @@ class _SearchUserState extends ConsumerState<SearchUserWidget> {
   @override
   Widget build(BuildContext context) {
     double radius = 20;
-
-    print(widget.user.inConversation);
     return InkWell(
       onTap: widget.user.inConversation ?? false ? null : searchButtonFunction,
       child: Container(

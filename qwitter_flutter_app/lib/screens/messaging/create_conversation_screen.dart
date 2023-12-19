@@ -39,6 +39,7 @@ class _CreateConversationScreenState
   String fetching = "";
   bool isFetching = false;
   bool createPushed = false;
+  int cnt = 0;
   final textController = TextEditingController();
 
   @override
@@ -77,30 +78,29 @@ class _CreateConversationScreenState
   static Future<List<User>> searchUser(String data, Conversation? convo) async {
     try {
       final response = await searchUserRespone(data, convo);
-      print(response.statusCode);
       if (response.statusCode == 200) {
-        print(response.body);
         final jsonBody = jsonDecode(response.body);
         final List<dynamic> userList = jsonBody['users'] as List<dynamic>;
 
         List<User> users = userList.map((user) => User.fromJson(user)).toList();
-        print(users.length);
-        print("doneU");
         return users;
       } else {
         return [];
       }
     } catch (e) {
-      print("Searching User Error");
       return [];
     }
   }
 
   Future<void> getUsers(String data) async {
+    int cur = cnt;
+    cnt += 1;
     fetching = textController.text;
     isFetching = true;
     List<User> users = await searchUser(data, widget.convo);
-    ref.watch(userSearchProvider.notifier).initData(users);
+    if (cur == (cnt - 1)) {
+      ref.watch(userSearchProvider.notifier).initData(users);
+    }
     isFetching = false;
   }
 
@@ -185,7 +185,7 @@ class _CreateConversationScreenState
           msg: "conflict",
           backgroundColor: Colors.grey[700],
         );
-      }else {
+      } else {
         print(response.body);
         Fluttertoast.showToast(
           msg: "error adding user",

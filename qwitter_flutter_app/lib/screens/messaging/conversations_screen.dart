@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/conversation_widget.dart';
+import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
+import 'package:qwitter_flutter_app/components/layout/sidebar/main_drawer.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
@@ -24,6 +26,8 @@ class ConversationScreen extends ConsumerStatefulWidget {
 
 class conversationScreenState extends ConsumerState<ConversationScreen> {
   AppUser user = AppUser();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -47,83 +51,46 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
   void goToCreateConversationScreen() {
     ref.watch(selectedUserProvider.notifier).deleteHistory();
     ref.watch(userSearchProvider.notifier).deleteHistory();
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => CreateConversationScreen(onUpdate: () {}),
       ),
+    )
+        .then(
+      (value) {
+        print('popped');
+        MessagingServices.getConversations().then(
+          (list) {
+            ref.read(ConversationProvider.notifier).InitConversations(list);
+          },
+        ).onError(
+          (error, stackTrace) {
+            //print(error);
+          },
+        );
+      },
     );
+    ;
   }
 
+  void onUpdate(
+    Conversation convo,
+  ) {}
   List<Conversation> conversations = [];
   double radius = 15;
   @override
   Widget build(context) {
     conversations = ref.watch(ConversationProvider);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        leading: SizedBox(
-          width: double.infinity,
-          child: Row(
-            children: [
-              SizedBox(
-                width: 10,
-              ),
-              InkWell(
-                onTap: () {
-                  print("hello world");
-                },
-                customBorder: CircleBorder(),
-                child: (user.profilePicture != null &&
-                        user.profilePicture?.path != '')
-                    ? Container(
-                        width: radius * 2,
-                        child: CircleAvatar(
-                          radius: radius,
-                          backgroundImage:
-                              NetworkImage(user.profilePicture?.path ?? ""),
-                        ),
-                      )
-                    : ClipOval(
-                        child: Image.asset(
-                          "assets/images/def.jpg",
-                          width: 35,
-                        ),
-                      ),
-              )
-            ],
-          ),
+      key: _scaffoldKey,
+      drawer: const MainDrawer(),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50),
+        child: QwitterAppBar(
+          autoImplyLeading: false,
+          scaffoldKey: _scaffoldKey,
         ),
-        title: Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
-            width: 300,
-            child: TextButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 44, 43, 43),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "  Search Driect Messages",
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Color.fromARGB(255, 197, 193, 193)),
-                  )),
-            )),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.settings,
-              color: Colors.black,
-            ),
-          )
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: refresh,
@@ -134,7 +101,9 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
           },
         ),
       ),
-      bottomNavigationBar: const QwitterBottomNavigationBar(),
+      bottomNavigationBar: QwitterBottomNavigationBar(
+        currentIndex: 4,
+      ),
       backgroundColor: Colors.black,
       floatingActionButton: FloatingActionButton(
         onPressed: goToCreateConversationScreen,

@@ -25,12 +25,16 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String imageUrl = "";
+    String imageUrl =
+        "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
     if (widget.convo.isGroup) {
-      imageUrl = widget.convo.photo ?? "";
+      imageUrl = widget.convo.photo ??
+          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
     } else if (widget.convo.users.isNotEmpty) {
-      imageUrl = widget.convo.users.first.profilePicture?.path ?? "";
+      imageUrl = widget.convo.users.first.profilePicture?.path ??
+          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
     }
+    print(imageUrl);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(75),
@@ -60,22 +64,37 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
         children: [
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: (imageUrl != "")
-                  ? Container(
-                      width: 80,
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundImage: NetworkImage(imageUrl),
-                      ),
-                    )
-                  : ClipOval(
-                      child: Image.asset(
-                        "assets/images/def.jpg",
+                padding: const EdgeInsets.all(10),
+                child: ClipOval(
+                  child: Image.network(
+                    imageUrl != ""
+                        ? imageUrl
+                        : 'https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        // Image has successfully loaded
+                        return child;
+                      } else {
+                        // Image is still loading
+                        return CircularProgressIndicator();
+                      }
+                    },
+                    errorBuilder: (BuildContext context, Object error,
+                        StackTrace? stackTrace) {
+                      // Handle image loading errors
+                      return Image.network(
+                        "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg",
                         width: 80,
-                      ),
-                    ),
-            ),
+                        height: 80,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                )),
           ),
           Padding(
             padding: const EdgeInsets.all(10),

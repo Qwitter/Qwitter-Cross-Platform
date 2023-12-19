@@ -34,20 +34,21 @@ class MessagingMediaViewerScreenState
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(75),
         child: AppBar(
-          actions: [
-            PopupMenuButton(
-              onSelected: (value) async {
-                try {
-                } catch (e) {
-                  print('Error saving image $e');
-                }
-              },
-              itemBuilder: ((context) => const [
-                    PopupMenuItem(
-                      child: Text("Save"),
-                    ),
-                  ]),
-            ),
+          actions:
+           [
+            // PopupMenuButton(
+            //   onSelected: (value) async {
+            //     try {
+            //     } catch (e) {
+            //       print('Error saving image $e');
+            //     }
+            //   },
+            //   itemBuilder: ((context) => const [
+            //         PopupMenuItem(
+            //           child: Text("Save"),
+            //         ),
+            //       ]),
+            // ),
           ],
         ),
       ),

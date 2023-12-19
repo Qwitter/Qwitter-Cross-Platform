@@ -8,6 +8,7 @@ import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversation_users_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
@@ -22,16 +23,31 @@ class ConversationWidget extends ConsumerWidget {
     String date = "";
 
     void switchToMessagingScreen() {
-      print("hello world");
-      Navigator.of(context).push(
+      Navigator.of(context)
+          .push(
         MaterialPageRoute(
           builder: (context) => MessagingScreen(
             convo: convo,
           ),
         ),
+      )
+          .then(
+        (value) {
+          print('popped');
+          MessagingServices.getConversations().then(
+            (list) {
+              ref.read(ConversationProvider.notifier).InitConversations(list);
+            },
+          ).onError(
+            (error, stackTrace) {
+              //print(error);
+            },
+          );
+        },
       );
+      ;
     }
-    print(convo.photo);
+
     String imageUrl = "";
     if (convo.isGroup) {
       imageUrl = convo.photo ?? "";
@@ -53,7 +69,31 @@ class ConversationWidget extends ConsumerWidget {
             children: [
               InkWell(
                 onTap: convo.isGroup
-                    ? () {}
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConversationUsersScreen(
+                              users: convo.users,
+                            ),
+                          ),
+                        ).then(
+                          (value) {
+                            print('popped');
+                            MessagingServices.getConversations().then(
+                              (list) {
+                                ref
+                                    .read(ConversationProvider.notifier)
+                                    .InitConversations(list);
+                              },
+                            ).onError(
+                              (error, stackTrace) {
+                                //print(error);
+                              },
+                            );
+                          },
+                        );
+                      }
                     : () {
                         if (convo.users.isNotEmpty &&
                             convo.users.first.username != null) {
@@ -63,6 +103,21 @@ class ConversationWidget extends ConsumerWidget {
                               builder: (context) => ProfileDetailsScreen(
                                   username: convo.users.first.username!),
                             ),
+                          ).then(
+                            (value) {
+                              print('popped');
+                              MessagingServices.getConversations().then(
+                                (list) {
+                                  ref
+                                      .read(ConversationProvider.notifier)
+                                      .InitConversations(list);
+                                },
+                              ).onError(
+                                (error, stackTrace) {
+                                  //print(error);
+                                },
+                              );
+                            },
                           );
                         }
                       },
@@ -70,7 +125,9 @@ class ConversationWidget extends ConsumerWidget {
                 child: ClipOval(
                   // borderRadius: BorderRadius.circular(30),
                   child: Image.network(
-                    imageUrl ?? "",
+                    imageUrl != ""
+                        ? imageUrl
+                        : 'https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg',
                     width: 60,
                     height: 60,
                     fit: BoxFit.cover,

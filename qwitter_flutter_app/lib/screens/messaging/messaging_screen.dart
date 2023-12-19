@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
+import 'package:qwitter_flutter_app/components/conversation_user_card.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/messaging_text_field.dart';
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
@@ -17,6 +18,7 @@ import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversation_info_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversation_users_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
@@ -154,11 +156,14 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
 
     msgs = ref.watch(messagesProvider);
     // widget.convo.name='asfklnhnaklfasklfnasklfnasklfnasklfnasklfnasaksfna';
-    String imageUrl = "";
+    String imageUrl =
+        "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
     if (widget.convo.isGroup) {
-      imageUrl = widget.convo.photo ?? "";
+      imageUrl = widget.convo.photo ??
+          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
     } else if (widget.convo.users.isNotEmpty) {
-      imageUrl = widget.convo.users.first.profilePicture?.path ?? "";
+      imageUrl = widget.convo.users.first.profilePicture?.path ??
+          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
     }
 
     return ProviderScope(
@@ -166,7 +171,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
         onWillPop: () {
           // ref.read(messagesProvider.notifier).DeleteHistory();
           ref.read(imageProvider.notifier).setImage(null);
-          return Future(() => true);
+          Navigator.pop(context,'popped');
+          return Future(() => false);
         },
         child: Scaffold(
           backgroundColor: Colors.black,
@@ -196,27 +202,53 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
                         : null,
                     splashColor: Colors.red,
                     customBorder: CircleBorder(),
-                    child: (imageUrl != '')
-                        ? Container(
-                            width: radius * 2,
-                            child: CircleAvatar(
-                              radius: radius,
-                              backgroundImage: NetworkImage(imageUrl),
+                    child: ClipOval(
+                      // borderRadius: BorderRadius.circular(30),
+                      child: Image.network(
+                        imageUrl != ""
+                            ? imageUrl
+                            : "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg",
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            // Image has successfully loaded
+                            return child;
+                          } else {
+                            // Image is still loading
+                            return CircularProgressIndicator();
+                          }
+                        },
+                        errorBuilder: (BuildContext context, Object error,
+                            StackTrace? stackTrace) {
+                          // Handle image loading errors
+                          return ClipOval(
+                            child: Image.network(
+                              "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg",
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
                             ),
-                          )
-                        : ClipOval(
-                            child: Image.asset(
-                              "assets/images/def.jpg",
-                              width: 35,
-                            ),
-                          ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(
                     width: 15,
                   ),
                   InkWell(
                     onTap: () {
-                      print('name');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ConversationUsersScreen(
+                            users: widget.convo.users,
+                          ),
+                        ),
+                      );
                     },
                     child: SizedBox(
                       width: 200,
