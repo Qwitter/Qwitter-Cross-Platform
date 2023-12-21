@@ -106,7 +106,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     TweetsServices.getTweetReplies(widget.tweet).then((replies) {
       print("reppp: " + replies.length.toString());
       setState(() {
-        ref.read(widget.tweet.provider.notifier).setReplies(replies);
+        ref.read(widget.tweet.provider.notifier).resetReplies(replies);
       });
     }).onError((error, stackTrace) {
       //print(error);
@@ -195,6 +195,16 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    // Simulating a refresh action with a delay
+    final List<Tweet> newTweets = await TweetsServices.getTweetReplies(widget.tweet);
+    setState(() {
+      print(newTweets.length);
+      ref.read(widget.tweet.provider.notifier).resetReplies(newTweets);
+      print('Refreshed!');
+      print("token : " + AppUser().token.toString());
+    });
+  }
   void _opentweetMenuModal(Tweet tweetProvider) {
     showModalBottomSheet(
       context: context,
@@ -326,526 +336,529 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
           iconTheme: Theme.of(context).iconTheme,
           elevation: 1,
         ),
-        body: Container(
-          height: MediaQuery.of(context).size.height - 100,
-          child: Stack(
-            children: [
-              ListView.builder(
-                itemBuilder: (ctx, index) {
-                  print("replies" + tweetProvider.replies.toString());
-                  return index == 0
-                      ? Column(
-                          children: [
-                            Container(
-                              // alignment: Alignment.topLeft,
-                              alignment: Alignment.center,
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      TweetAvatar(
-                                        avatar: widget
-                                            .tweet.user!.profilePicture!.path,
-                                        username: widget.tweet.user!.username!,
-                                      ),
-                                      Expanded(
-                                        child: TweetHeader.stretched(
-                                          tweet: tweetProvider,
-                                          opentweetMenuModal: () {
-                                            _opentweetMenuModal(tweetProvider);
-                                          },
-
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  TweetBody(
-                                    tweet: widget.tweet,
-                                    pushMediaViewerFunc: pushMediaViewer,
-                                    stretched: true,
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
-                                    child: Row(
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: Container(
+            height: MediaQuery.of(context).size.height - 100,
+            child: Stack(
+              children: [
+                ListView.builder(
+                  itemBuilder: (ctx, index) {
+                    print("replies" + tweetProvider.replies.toString());
+                    return index == 0
+                        ? Column(
+                            children: [
+                              Container(
+                                // alignment: Alignment.topLeft,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  children: [
+                                    Row(
                                       children: [
-                                        Text(
-                                          DateHelper.extractTime(
-                                              tweetProvider.createdAt!),
-                                          style: TextStyle(
-                                              color: Colors.grey[600]),
+                                        TweetAvatar(
+                                          avatar: widget
+                                              .tweet.user!.profilePicture!.path,
+                                          username: widget.tweet.user!.username!,
                                         ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Container(
-                                          width: 3,
-                                          height: 3,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.grey[600],
+                                        Expanded(
+                                          child: TweetHeader.stretched(
+                                            tweet: tweetProvider,
+                                            opentweetMenuModal: () {
+                                              _opentweetMenuModal(tweetProvider);
+                                            },
+        
                                           ),
                                         ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          DateHelper.extractFullDate(
-                                              tweetProvider.createdAt!),
-                                          style: TextStyle(
-                                              color: Colors.grey[600]),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Container(
-                                          width: 3,
-                                          height: 3,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          "45K",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          "Views",
-                                          style: TextStyle(
-                                              color: Colors.grey[600]),
-                                        )
                                       ],
                                     ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.grey[900]!, width: 1),
+                                    TweetBody(
+                                      tweet: widget.tweet,
+                                      pushMediaViewerFunc: pushMediaViewer,
+                                      stretched: true,
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            DateHelper.extractTime(
+                                                tweetProvider.createdAt!),
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Container(
+                                            width: 3,
+                                            height: 3,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            DateHelper.extractFullDate(
+                                                tweetProvider.createdAt!),
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Container(
+                                            width: 3,
+                                            height: 3,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            "45K",
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            "Views",
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          )
+                                        ],
                                       ),
                                     ),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              top: BorderSide(
-                                                  color: Colors.grey[900]!,
-                                                  width: 1),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 10 +
-                                                    10 *
-                                                        (tweetProvider
-                                                                .retweetsCount
-                                                                .toString()
-                                                                .length)
-                                                            .toDouble(),
-                                                child: TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            RetweetersScreen(
-                                                                tweetId:
-                                                                    tweetProvider
-                                                                        .id!),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: Text(
-                                                    tweetProvider.retweetsCount
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  style: ButtonStyle(
-                                                    alignment: Alignment.center,
-                                                    // overlayColor: MaterialStateProperty.all(Colors.transparent),
-                                                    padding:
-                                                        MaterialStateProperty
-                                                            .all(EdgeInsets
-                                                                .zero),
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                "Reposts",
-                                                style: TextStyle(
-                                                    color: Colors.grey[600],
-                                                    fontSize: 16),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Container(
-                                                width: 10 +
-                                                    10 *
-                                                        ("41".length)
-                                                            .toDouble(),
-                                                child: TextButton(
-                                                  onPressed: () {},
-                                                  child: Text(
-                                                    "41",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  style: ButtonStyle(
-                                                    alignment: Alignment.center,
-                                                    // overlayColor: MaterialStateProperty.all(Colors.transparent),
-                                                    padding:
-                                                        MaterialStateProperty
-                                                            .all(EdgeInsets
-                                                                .zero),
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                "Quotes",
-                                                style: TextStyle(
-                                                    color: Colors.grey[600],
-                                                    fontSize: 16),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Container(
-                                                width: 10 +
-                                                    10 *
-                                                        (tweetProvider
-                                                                .likesCount
-                                                                .toString()
-                                                                .length)
-                                                            .toDouble(),
-                                                child: TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            LikersScreen(
-                                                                tweetId:
-                                                                    tweetProvider
-                                                                        .id!),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: Text(
-                                                    tweetProvider.likesCount
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  style: ButtonStyle(
-                                                    alignment: Alignment.center,
-                                                    // overlayColor: MaterialStateProperty.all(Colors.transparent),
-                                                    padding:
-                                                        MaterialStateProperty
-                                                            .all(EdgeInsets
-                                                                .zero),
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                "Likes",
-                                                style: TextStyle(
-                                                    color: Colors.grey[600],
-                                                    fontSize: 16),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              )
-                                            ],
-                                          ),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                              color: Colors.grey[900]!, width: 1),
                                         ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              top: BorderSide(
-                                                  color: Colors.grey[900]!,
-                                                  width: 1),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 10 +
-                                                    10 *
-                                                        ("41".length)
-                                                            .toDouble(),
-                                                child: TextButton(
-                                                  onPressed: () {},
-                                                  child: Text(
-                                                    "41",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  style: ButtonStyle(
-                                                    alignment: Alignment.center,
-                                                    // overlayColor: MaterialStateProperty.all(Colors.transparent),
-                                                    padding:
-                                                        MaterialStateProperty
-                                                            .all(EdgeInsets
-                                                                .zero),
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                "Bookmarks",
-                                                style: TextStyle(
-                                                    color: Colors.grey[600],
-                                                    fontSize: 16),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            border: Border(
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
                                                 top: BorderSide(
                                                     color: Colors.grey[900]!,
-                                                    width: 1)),
+                                                    width: 1),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 10 +
+                                                      10 *
+                                                          (tweetProvider
+                                                                  .retweetsCount
+                                                                  .toString()
+                                                                  .length)
+                                                              .toDouble(),
+                                                  child: TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context).push(
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              RetweetersScreen(
+                                                                  tweetId:
+                                                                      tweetProvider
+                                                                          .id!),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Text(
+                                                      tweetProvider.retweetsCount
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    style: ButtonStyle(
+                                                      alignment: Alignment.center,
+                                                      // overlayColor: MaterialStateProperty.all(Colors.transparent),
+                                                      padding:
+                                                          MaterialStateProperty
+                                                              .all(EdgeInsets
+                                                                  .zero),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "Reposts",
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 16),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Container(
+                                                  width: 10 +
+                                                      10 *
+                                                          ("41".length)
+                                                              .toDouble(),
+                                                  child: TextButton(
+                                                    onPressed: () {},
+                                                    child: Text(
+                                                      "41",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    style: ButtonStyle(
+                                                      alignment: Alignment.center,
+                                                      // overlayColor: MaterialStateProperty.all(Colors.transparent),
+                                                      padding:
+                                                          MaterialStateProperty
+                                                              .all(EdgeInsets
+                                                                  .zero),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "Quotes",
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 16),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Container(
+                                                  width: 10 +
+                                                      10 *
+                                                          (tweetProvider
+                                                                  .likesCount
+                                                                  .toString()
+                                                                  .length)
+                                                              .toDouble(),
+                                                  child: TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context).push(
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              LikersScreen(
+                                                                  tweetId:
+                                                                      tweetProvider
+                                                                          .id!),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Text(
+                                                      tweetProvider.likesCount
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    style: ButtonStyle(
+                                                      alignment: Alignment.center,
+                                                      // overlayColor: MaterialStateProperty.all(Colors.transparent),
+                                                      padding:
+                                                          MaterialStateProperty
+                                                              .all(EdgeInsets
+                                                                  .zero),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "Likes",
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 16),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                )
+                                              ],
+                                            ),
                                           ),
-                                          child: Row(children: [
-                                            Expanded(
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.chat_bubble_outline,
-                                                  color: Colors.grey[600],
-                                                  size: 20,
-                                                ),
-                                                onPressed: () {
-                                                  FocusScope.of(context)
-                                                      .requestFocus(focusNode);
-                                                },
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                top: BorderSide(
+                                                    color: Colors.grey[900]!,
+                                                    width: 1),
                                               ),
                                             ),
-                                            Expanded(
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.repeat_outlined,
-                                                  color:
-                                                      tweetProvider.isRetweeted!
-                                                          ? Colors.green
-                                                          : Colors.grey[600],
-                                                  size: 22,
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 10 +
+                                                      10 *
+                                                          ("41".length)
+                                                              .toDouble(),
+                                                  child: TextButton(
+                                                    onPressed: () {},
+                                                    child: Text(
+                                                      "41",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    style: ButtonStyle(
+                                                      alignment: Alignment.center,
+                                                      // overlayColor: MaterialStateProperty.all(Colors.transparent),
+                                                      padding:
+                                                          MaterialStateProperty
+                                                              .all(EdgeInsets
+                                                                  .zero),
+                                                    ),
+                                                  ),
                                                 ),
-                                                onPressed: _openRepostModal,
-                                              ),
+                                                Text(
+                                                  "Bookmarks",
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 16),
+                                                )
+                                              ],
                                             ),
-                                            Expanded(
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  tweetProvider.isLiked!
-                                                      ? Icons.favorite
-                                                      : Icons.favorite_border,
-                                                  color: tweetProvider.isLiked!
-                                                      ? Colors.pink
-                                                      : Colors.grey[600],
-                                                  size: 22,
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                  top: BorderSide(
+                                                      color: Colors.grey[900]!,
+                                                      width: 1)),
+                                            ),
+                                            child: Row(children: [
+                                              Expanded(
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.chat_bubble_outline,
+                                                    color: Colors.grey[600],
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () {
+                                                    FocusScope.of(context)
+                                                        .requestFocus(focusNode);
+                                                  },
                                                 ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    TweetsServices.makeLike(
-                                                        ref, widget.tweet);
-                                                  });
-                                                },
                                               ),
-                                            ),
-                                            Expanded(
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.bookmark_outline,
-                                                  color: Colors.grey[600],
-                                                  size: 22,
+                                              Expanded(
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.repeat_outlined,
+                                                    color:
+                                                        tweetProvider.isRetweeted!
+                                                            ? Colors.green
+                                                            : Colors.grey[600],
+                                                    size: 22,
+                                                  ),
+                                                  onPressed: _openRepostModal,
                                                 ),
-                                                onPressed: () {},
                                               ),
-                                            ),
-                                            Expanded(
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.share_outlined,
-                                                  color: Colors.grey[600],
-                                                  size: 22,
+                                              Expanded(
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    tweetProvider.isLiked!
+                                                        ? Icons.favorite
+                                                        : Icons.favorite_border,
+                                                    color: tweetProvider.isLiked!
+                                                        ? Colors.pink
+                                                        : Colors.grey[600],
+                                                    size: 22,
+                                                  ),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      TweetsServices.makeLike(
+                                                          ref, widget.tweet);
+                                                    });
+                                                  },
                                                 ),
-                                                onPressed: () {},
                                               ),
-                                            ),
-                                          ]),
-                                        ),
-                                      ],
+                                              Expanded(
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.bookmark_outline,
+                                                    color: Colors.grey[600],
+                                                    size: 22,
+                                                  ),
+                                                  onPressed: () {},
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.share_outlined,
+                                                    color: Colors.grey[600],
+                                                    size: 22,
+                                                  ),
+                                                  onPressed: () {},
+                                                ),
+                                              ),
+                                            ]),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : index == tweetProvider.replies.length + 1
-                          ? SizedBox(
-                              height: focusNode.hasFocus ? 150 : 80,
-                            )
-                          : TweetCard(tweet: tweetProvider.replies[index - 1], removeReply: (){
-                            Navigator.pop(context);
-                            setState(() {
-                              TweetsServices.deleteTweet(
-                                  ref, context, tweetProvider);
-                              ref.read(tweetProvider.provider.notifier).removeTweet(tweetProvider);
-                            });
-                          } );
-
-                },
-                itemCount: tweetProvider.replies.length + 2,
-              ),
-              Positioned(
-                bottom: 0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border(
-                      top: BorderSide(
-                        color: Colors.grey[800]!,
+                            ],
+                          )
+                        : index == tweetProvider.replies.length + 1
+                            ? SizedBox(
+                                height: focusNode.hasFocus ? 150 : 80,
+                              )
+                            : TweetCard(tweet: tweetProvider.replies[index - 1], removeReply: (){
+                              Navigator.pop(context);
+                              setState(() {
+                                TweetsServices.deleteTweet(
+                                    ref, context, tweetProvider);
+                                ref.read(tweetProvider.provider.notifier).removeTweet(tweetProvider);
+                              });
+                            } );
+        
+                  },
+                  itemCount: tweetProvider.replies.length + 2,
+                ),
+                Positioned(
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.grey[800]!,
+                        ),
                       ),
                     ),
-                  ),
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    children: [
-                      focusNode.hasFocus
-                          ? Container(
-                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                              alignment: Alignment.centerLeft,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Replying to ",
-                                    style: TextStyle(color: Colors.grey[500]),
-                                  ),
-                                  Text(
-                                    "@" + widget.tweet.user!.username!,
-                                    style: TextStyle(color: Colors.blue),
-                                  )
-                                ],
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      children: [
+                        focusNode.hasFocus
+                            ? Container(
+                                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                alignment: Alignment.centerLeft,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Replying to ",
+                                      style: TextStyle(color: Colors.grey[500]),
+                                    ),
+                                    Text(
+                                      "@" + widget.tweet.user!.username!,
+                                      style: TextStyle(color: Colors.blue),
+                                    )
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: TextFormField(
+                            focusNode: focusNode,
+                            controller: textEditingController,
+                            style: const TextStyle(
+                                color: Colors.white), // Text color
+                            decoration: const InputDecoration(
+                              hintText: "Post your reply",
+                              labelStyle: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14), // Text color// Placeholder text
+                              hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16.0), // Placeholder color
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey), // Bottom border color
                               ),
-                            )
-                          : Container(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: TextFormField(
-                          focusNode: focusNode,
-                          controller: textEditingController,
-                          style: const TextStyle(
-                              color: Colors.white), // Text color
-                          decoration: const InputDecoration(
-                            hintText: "Post your reply",
-                            labelStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14), // Text color// Placeholder text
-                            hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16.0), // Placeholder color
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.grey), // Bottom border color
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors
-                                      .blue), // Bottom border color when focused
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors
+                                        .blue), // Bottom border color when focused
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      focusNode.hasFocus
-                          ? Container(
-                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            focusNode.unfocus();
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AddTweetScreen(
-                                                  replyToTweetId:
-                                                      widget.tweet.id!,
-                                                  tweetText:
-                                                      textEditingController
-                                                          .text,
+                        focusNode.hasFocus
+                            ? Container(
+                                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.centerLeft,
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              focusNode.unfocus();
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AddTweetScreen(
+                                                    replyToTweetId:
+                                                        widget.tweet.id!,
+                                                    tweetText:
+                                                        textEditingController
+                                                            .text,
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                          icon: const Icon(
-                                            Icons.camera_alt_outlined,
-                                            color: Colors.blue,
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.camera_alt_outlined,
+                                              color: Colors.blue,
+                                            ),
                                           ),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            print(
-                                                "tweetID:  ${widget.tweet.id}");
-
-                                            print(
-                                                "text:  ${textEditingController.text}");
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AddTweetScreen(
-                                                  replyToTweetId:
-                                                      widget.tweet.id!,
-                                                  tweetText:
-                                                      textEditingController
-                                                          .text,
+                                          IconButton(
+                                            onPressed: () {
+                                              print(
+                                                  "tweetID:  ${widget.tweet.id}");
+        
+                                              print(
+                                                  "text:  ${textEditingController.text}");
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AddTweetScreen(
+                                                    replyToTweetId:
+                                                        widget.tweet.id!,
+                                                    tweetText:
+                                                        textEditingController
+                                                            .text,
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                          icon: const Icon(
-                                            Icons.image_outlined,
-                                            color: Colors.blue,
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.image_outlined,
+                                              color: Colors.blue,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.centerRight,
-                                      child: PrimaryButton(
-                                        buttonSize: Size(90, 30),
-                                        onPressed: buttonFunction,
-                                        text: 'Reply',
+                                        ],
                                       ),
                                     ),
-                                  )
-                                ],
-                              ),
-                            )
-                          : Container()
-                    ],
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.centerRight,
+                                        child: PrimaryButton(
+                                          buttonSize: Size(90, 30),
+                                          onPressed: buttonFunction,
+                                          text: 'Reply',
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            : Container()
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
