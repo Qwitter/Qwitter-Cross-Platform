@@ -298,7 +298,12 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
         setState(() {
           buttonFunction = () {
             TweetsServices.makeReply(
-                ref, tweetProvider, textEditingController.text);
+                ref, tweetProvider, textEditingController.text).then((tweet) {
+                  final t = Tweet.fromJson(tweet['tweet']);
+                  tweetProvider.replies = [ ...tweetProvider.replies,t];
+                  // ref.watch(tweetProvider.provider.notifier).setReplies([t]);
+                });
+              
             textEditingController.text = "";
           };
         });
