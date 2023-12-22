@@ -39,7 +39,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       });
       searchUser(widget.query).then((value) {
         setState(() {
-          _usersList = value;
+        _usersList = value;
         });
       });
       page++;
@@ -104,6 +104,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/follow/${user.username}');
     AppUser appUser = AppUser();
+
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
     };
@@ -297,6 +298,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                           CrossAxisAlignment.start,
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
+
                                       children: [
                                         Text(
                                           "${_usersList![index].fullName}",
@@ -316,15 +318,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                       ],
                                     ),
                                     Spacer(),
-                                    if (_usersList![index].username !=
-                                        AppUser().username)
-                                      FollowButton(
-                                          isFollowed:
-                                              _usersList![index].isFollowed!,
-                                          onTap: () async {
-                                            _toggleFollowState(
-                                                _usersList![index]);
-                                          }),
+
+                                    if(_usersList![index].username!=AppUser().username)
+                                    FollowButton(
+                                        isFollowed:
+                                            _usersList![index].isFollowed!,
+                                        onTap: () async {_toggleFollowState(_usersList![index]);}),
                                   ],
                                 )
                               ]),

@@ -15,7 +15,6 @@ class TweetMedia extends ConsumerStatefulWidget {
     required this.tweet,
     required this.pushMediaViewerFunc,
     this.radius = 10,
-    
   });
 
   @override
@@ -54,7 +53,6 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
 
   @override
   Widget build(BuildContext context) {
-    
     final tweetProvider = ref.watch(widget.tweet.provider);
 
     List<String> uniqueIds = [
@@ -107,6 +105,32 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                     child: Image.network(
                                       tweetProvider.media![0].value,
                                       fit: BoxFit.cover,
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child; // Display the image once it's loaded
+                                        } else {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                  : null,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      errorBuilder: (BuildContext context,
+                                          Object exception,
+                                          StackTrace? stackTrace) {
+                                        return Text(
+                                            'Image not available'); // Display an error message if the image fails to load
+                                      },
                                       // width: (MediaQuery.of(context).size.width - 65),
                                     ),
                                   )
@@ -168,6 +192,36 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                               child: Image.network(
                                                 tweetProvider.media![3].value,
                                                 fit: BoxFit.cover,
+                                                loadingBuilder:
+                                                    (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child; // Display the image once it's loaded
+                                                  } else {
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                loadingProgress
+                                                                    .expectedTotalBytes!
+                                                            : null,
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                errorBuilder: (BuildContext
+                                                        context,
+                                                    Object exception,
+                                                    StackTrace? stackTrace) {
+                                                  return Text(
+                                                      'Image not available'); // Display an error message if the image fails to load
+                                                },
                                                 // width: (MediaQuery.of(context).size.width - 65),
                                               ),
                                             ),
@@ -237,6 +291,35 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                                           child: Image.network(
                                             image.value.value,
                                             fit: BoxFit.cover,
+                                            loadingBuilder:
+                                                (BuildContext context,
+                                                    Widget child,
+                                                    ImageChunkEvent?
+                                                        loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child; // Display the image once it's loaded
+                                              } else {
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            errorBuilder: (BuildContext context,
+                                                Object exception,
+                                                StackTrace? stackTrace) {
+                                              return Text(
+                                                  'Image not available'); // Display an error message if the image fails to load
+                                            },
                                             // width: (MediaQuery.of(context).size.width - 65),
                                           ),
                                         )
@@ -287,7 +370,6 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                     uniqueIds[0], tweetProvider);
               },
               child: ClipRRect(
-                
                 borderRadius: BorderRadius.vertical(
                     top: Radius.circular(widget.radius.toDouble()),
                     bottom: const Radius.circular(10)),
@@ -297,11 +379,32 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                         child: Image.network(
                           tweetProvider.media![0].value,
                           fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child; // Display the image once it's loaded
+                            } else {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            }
+                          },
+                          errorBuilder: (BuildContext context, Object exception,
+                              StackTrace? stackTrace) {
+                            return Text(
+                                'Image not available'); // Display an error message if the image fails to load
+                          },
                           // width: (MediaQuery.of(context).size.width - 65),
                         ),
                       )
                     : SizedBox(
-                      child: TweetVideo(
+                        child: TweetVideo(
                           video: tweetProvider.media![0].value,
                           aspectRatio: 1,
                           tweet: tweetProvider,
@@ -309,7 +412,7 @@ class _TweetMediaState extends ConsumerState<TweetMedia> {
                               (5 * (tweetProvider.media!.length % 2)),
                           autoPlay: true,
                         ),
-                    ),
+                      ),
               ))
         ],
       );

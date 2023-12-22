@@ -57,44 +57,57 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
   List<Widget> headerRowWidgets(width, context, Tweet tweetProvider) {
     final appUser = AppUser();
     return [
-      TextButton(
-        onPressed: () {},
-        style: ButtonStyle(
-          overlayColor: MaterialStateProperty.all(Colors.transparent),
-          // backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
-          padding: MaterialStateProperty.all(EdgeInsets.zero),
-        ),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: FittedBox(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ProfileDetailsScreen(username: tweetProvider.user!.username!),
-                    ));
-              },
-              child: Text(
-                tweetProvider.user!.fullName!.length > 15
-                    ? tweetProvider.user!.fullName!.substring(0, 15)
-                    : tweetProvider.user!.fullName!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      Container(
+        alignment: Alignment.centerLeft,
+        child: TextButton(
+          onPressed: () {},
+          style: ButtonStyle(
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+            // backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+            minimumSize: MaterialStateProperty.all(Size.zero),
+            padding: MaterialStateProperty.all(EdgeInsets.zero),
+            alignment: Alignment.centerLeft,
+            visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: FittedBox(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileDetailsScreen(
+                            username: tweetProvider.user!.username!),
+                      ));
+                },
+                child: SizedBox(
+                  // width: 0.25 * width,
+                  child: Text(
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    tweetProvider.user!.fullName!.length > 15
+                        ? tweetProvider.user!.fullName!.substring(0, 15)
+                        : tweetProvider.user!.fullName!,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-      ...tweetProvider.user!.isVerified ?? false ? tweetVerifiedIcon() : [Container()],
+      ...tweetProvider.user!.isVerified ?? false
+          ? tweetVerifiedIcon()
+          : [Container()],
       Padding(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
         child: SizedBox(
-          width: width * 0.15,
+          width: width * 0.2,
           child: Text(
             "@" + tweetProvider.user!.username!,
             overflow: TextOverflow.ellipsis,
@@ -197,7 +210,9 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
                     ),
                   ),
                 ),
-                ...tweetProvider.user!.isVerified! ? tweetVerifiedIcon() : [Container()],
+                ...tweetProvider.user!.isVerified!
+                    ? tweetVerifiedIcon()
+                    : [Container()],
               ],
             ),
             FittedBox(
@@ -219,24 +234,36 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
             Expanded(
               child: Row(
                 children: [
-                  if (appUser.username != tweetProvider.user!.username!) Container(
-                    height: 35,
-                    padding: !widget.stretchedMenu
-                        ? EdgeInsets.fromLTRB(0, 0, 15, 0)
-                        : EdgeInsets.zero,
-                    child: OutlinedButton(
-                      style: ButtonStyle(
-                        padding: MaterialStateProperty.all(
-                            EdgeInsets.symmetric(horizontal: 25)),
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        "Follow",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w700),
+                  if (appUser.username != tweetProvider.user!.username!)
+                    Container(
+                      height: 35,
+                      padding: !widget.stretchedMenu
+                          ? EdgeInsets.fromLTRB(0, 0, 15, 0)
+                          : EdgeInsets.zero,
+                      child: FittedBox(
+                        child: OutlinedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                                EdgeInsets.symmetric(horizontal: 25)),
+                            backgroundColor: MaterialStateColor.resolveWith(
+                                (states) => tweetProvider.user!.isFollowed! ? Colors.white : Colors.black),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              TweetsServices.makeFollow(ref, tweetProvider);
+                            });
+                          },
+                          child: Text(
+                            !tweetProvider.user!.isFollowed!
+                                ? "Follow"
+                                : "Unfollow",
+                            style: TextStyle(
+                                color: !tweetProvider.user!.isFollowed!? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
                   widget.stretchedMenu
                       ? TweetMenu(opentweetMenuModal: widget.opentweetMenuModal)
                       : Container()
@@ -251,29 +278,29 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
 
   @override
   Widget build(BuildContext context) {
-    
     final tweetProvider = ref.watch(widget.tweet.provider);
     return SizedBox(
       height: widget.stretched ? 90 : 30,
+      // width: MediaQuery.of(context).size.width - 190,
       child: widget.stretched
           ? Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: headerColumnWidgets((){
+              children: headerColumnWidgets(() {
                 print("handle : " + tweetProvider.user!.username!);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ProfileDetailsScreen(username: tweetProvider.user!.username!),
+                      builder: (context) => ProfileDetailsScreen(
+                          username: tweetProvider.user!.username!),
                     ));
               }, tweetProvider),
             )
           : Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
-              children:
-                  headerRowWidgets(MediaQuery.of(context).size.width, context, tweetProvider),
+              children: headerRowWidgets(
+                  MediaQuery.of(context).size.width, context, tweetProvider),
             ),
     );
   }

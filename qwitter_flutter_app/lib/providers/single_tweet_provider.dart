@@ -29,6 +29,9 @@ class SingleTweetProvider extends StateNotifier<Tweet> {
     state = tweet;
   }
 
+  void resetReplies(List<Tweet> replies){
+    state.replies = [...replies];
+  }
   void setReplies(List<Tweet> replies){
     Tweet tweet = state;
     tweet.replies = [...tweet.replies, ...replies];

@@ -203,225 +203,240 @@ class _TweetVideoState extends State<TweetVideo> {
         (MediaQuery.of(context).size.width /
                 _videoPlayerController.value.aspectRatio)
             .toString());
-    return FutureBuilder(
-      future: _initializeVideoPlayerFuture,
-      builder: (ctx, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Container(
-            child: Stack(
-              children: [
-                !widget.fullScreen
-                    ? Container(
-                      width: double.infinity,
-                      child: VisibilityDetector(
-                          key: Key(widget.video),
-                          onVisibilityChanged: (visibilityInfo) {
-                            if (visibilityInfo.visibleFraction < 1.0) {
-                              _videoPlayerController.pause();
-                            } else if (widget.autoPlay) {
-                              _videoPlayerController.play();
-                            } else {
-                              _videoPlayerController.pause();
-                            }
-                          },
-                          child: Container(
-                            // width: double.infinity,
-                            height: widget.height,
-                            child: AspectRatio(
-                              aspectRatio: widget.aspectRatio,
-                              child: VideoPlayer(_videoPlayerController),
+    if (widget.video.isNotEmpty && _videoPlayerController != null) {
+      return FutureBuilder(
+        future: _initializeVideoPlayerFuture,
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Container(
+              child: Stack(
+                children: [
+                  !widget.fullScreen
+                      ? Container(
+                          width: double.infinity,
+                          child: VisibilityDetector(
+                            key: Key(widget.video),
+                            onVisibilityChanged: (visibilityInfo) {
+                              if (visibilityInfo.visibleFraction < 1.0) {
+                                _videoPlayerController.pause();
+                              } else if (widget.autoPlay) {
+                                _videoPlayerController.play();
+                              } else {
+                                _videoPlayerController.pause();
+                              }
+                            },
+                            child: Container(
+                              // width: double.infinity,
+                              height: widget.height,
+                              child: AspectRatio(
+                                aspectRatio: widget.aspectRatio,
+                                child: VideoPlayer(_videoPlayerController),
+                              ),
                             ),
                           ),
-                        ),
-                    )
-                    : Container(
-                        child: Column(
-                        children: [
-                          Expanded(
-                            child: widget.fullScreen
-                                ? Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.width /
-                                                _videoPlayerController
-                                                    .value.aspectRatio,
-                                        width: MediaQuery.of(context).size.width,
-                                        child:
-                                            VideoPlayer(_videoPlayerController),
-                                      )
-                                    ],
-                                  )
-                                : SizedBox(
-                                  width: double.infinity,
-                                    child: VideoPlayer(_videoPlayerController),
-                                  ),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.15,
-                          ),
-                        ],
-                      )),
-                widget.fullScreen
-                    ? Positioned(
-                        bottom: 10,
-                        left: 0,
-                        right: 0,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        )
+                      : Container(
+                          child: Column(
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.5),
-                              ),
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: _toggleVideoPlayback,
-                                    child: Container(
-                                      child: Center(
-                                        child: Icon(
-                                          _videoPlayerController.value.isPlaying
-                                              ? Icons.pause
-                                              : Icons.play_arrow,
-                                          size: 25,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                            Expanded(
+                              child: widget.fullScreen
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              _videoPlayerController
+                                                  .value.aspectRatio,
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          child: VideoPlayer(
+                                              _videoPlayerController),
+                                        )
+                                      ],
+                                    )
+                                  : SizedBox(
+                                      width: double.infinity,
+                                      child:
+                                          VideoPlayer(_videoPlayerController),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onHorizontalDragUpdate: (details) {
-                                        final double dragPosition =
-                                            details.localPosition.dx /
-                                                MediaQuery.of(context).size.width;
-                                        _onVideoDrag(dragPosition);
-                                      },
-                                      child: SliderTheme(
-                                        data: SliderThemeData(
-                                          trackHeight: 1,
-                                          thumbShape: RoundSliderThumbShape(
-                                              enabledThumbRadius: 5),
-                                          overlayShape: RoundSliderOverlayShape(
-                                              overlayRadius: 0),
-                                          trackShape:
-                                              RoundedRectSliderTrackShape(),
-                                          allowedInteraction:
-                                              SliderInteraction.slideOnly,
-                                        ),
-                                        child: Slider(
-                                          min: 0,
-                                          max: 1,
-                                          value: _sliderValue,
-                                          onChanged: _onVideoDrag,
-                                          onChangeEnd: _onVideoDrag,
-                                          activeColor: Colors.white,
-                                          thumbColor: Colors.blue,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      _videoPlayerController.value.volume == 0.0
-                                          ? Icons.volume_off
-                                          : Icons.volume_up,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                    onPressed: _toggleMute,
-                                  ),
-                                  Text(
-                                    _remainingTime,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.5)),
-                              child: Column(
-                                children: widget.tweetSection,
-                              ),
-                            )
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.15,
+                            ),
                           ],
-                        ),
-                      )
-                    : Container(),
-                !widget.fullScreen
-                    ? Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                        )),
+                  widget.fullScreen
+                      ? Positioned(
+                          bottom: 10,
+                          left: 0,
+                          right: 0,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: _toggleVideoPlayback,
+                                      child: Container(
+                                        child: Center(
+                                          child: Icon(
+                                            _videoPlayerController
+                                                    .value.isPlaying
+                                                ? Icons.pause
+                                                : Icons.play_arrow,
+                                            size: 25,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onHorizontalDragUpdate: (details) {
+                                          final double dragPosition = details
+                                                  .localPosition.dx /
+                                              MediaQuery.of(context).size.width;
+                                          _onVideoDrag(dragPosition);
+                                        },
+                                        child: SliderTheme(
+                                          data: SliderThemeData(
+                                            trackHeight: 1,
+                                            thumbShape: RoundSliderThumbShape(
+                                                enabledThumbRadius: 5),
+                                            overlayShape:
+                                                RoundSliderOverlayShape(
+                                                    overlayRadius: 0),
+                                            trackShape:
+                                                RoundedRectSliderTrackShape(),
+                                            allowedInteraction:
+                                                SliderInteraction.slideOnly,
+                                          ),
+                                          child: Slider(
+                                            min: 0,
+                                            max: 1,
+                                            value: _sliderValue,
+                                            onChanged: _onVideoDrag,
+                                            onChangeEnd: _onVideoDrag,
+                                            activeColor: Colors.white,
+                                            thumbColor: Colors.blue,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        _videoPlayerController.value.volume ==
+                                                0.0
+                                            ? Icons.volume_off
+                                            : Icons.volume_up,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                      onPressed: _toggleMute,
+                                    ),
+                                    Text(
+                                      _remainingTime,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.5)),
+                                child: Column(
+                                  children: widget.tweetSection,
+                                ),
+                              )
+                            ],
                           ),
-                          child: Text(
-                            _remainingTime,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Positioned(
-                        child: Container(),
-                        bottom: 10,
-                        right: 10,
-                      ),
-                !widget.fullScreen
-                    ? Positioned(
-                        bottom: 10,
-                        left: 10,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _toggleMute();
-                            });
-                          },
+                        )
+                      : Container(),
+                  !widget.fullScreen
+                      ? Positioned(
+                          bottom: 10,
+                          right: 10,
                           child: Container(
-                            padding:
-                                EdgeInsets.all(8), // Adjust padding as needed
+                            padding: EdgeInsets.all(5),
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle, // Shape of the background
-                              color: Colors.black
-                                  .withOpacity(0.5), // Background color
+                              color: Colors.black.withOpacity(0.5),
                             ),
-          
-                            child: Icon(
-                              _videoPlayerController.value.volume == 0.0
-                                  ? Icons.volume_off // Muted icon
-                                  : Icons.volume_up, // Unmuted icon
-                              color: Colors.white,
-                              // background:
-                              size: 15,
+                            child: Text(
+                              _remainingTime,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
+                        )
+                      : Positioned(
+                          child: Container(),
+                          bottom: 10,
+                          right: 10,
                         ),
-                      )
-                    : Positioned(
-                        child: Container(),
-                        bottom: 10,
-                        right: 10,
-                      ),
-              ],
-            ),
-          );
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+                  !widget.fullScreen
+                      ? Positioned(
+                          bottom: 10,
+                          left: 10,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _toggleMute();
+                              });
+                            },
+                            child: Container(
+                              padding:
+                                  EdgeInsets.all(8), // Adjust padding as needed
+                              decoration: BoxDecoration(
+                                shape:
+                                    BoxShape.circle, // Shape of the background
+                                color: Colors.black
+                                    .withOpacity(0.5), // Background color
+                              ),
+
+                              child: Icon(
+                                _videoPlayerController.value.volume == 0.0
+                                    ? Icons.volume_off // Muted icon
+                                    : Icons.volume_up, // Unmuted icon
+                                color: Colors.white,
+                                // background:
+                                size: 15,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Positioned(
+                          child: Container(),
+                          bottom: 10,
+                          right: 10,
+                        ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      );
+    } else {
+      return Container(
+        // You can provide a placeholder or message here
+        child: Text('No valid video URL available'),
+      );
+    }
   }
 }

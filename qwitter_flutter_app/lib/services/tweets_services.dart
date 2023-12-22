@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/for_you_tweets_provider.dart';
 import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,6 +17,10 @@ class TweetsServices {
   };
 
   static Future<http.Response> getTimelineResponse(int page) async {
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final url =
         Uri.parse('$_baseUrl/api/v1/tweets?page=${page.toString()}&limit=10');
 
@@ -33,9 +38,33 @@ class TweetsServices {
     return response;
   }
 
-  static Future<http.Response> getTweetRepliesResponse(Tweet tweet) async {
-    AppUser user = AppUser();
+  static Future<http.Response> getForYouResponse(int page) async {
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
+    final url =
+        Uri.parse('$_baseUrl/api/v1/timeline?page=${page.toString()}&limit=10');
 
+    //print(user.token);
+
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      // 'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
+    });
+
+    return response;
+  }
+
+  static Future<http.Response> getTweetRepliesResponse(Tweet tweet) async {
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final url = Uri.parse('$_baseUrl/api/v1/tweets/' +
         (tweet.repostToId ?? tweet.id!) +
         "/replies");
@@ -55,8 +84,10 @@ class TweetsServices {
   }
 
   static Future<http.Response> deleteTweetResponse(Tweet tweet) async {
-    AppUser user = AppUser();
-
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final url = Uri.parse('$_baseUrl/api/v1/tweets/${tweet.id!}');
 
     print(user.token);
@@ -72,9 +103,51 @@ class TweetsServices {
     return response;
   }
 
-  static Future<http.Response> likeTweetRequest(Tweet tweet) async {
-    AppUser user = AppUser();
+  static Future<http.Response> followTweetUser(String id) async {
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
+    final url = Uri.parse('$_baseUrl/api/v1/user/follow/${id}');
 
+    print(user.token);
+
+    final response = await http.post(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
+    });
+
+    return response;
+  }
+
+    static Future<http.Response> unfollowTweetUser(String id) async {
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
+    final url = Uri.parse('$_baseUrl/api/v1/user/follow/${id}');
+
+    print(user.token);
+
+    final response = await http.delete(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
+    });
+
+    return response;
+  }
+
+  static Future<http.Response> likeTweetRequest(Tweet tweet) async {
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final url = Uri.parse(
         '$_baseUrl/api/v1/tweets/' + (tweet.repostToId ?? tweet.id!) + "/like");
 
@@ -93,8 +166,10 @@ class TweetsServices {
   }
 
   static Future<http.Response> retweetRequest(Tweet tweet) async {
-    AppUser user = AppUser();
-
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final url = Uri.parse('$_baseUrl/api/v1/tweets/');
 
     Future<void> uploadFiles(List<http.MultipartFile> files) async {
@@ -139,13 +214,16 @@ class TweetsServices {
         }));
 
     print(response.body);
+
     return response;
   }
 
   static Future<Map<String, dynamic>> replyToTweetRequest(
       String text, Tweet tweet) async {
-    AppUser user = AppUser();
-
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final url = Uri.parse('$_baseUrl/api/v1/tweets/');
 
     final response = await http.post(url,
@@ -170,8 +248,10 @@ class TweetsServices {
   }
 
   static Future<http.Response> unlikeTweetRequest(Tweet tweet) async {
-    AppUser user = AppUser();
-
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final url = Uri.parse(
         '$_baseUrl/api/v1/tweets/' + (tweet.repostToId ?? tweet.id!) + "/like");
 
@@ -192,6 +272,36 @@ class TweetsServices {
   static Future<List<Tweet>> getTimeline(int page) async {
     try {
       final response = await getTimelineResponse(page);
+      print('${page} page fetched');
+      print("scode: " + response.statusCode.toString());
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+
+        print('List ${tweetList}');
+        List<Tweet> tweets =
+            tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+
+
+        print('${tweets.length} - ${tweetList.length} tweets fetched');
+
+
+        return tweets;
+      } else {
+        //print('Failed to fetch tweets: ${response.statusCode}');
+        return [];
+      }
+    } catch (error, stackTrace) {
+      print('Error fetching tweets: $error');
+      print('StackTrace: $stackTrace');
+      return [];
+    }
+  }
+
+
+  static Future<List<Tweet>> getForYou(int page) async {
+    try {
+      final response = await getForYouResponse(page);
       print('${page} page fetched');
       print("scode: " + response.statusCode.toString());
       if (response.statusCode == 200) {
@@ -245,9 +355,15 @@ class TweetsServices {
 
   static void makeRepost(ref, Tweet tweet) {
     try {
-      final response = retweetRequest(tweet);
+      final response = retweetRequest(tweet).then((response){
+        final responseBody = jsonDecode(response.body);
+        print(responseBody['tweet']);
+        ref.read(timelineTweetsProvider.notifier).setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
+        ref.read(forYouTweetsProvider.notifier).setForYouTweets([Tweet.fromJson(responseBody['tweet'])]);
+      });
 
       ref.read(tweet.provider.notifier).toggleRetweet();
+
     } catch (error, stackTrace) {
       print('Error fetching tweets: $error');
       print('StackTrace: $stackTrace');
@@ -256,13 +372,14 @@ class TweetsServices {
     // ref.read(tweet.provider.notifier).toggleRetweet();
   }
 
-  static void makeReply(ref, Tweet tweet, String text) {
+  static Future<Map<String, dynamic>> makeReply(ref, Tweet tweet, String text) async {
     try {
-      final response = replyToTweetRequest(text, tweet);
+      final response = await replyToTweetRequest(text, tweet);
+      return response;
     } catch (error, stackTrace) {
       print('Error fetching tweets: $error');
       print('StackTrace: $stackTrace');
-      return;
+      return {};
     }
   }
 
@@ -280,8 +397,23 @@ class TweetsServices {
   }
 
   static void makeFollow(ref, Tweet tweet) {
-    ref.read(tweet.provider.notifier).toggleFollow();
+    try {
+      if(tweet.user!.isFollowed!){
+        final response = unfollowTweetUser(tweet.user!.username!);
+      }else{
+        final response = followTweetUser(tweet.user!.username!);
+      }
+      print(tweet.user!.isFollowed!);
+
+      ref.read(tweet.provider.notifier).toggleFollow();
+    } catch (error, stackTrace) {
+      print('Error fetching tweets: $error');
+      print('StackTrace: $stackTrace');
+      return;
+    }
+    // ref.read(tweet.provider.notifier).toggleFollow();
   }
+
 
   static void makeComment(context, Tweet tweet) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -409,6 +541,35 @@ class TweetsServices {
           tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
       return tweets;
     } else {
+      return [];
+    }
+  }
+
+  static Future<List<Tweet>> getSearchTweets(String query,String hashtag,int page) async{
+    final url = Uri.parse(
+        '$_baseUrl/api/v1/tweets?page=${page.toString()}&limit=10${query.isEmpty==false?"&q=$query":""}${hashtag.isEmpty==false?"&hashtag=${hashtag.replaceFirst("#", "%23")}":""}');
+    print(url);
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      // 'authorization': 'Bearer ${appUser.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
+    });
+    if (response.statusCode == 200) {
+      final jsonBody = jsonDecode(response.body);
+      final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+      List<Tweet> tweets =
+          tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+      
+      for(var t in tweets){
+        print("tweeeeeet: $t");
+      }
+      return tweets;
+    } else {
+      
+      print("failed to fetch the search tweets status code:${response.statusCode} and the body:${response.body}");
       return [];
     }
   }

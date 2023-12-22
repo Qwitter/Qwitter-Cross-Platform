@@ -115,7 +115,7 @@ class _ForgetNewPasswordScreenState
                           builder: (context) => const LoginEmailScreen()));
                 } else {
                   Fluttertoast.showToast(
-                      msg: json.decode(value.body)['message']);
+                      msg: "couldn't change password, try again!");
                 }
               }).onError((error, stackTrace) {
                 Fluttertoast.showToast(msg: "error in sending");

@@ -29,6 +29,27 @@ class _ChangeEmailScreenState extends ConsumerState<ChangeEmailScreen> {
     emailController.dispose();
   }
 
+  Future<http.Response> checkEmailExisistance() async {
+    final url = Uri.parse(
+        'http://back.qwitter.cloudns.org:3000/api/v1/auth/check-existence');
+
+    // Define the data you want to send as a map
+    final Map<String, String> data = {
+      'userNameOrEmail': emailController.text,
+    };
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    );
+    // Successfully sent the data
+    return response;
+  }
+
   Future<http.Response> sendVerificationEmail() async {
     final url = Uri.parse(
         'http://back.qwitter.cloudns.org:3000/api/v1/auth/send-verification-email');
@@ -46,7 +67,6 @@ class _ChangeEmailScreenState extends ConsumerState<ChangeEmailScreen> {
         'Accept': 'application/json',
       },
     );
-
     // Successfully sent the data
     return response;
   }
@@ -66,23 +86,37 @@ class _ChangeEmailScreenState extends ConsumerState<ChangeEmailScreen> {
     emailController.addListener(() {
       if (emailController.text.isNotEmpty) {
         buttonFunction = (context) {
-          sendVerificationEmail().then((value) {
-            if (value.statusCode == 200) {
-              final User u = User(email: emailController.text);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ConfirmationCodeScreen(
-                    user: u,
-                    code: ConfirmationCodeType.changeEmail,
-                  ),
-                ),
-              );
-            } else {
+          checkEmailExisistance().then((value) {
+            if (value.statusCode == 404) {
               Fluttertoast.showToast(
-                msg: "Wrong Email",
+                msg: "This email is already in use",
                 backgroundColor: Colors.grey[700],
               );
+            } else if (value.statusCode == 200) {
+              sendVerificationEmail().then((value) {
+                if (value.statusCode == 200) {
+                  final User u = User(email: emailController.text);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ConfirmationCodeScreen(
+                        user: u,
+                        code: ConfirmationCodeType.changeEmail,
+                      ),
+                    ),
+                  );
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Wrong Email",
+                    backgroundColor: Colors.grey[700],
+                  );
+                }
+              }).onError((error, stackTrace) {
+                Fluttertoast.showToast(
+                  msg: "Error in sending",
+                  backgroundColor: Colors.grey[700],
+                );
+              });
             }
           }).onError((error, stackTrace) {
             Fluttertoast.showToast(

@@ -127,12 +127,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (_profilebannerFile != null) {
         uploadProfilebanner(_profilebannerFile!);
       }
-      _updateUserProfile(
+      if(_nameFieldController.text!=appUser.fullName||_bioFieldController.text!=appUser.description||_locationFieldController.text!=appUser.location||_websiteFieldController.text!=appUser.url||_birthDate.toIso8601String()!=appUser.birthDate) {
+        
+        _updateUserProfile(
           _nameFieldController.text,
           _bioFieldController.text,
           _locationFieldController.text,
           _websiteFieldController.text,
           _birthDate);
+      }
 
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -149,14 +152,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       String location, String website, DateTime birthData) async {
     String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/profile');
-
+    
     try {
       final body = {
         'name': name,
         'description': description,
         'location': location,
         'url': website,
-        'birth_date': "${birthData.toIso8601String()}Z"
+        'birth_date': "${birthData.toIso8601String()}${birthData.toIso8601String().endsWith("Z")?"":"Z"}"
       };
       final Map<String, String> cookies = {
         'qwitter_jwt': 'Bearer ${appUser.token}',
@@ -241,7 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appUser.saveUserData();
     } else {
       // Handle errors
-      print(response.statusCode);
+      print("error when trying to upload profile picture ${response.statusCode} ");
       //print(response.reasonPhrase);
     }
   }
@@ -295,10 +298,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final responseBody = jsonDecode(responseFromStream.body);
       //print(responseBody);
       appUser.setProfileBanner(File(responseBody['user']['profileBannerUrl']));
+      print(responseBody);
       appUser.saveUserData();
     } else {
       // Handle errors
-      print(response.statusCode);
+      print("error when trying to upload profile banner${response.statusCode}");
       //print(response.reasonPhrase);
     }
   }
@@ -320,6 +324,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 color: Colors.white,
               ))),
               child: CupertinoDatePicker(
+                maximumYear: DateTime.now().year-18,
                 onDateTimeChanged: (value) {
                   _birthDate = value;
                   print(_birthDate.toUtc().toIso8601String());
