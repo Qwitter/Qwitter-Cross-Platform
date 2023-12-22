@@ -44,7 +44,7 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
       List<User> users = [];
       var result = jsonDecode(response.body);
       result = result['users'];
-
+      
       for (var user in result) {
         users.add(User.fromJson(user));
       }
@@ -78,6 +78,7 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
       for (var hast in result) {
         hastags.add(hast['text']);
       }
+
       ref.read(hastagSearchProvider.notifier).setHastags(hastags);
     } else {
       //print('response status code : ${response.statusCode}');
@@ -98,12 +99,18 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
           }
         },
         onChanged: (value) {
+          print(value);
           if (value.isNotEmpty) {
             setState(() {
               isIconShowed = true;
               searchUser(value);
               searchHastags(value);
             });
+            ref.read(userSearchProfileProvider.notifier).remove();
+            searchUser(value);
+            ref.read(hastagSearchProvider.notifier).remove();
+            searchHastags(value);
+
           } else {
             setState(() {
               isIconShowed = false;
