@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/user_profile_search_provider.dart';
+import 'package:qwitter_flutter_app/screens/searching/search_screen.dart';
 
 class CustomSearchField extends ConsumerStatefulWidget {
   const CustomSearchField({
@@ -58,6 +59,12 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
   Widget build(BuildContext context) {
     return TextFormField(
         controller: widget.controller,
+        onFieldSubmitted: (value){
+          if(value.isEmpty==false){
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context){ return SearchScreen(hastag: "", query: value);}));
+          }
+        },
         onChanged: (value) {
           if (value.isNotEmpty) {
             setState(() {
