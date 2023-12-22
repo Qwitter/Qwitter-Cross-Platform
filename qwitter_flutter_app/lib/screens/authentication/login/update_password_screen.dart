@@ -161,11 +161,11 @@ class _UpdatePasswordScreenState extends ConsumerState<UpdatePasswordScreen> {
     }
 
     return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(75),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(75),
         child: QwitterTitleAppBar(
           title: "Update password",
-          extraTitle: "@AlyMF",
+          extraTitle: AppUser().getUsername,
         ),
       ),
       body: SingleChildScrollView(

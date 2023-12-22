@@ -31,7 +31,6 @@ class _SearchUserScreenState extends ConsumerState<SearchUserScreen> {
   void dispose() {
     super.dispose();
     searchController.dispose();
-    ref.read(userSearchProfileProvider.notifier).remove();
   }
 
   @override
@@ -44,38 +43,45 @@ class _SearchUserScreenState extends ConsumerState<SearchUserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: CustomSearchField(controller: searchController),
-        ),
-        body: Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          search = ref.watch(userSearchProfileProvider);
-          return search.isNotEmpty
-              ? Center(
-                  child: ListView.builder(
-                    itemCount: search.length,
-                    itemBuilder: (context, index) {
-                      return SearchProfileWidget(
-                        mainName: search[index].fullName,
-                        littleText: search[index].username,
-                        photLink: search[index].profilePicture!.path,
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return ProfileDetailsScreen(
-                                username: search[index].username!,
-                              );
-                            },
-                          ));
-                        },
-                      );
-                    },
-                  ),
-                )
-              : const Center(
-                  child: Text("Searching for the result"),
-                );
-        }));
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        ref.read(userSearchProfileProvider.notifier).remove();
+        return true;
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            title: CustomSearchField(controller: searchController),
+          ),
+          body: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            search = ref.watch(userSearchProfileProvider);
+            return search.isNotEmpty
+                ? Center(
+                    child: ListView.builder(
+                      itemCount: search.length,
+                      itemBuilder: (context, index) {
+                        return SearchProfileWidget(
+                          mainName: search[index].fullName,
+                          littleText: search[index].username,
+                          photLink: search[index].profilePicture!.path,
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return ProfileDetailsScreen(
+                                  username: search[index].username!,
+                                );
+                              },
+                            ));
+                          },
+                        );
+                      },
+                    ),
+                  )
+                : const Center(
+                    child: Text("Searching for the result"),
+                  );
+          })),
+    );
   }
 }
