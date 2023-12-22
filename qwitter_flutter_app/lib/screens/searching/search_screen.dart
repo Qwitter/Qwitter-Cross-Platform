@@ -39,7 +39,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       });
       searchUser(widget.query).then((value) {
         setState(() {
-          
         _usersList = value;
         });
       });
@@ -101,10 +100,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
   }
 
- Future<void> _toggleFollowState(User user) async {
+  Future<void> _toggleFollowState(User user) async {
     String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
     Uri url = Uri.parse('$_baseUrl/api/v1/user/follow/${user.username}');
-    AppUser appUser=AppUser();
+    AppUser appUser = AppUser();
+
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
     };
@@ -227,7 +227,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   text: 'People',
                 ),
               ],
-              dividerHeight: 0.3,
+              // dividerHeight: 0.3,
               dividerColor: Colors.grey.shade600,
               labelStyle:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -296,7 +296,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+
                                       children: [
                                         Text(
                                           "${_usersList![index].fullName}",
@@ -316,6 +318,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                       ],
                                     ),
                                     Spacer(),
+
                                     if(_usersList![index].username!=AppUser().username)
                                     FollowButton(
                                         isFollowed:
