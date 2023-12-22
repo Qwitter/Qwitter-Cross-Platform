@@ -44,11 +44,12 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
       List<User> users = [];
       var result = jsonDecode(response.body);
       result = result['users'];
-      
+
       for (var user in result) {
         users.add(User.fromJson(user));
       }
       // print("Iam here");
+
       ref.read(userSearchProfileProvider.notifier).setUsers(users);
     } else {
       //print('response status code : ${response.statusCode}');
@@ -99,24 +100,22 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
           }
         },
         onChanged: (value) {
-          print(value);
-          if (value.isNotEmpty) {
+          if (value.trim().isNotEmpty && value != "") {
+            print("value entered: ${value}");
             setState(() {
               isIconShowed = true;
+              ref.read(userSearchProfileProvider.notifier).remove();
               searchUser(value);
+              ref.read(hastagSearchProvider.notifier).remove();
               searchHastags(value);
             });
-            ref.read(userSearchProfileProvider.notifier).remove();
-            searchUser(value);
-            ref.read(hastagSearchProvider.notifier).remove();
-            searchHastags(value);
-
           } else {
+            print("value entered: here in the else ${value}");
             setState(() {
               isIconShowed = false;
+              ref.read(userSearchProfileProvider.notifier).remove();
+              ref.read(hastagSearchProvider.notifier).remove();
             });
-            ref.read(userSearchProfileProvider.notifier).remove();
-            ref.read(hastagSearchProvider.notifier).remove();
           }
         },
         style: const TextStyle(color: Color.fromARGB(255, 29, 155, 240)),
