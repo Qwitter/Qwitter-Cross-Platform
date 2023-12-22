@@ -170,12 +170,9 @@ class _TweetMediaViewerScreenState
                               ),
                               Expanded(
                                 child: TweetHeader.stretched(
-                                  tweetUserHandle:
-                                      "@" + tweetProvider.user!.username!,
-                                  tweetUserName:
-                                      tweetProvider.user!.fullName!,
-                                  tweetUserVerified: true,
+                                  tweet: tweetProvider,
                                   stretchedMenu: true,
+                                  opentweetMenuModal: () {},
                                 ),
                               ),
                             ],
@@ -302,11 +299,9 @@ class _TweetMediaViewerScreenState
                             avatar: tweetProvider.user!.profilePicture!.path,username: tweetProvider.user!.username!,),
                         Expanded(
                             child: TweetHeader.stretched(
-                          tweetUserHandle:
-                              "@" + tweetProvider.user!.username!,
-                          tweetUserName: tweetProvider.user!.fullName!,
-                          tweetUserVerified: true,
+                          tweet: tweetProvider,
                           stretchedMenu: false,
+                          opentweetMenuModal: () {},
                           // stretched_menu: false,
                         )),
                       ],

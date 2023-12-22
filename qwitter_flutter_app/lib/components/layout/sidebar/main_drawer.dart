@@ -60,7 +60,7 @@ class MainDrawer extends StatelessWidget {
                         },
                         icon: const Icon(
                           Icons.more_vert_outlined,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                         padding: const EdgeInsets.only(right: 20)),
                   ]),

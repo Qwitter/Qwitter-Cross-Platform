@@ -44,7 +44,8 @@ class AppUser extends User {
     prefs.setString('full_name', fullName ?? '');
     prefs.setString('birth_date', birthDate ?? '');
     prefs.setString('password', password ?? '');
-
+    prefs.setString('followersCount', followersCount.toString()??'0');
+    prefs.setString('followingCount',followingCount.toString()??'0');
     // For saving the profile picture, you can store the file path.
     prefs.setString('profileImageUrl', profilePicture?.path ?? '');
     prefs.setString('token', token ?? '');
@@ -65,7 +66,9 @@ class AppUser extends User {
     appUser.profilePicture =
         File(prefs.getString('profileImageUrl') ?? '');
     appUser.token = prefs.getString('token');
-
+    appUser.followersCount=int.parse(prefs.getString('followersCount')??'0') ;
+    appUser.followingCount=int.parse(prefs.getString('followingCount')??'0');
+   
     return appUser;
   }
 

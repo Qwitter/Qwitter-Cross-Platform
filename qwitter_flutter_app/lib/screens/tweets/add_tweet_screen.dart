@@ -7,6 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/primary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/providers/tweet_images_provider.dart';
 import 'package:qwitter_flutter_app/providers/tweet_progress_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/add_tweet_action_bar.dart';
@@ -89,6 +91,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseFromStream = await http.Response.fromStream(response);
         final responseBody = jsonDecode(responseFromStream.body);
+        ref.read(timelineTweetsProvider.notifier).setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
         print("Successfully uploaded tweet: $responseBody");
         return true;
       } else {
@@ -98,8 +101,9 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
         print(response.statusCode);
         return false;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print("Error uploading profile pictures: $e");
+      print(stackTrace);
       return false;
     }
   }
