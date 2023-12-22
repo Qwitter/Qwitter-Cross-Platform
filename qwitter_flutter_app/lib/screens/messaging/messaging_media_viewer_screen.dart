@@ -34,8 +34,7 @@ class MessagingMediaViewerScreenState
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(75),
         child: AppBar(
-          actions:
-           [
+          actions: [
             // PopupMenuButton(
             //   onSelected: (value) async {
             //     try {
@@ -58,7 +57,29 @@ class MessagingMediaViewerScreenState
         child: Center(
           child: Hero(
             tag: widget.tag,
-            child: Image.network(widget.imageUrl),
+            child: Image.network(
+              widget.imageUrl,
+              width: 35,
+              height: 35,
+              fit: BoxFit.cover,
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  // Image has successfully loaded
+                  return child;
+                } else {
+                  // Image is still loading
+                  return CircularProgressIndicator();
+                }
+              },
+              errorBuilder:
+                  (BuildContext context, Object error, StackTrace? stackTrace) {
+                // Handle image loading errors
+                return const SizedBox(
+                  height: 0,
+                );
+              },
+            ),
           ),
         ),
       ),

@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
               // Display a loading indicator while the future is loading
               return Center(
                 child: CircularProgressIndicator(),
-              );
+              );  
             } else if (user.username != null) {
               // //print(snapshot.data);
               return ConversationScreen();

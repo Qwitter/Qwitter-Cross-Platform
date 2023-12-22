@@ -26,6 +26,7 @@ class ConversationScreen extends ConsumerStatefulWidget {
 
 class conversationScreenState extends ConsumerState<ConversationScreen> {
   AppUser user = AppUser();
+  int requestNumber = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -41,9 +42,16 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
   }
 
   Future<void> refresh() async {
-    await MessagingServices.getConversations().then((list) {
-      ref.read(ConversationProvider.notifier).InitConversations(list);
-    }).onError((error, stackTrace) {
+    final int cur = requestNumber;
+    requestNumber += 1;
+    await MessagingServices.getConversations().then(
+      (list) {
+        print(cur);
+        if (cur == requestNumber - 1) {
+          ref.read(ConversationProvider.notifier).InitConversations(list);
+        }
+      },
+    ).onError((error, stackTrace) {
       //print(error);
     });
   }
@@ -60,6 +68,7 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
         .then(
       (value) {
         print('popped');
+        print(value);
         MessagingServices.getConversations().then(
           (list) {
             ref.read(ConversationProvider.notifier).InitConversations(list);
@@ -105,9 +114,17 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
         currentIndex: 4,
       ),
       backgroundColor: Colors.black,
-      floatingActionButton: FloatingActionButton(
-        onPressed: goToCreateConversationScreen,
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 13),
+        child: Container(
+          height: 65,
+          width: 65,
+          child: FloatingActionButton(
+            shape: CircleBorder(),
+            onPressed: goToCreateConversationScreen,
+            child: const Icon(Icons.add),
+          ),
+        ),
       ),
     );
   }

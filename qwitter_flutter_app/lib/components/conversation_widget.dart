@@ -125,9 +125,7 @@ class ConversationWidget extends ConsumerWidget {
                 child: ClipOval(
                   // borderRadius: BorderRadius.circular(30),
                   child: Image.network(
-                    imageUrl != ""
-                        ? imageUrl
-                        : 'https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg',
+                    imageUrl,
                     width: 60,
                     height: 60,
                     fit: BoxFit.cover,

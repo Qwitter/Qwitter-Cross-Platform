@@ -15,6 +15,8 @@ import 'package:qwitter_flutter_app/components/scrollable_messages.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversation_info_screen.dart';
@@ -148,30 +150,45 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     print('clear');
   }
 
+  void updateConvoList(List<User> list) {
+    setState(() {
+      widget.convo.users.addAll(list);
+    });
+  }
+
+  void updateConvo(Conversation convo) {
+    setState(() {
+      widget.convo = convo;
+    });
+  }
+
   @override
   Widget build(context) {
+    print(messagesProvider.runtimeType);
     double radius = 17.5;
     imageFile = ref.watch(imageProvider);
     MessagingServices.connectToConversation(widget.convo.id);
 
     msgs = ref.watch(messagesProvider);
-    // widget.convo.name='asfklnhnaklfasklfnasklfnasklfnasklfnasklfnasaksfna';
-    String imageUrl =
-        "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
+    String imageUrl = "";
     if (widget.convo.isGroup) {
-      imageUrl = widget.convo.photo ??
-          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
+      imageUrl = widget.convo.photo ?? "";
     } else if (widget.convo.users.isNotEmpty) {
-      imageUrl = widget.convo.users.first.profilePicture?.path ??
-          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
+      imageUrl = widget.convo.users.first.profilePicture?.path ?? "";
     }
-
+    print(imageUrl);
     return ProviderScope(
       child: WillPopScope(
         onWillPop: () {
+          if (msgs.isNotEmpty) {
+            widget.convo.lastMsg = msgs.first;
+            ref
+                .read(ConversationProvider.notifier)
+                .updateConvo(widget.convo, widget.convo);
+          }
           // ref.read(messagesProvider.notifier).DeleteHistory();
           ref.read(imageProvider.notifier).setImage(null);
-          Navigator.pop(context,'popped');
+          Navigator.pop(context, 'popped');
           return Future(() => false);
         },
         child: Scaffold(
@@ -205,9 +222,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
                     child: ClipOval(
                       // borderRadius: BorderRadius.circular(30),
                       child: Image.network(
-                        imageUrl != ""
-                            ? imageUrl
-                            : "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg",
+                        imageUrl,
                         width: 40,
                         height: 40,
                         fit: BoxFit.cover,
@@ -224,13 +239,11 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
                         errorBuilder: (BuildContext context, Object error,
                             StackTrace? stackTrace) {
                           // Handle image loading errors
-                          return ClipOval(
-                            child: Image.network(
-                              "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg",
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.cover,
-                            ),
+                          return Image.asset(
+                            "assets/images/def.jpg",
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
                           );
                         },
                       ),
@@ -267,15 +280,28 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.info),
+                  icon: const Icon(
+                    Icons.info,
+                    color: white,
+                  ),
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ConversationInfoScreen(
                           convo: widget.convo,
+                          updateConvo: updateConvoList,
                         ),
                       ),
+                    ).then(
+                      (value) {
+                        if (value != null &&
+                            value.runtimeType == Conversation) {
+                          setState(() {
+                            widget.convo = value!;
+                          });
+                        }
+                      },
                     );
                   },
                 )
@@ -288,6 +314,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
                 msgs: msgs,
                 scrollController: scrollController,
                 isGroup: widget.convo.isGroup,
+                converstaionID: widget.convo.id,
+                messageProvider: messagesProvider,
               ),
               MessagingTextField(
                 textController: textController,

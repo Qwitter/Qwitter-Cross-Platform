@@ -57,36 +57,37 @@ class MessageCard extends StatelessWidget {
                             );
                           },
                           child: msg.byMe == false
-                              ? Image.network(
-                                  user.profilePicture?.path ??
-                                      "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg",
-                                  width: 35,
-                                  height: 35,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (BuildContext context,
-                                      Widget child,
-                                      ImageChunkEvent? loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      // Image has successfully loaded
-                                      return child;
-                                    } else {
-                                      // Image is still loading
-                                      return CircularProgressIndicator();
-                                    }
-                                  },
-                                  errorBuilder: (BuildContext context,
-                                      Object error, StackTrace? stackTrace) {
-                                    // Handle image loading errors
-                                    return ClipOval(
-                                      child: Image.network(
-                                        "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg",
-                                        width: 35,
-                                        height: 35,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    );
-                                  },
-                                )
+                              ? ClipOval(
+                                child: Image.network(
+                                    msg.profileImageUrl ?? "",
+                                    width: 35,
+                                    height: 35,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        // Image has successfully loaded
+                                        return child;
+                                      } else {
+                                        // Image is still loading
+                                        return CircularProgressIndicator();
+                                      }
+                                    },
+                                    errorBuilder: (BuildContext context,
+                                        Object error, StackTrace? stackTrace) {
+                                      // Handle image loading errors
+                                      return ClipOval(
+                                        child: Image.asset(
+                                          "assets/images/def.jpg",
+                                          width: 35,
+                                          height: 35,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                              )
                               : const SizedBox(
                                   height: 0,
                                 ),
@@ -125,10 +126,11 @@ class MessageCard extends StatelessWidget {
                                       child: Hero(
                                         tag: tag,
                                         child: Image.network(msg.media!.value,
-                                            loadingBuilder: (BuildContext context,
-                                                Widget child,
-                                                ImageChunkEvent?
-                                                    loadingProgress) {
+                                            loadingBuilder:
+                                                (BuildContext context,
+                                                    Widget child,
+                                                    ImageChunkEvent?
+                                                        loadingProgress) {
                                           if (loadingProgress == null) {
                                             // Image has successfully loaded
                                             return child;
@@ -161,12 +163,13 @@ class MessageCard extends StatelessWidget {
                         children: [
                           msg.text != ""
                               ? GestureDetector(
-                                  onLongPress: () {
+                                  onLongPress:msg.byMe? () {
                                     longHold(msg);
-                                  },
+                                  }:null,
                                   child: Card(
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20)),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
                                     elevation: 0,
                                     color: this.msg.name == user.username
                                         ? Colors.blue
@@ -181,11 +184,11 @@ class MessageCard extends StatelessWidget {
                                           child: Text(
                                             this.msg.text,
                                             style: TextStyle(
-                                                color:
-                                                    this.msg.name == user.username
-                                                        ? white
-                                                        : Color.fromARGB(
-                                                            255, 232, 231, 231)),
+                                                color: this.msg.name ==
+                                                        user.username
+                                                    ? white
+                                                    : Color.fromARGB(
+                                                        255, 232, 231, 231)),
                                           ),
                                         ),
                                       ],
@@ -213,7 +216,6 @@ class MessageCard extends StatelessWidget {
                           DateFormat('h:mm a').format(msg.date),
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.grey, fontSize: 12),
-                      
                     ),
                   )
                 : Container(),

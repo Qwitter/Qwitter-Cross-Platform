@@ -12,12 +12,14 @@ import 'package:qwitter_flutter_app/components/search_user_widget.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
 import 'package:qwitter_flutter_app/providers/user_search_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
+import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 
 class CreateConversationScreen extends ConsumerStatefulWidget {
   const CreateConversationScreen({
@@ -137,7 +139,10 @@ class _CreateConversationScreenState
 
   Future<void> createConverstaion() async {
     print(createPushed);
-    if (createPushed == true) return;
+    if (createPushed == true){
+      Fluttertoast.showToast(msg: 'Request being processed');
+      return;
+    } 
     if (selectedUsers.isEmpty) {
       Fluttertoast.showToast(
         msg: "You didn't select any user",
@@ -151,9 +156,10 @@ class _CreateConversationScreenState
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (widget.convo == null) {
           final jsonBody = jsonDecode(response.body);
+          print(response.body);
           Conversation convo = Conversation.fromJson(jsonBody);
           ref.read(selectedUserProvider.notifier).deleteHistory();
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(convo);
           // ref.watch(messagesProvider.notifier).DeleteHistory();
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -169,11 +175,21 @@ class _CreateConversationScreenState
             backgroundColor: Colors.grey[700],
           );
           print("added");
-          print(widget.convo!.users.length);
-
-          widget.onUpdate(selectedUsers);
+          if (widget.convo != null) {
+            widget.convo!.users.addAll(selectedUsers);
+            print('added users');
+            print(widget.convo!.users.length);
+          } // widget.onUpdate(selectedUsers);
+          
           ref.read(selectedUserProvider.notifier).deleteHistory();
-          Navigator.of(context).pop();
+          ref
+              .read(ConversationProvider.notifier)
+              .updateConvo(widget.convo!, widget.convo!);
+
+          Navigator.pop(
+            context,
+            widget.convo,
+          );
         }
       } else if (response.statusCode == 400) {
         Fluttertoast.showToast(

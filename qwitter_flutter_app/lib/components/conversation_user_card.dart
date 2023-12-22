@@ -38,7 +38,6 @@ class _UserCardState extends State<ConversationUserCard> {
       },
     );
 
-
     return response;
   }
 
@@ -60,17 +59,16 @@ class _UserCardState extends State<ConversationUserCard> {
       },
     );
 
-
     return response;
   }
 
   @override
   Widget build(BuildContext context) {
     String url = widget.userData.profilePicture?.path ??
-        "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
+        "";
     if (url == "") {
       url = widget.userData.profilePicture?.path ??
-          "https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg";
+          "";
     }
     return Column(children: [
       GestureDetector(
@@ -106,8 +104,8 @@ class _UserCardState extends State<ConversationUserCard> {
                   (BuildContext context, Object error, StackTrace? stackTrace) {
                 // Handle image loading errors
                 return ClipOval(
-                  child: Image.network(
-                    'https://img.freepik.com/premium-vector/flat-instagram-icons-notifications_619991-50.jpg?size=626&ext=jpg',
+                  child: Image.asset(
+                    "assets/images/def.jpg",
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
@@ -146,8 +144,7 @@ class _UserCardState extends State<ConversationUserCard> {
                     ? SecondaryButtonOutlined(
                         text: 'Following',
                         onPressed: () {
-                          unFollowUser().then((value) {
-                          });
+                          unFollowUser().then((value) {});
                           setState(() {
                             widget.userData.isFollowed = false;
                           });
@@ -162,8 +159,7 @@ class _UserCardState extends State<ConversationUserCard> {
                     : SecondaryButton(
                         text: 'Follow',
                         onPressed: () {
-                          followUser().then((value) {
-                          });
+                          followUser().then((value) {});
                           setState(() {
                             widget.userData.isFollowed = true;
                           });
