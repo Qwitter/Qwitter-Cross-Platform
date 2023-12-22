@@ -2,18 +2,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 
-class TimelineTweetsProvider extends StateNotifier<List<Tweet>> {
-  TimelineTweetsProvider() : super([]);
+class ForYouTweetsProvider extends StateNotifier<List<Tweet>> {
+  ForYouTweetsProvider() : super([]);
 
-  void setTimelineTweets(List<Tweet> tweets) {
+  void setForYouTweets(List<Tweet> tweets) {
+    
     for (var tweet in tweets) {
       bool prevLoaded = state.contains(tweet);
       if (state.where((element) => element.id == tweet.id).isEmpty) {
         state = [...state, tweet];
       }
     }
+
+
   }
-  void resetTimelineTweets(List<Tweet> tweets) {
+  void resetForYouTweets(List<Tweet> tweets) {
     state = tweets;
   }
 
@@ -22,9 +25,9 @@ class TimelineTweetsProvider extends StateNotifier<List<Tweet>> {
   }
 }
 
-final timelineTweetsProvider =
-    StateNotifierProvider<TimelineTweetsProvider, List<Tweet>>((ref) {
-  return TimelineTweetsProvider();
+final forYouTweetsProvider =
+    StateNotifierProvider<ForYouTweetsProvider, List<Tweet>>((ref) {
+  return ForYouTweetsProvider();
 });
 
 

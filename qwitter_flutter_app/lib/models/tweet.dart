@@ -68,18 +68,20 @@ class Tweet {
     User user = User.fromJson(json['retweetedId'] != null
         ? json["retweetedTweet"]['author']
         : json['author']);
+    user.isFollowed = json['isFollowing'];
     Tweet tweet = Tweet(
-      id: json['retweetedId'] != null
-          ? json["retweetedTweet"]['id']
-          : json['id'],
+      // id: json['retweetedId'] != null
+      //     ? json["retweetedTweet"]['id']
+      //     : json['id'],
+      id: json['id'],
       createdAt: json['createdAt'],
       user: user,
       retweetUser:
           json['retweetedId'] != null && json.containsKey('retweetedTweet')
-              ? User.fromJson(json["retweetedTweet"]['author'])
+              ? User.fromJson(json['author'])
               : null,
       replyUser:
-          json['replyToTweetId'] != null && json.containsKey('replyToTweet')
+          json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'].containsKey('author')
               ? User.fromJson(json["replyToTweet"]['author'])
               : null,
       source: json['retweetedId'] != null
@@ -152,12 +154,16 @@ class Tweet {
                   Media(media['value'] as String, media['type'] as String))
               : []),
       isLiked: json["liked"],
-      isRetweeted: false,
+      isRetweeted: json['isRetweeted'],
       isQuoted: false,
       isBookmarked: false,
+
     );
 
     // //print(tweet.id);
     return tweet;
   }
+
+
+  
 }

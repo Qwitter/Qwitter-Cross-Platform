@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:bootstrap_icons/bootstrap_icons.dart';
+import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
+import 'package:qwitter_flutter_app/screens/searching/search_screen.dart';
+import 'package:qwitter_flutter_app/screens/searching/searching_user_screen.dart';
+import 'package:qwitter_flutter_app/screens/trends/trends_screen.dart';
+// import 'package:qwitter_flutter_app/screens/notifications/notifications_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
 class QwitterBottomNavigationBar extends StatefulWidget {
@@ -54,6 +59,12 @@ class _QwitterBottomNavigationBarState
                 context,
                 MaterialPageRoute(
                     builder: (context) => const ConversationScreen()));
+          }
+          if (index == 1) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>  TrendsScreen()));
           }
         },
         items: [
