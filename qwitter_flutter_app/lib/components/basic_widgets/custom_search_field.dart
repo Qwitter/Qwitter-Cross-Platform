@@ -44,7 +44,7 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
       List<User> users = [];
       var result = jsonDecode(response.body);
       result = result['users'];
-
+      
       for (var user in result) {
         users.add(User.fromJson(user));
       }
@@ -109,6 +109,11 @@ class _CustomSearchFieldState extends ConsumerState<CustomSearchField> {
               ref.read(hastagSearchProvider.notifier).remove();
               searchHastags(value);
             });
+            ref.read(userSearchProfileProvider.notifier).remove();
+            searchUser(value);
+            ref.read(hastagSearchProvider.notifier).remove();
+            searchHastags(value);
+
           } else {
             print("value entered: here in the else ${value}");
             setState(() {
