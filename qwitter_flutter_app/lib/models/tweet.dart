@@ -11,6 +11,7 @@ class Media {
 
 class Tweet {
   String? id;
+  String? currentUserRetweetId;
   String? createdAt;
   User? user;
   User? retweetUser;
@@ -38,6 +39,7 @@ class Tweet {
 
   Tweet({
     required this.id,
+    required this.currentUserRetweetId,
     required this.createdAt,
     required this.user,
     required this.retweetUser,
@@ -74,6 +76,7 @@ class Tweet {
       //     ? json["retweetedTweet"]['id']
       //     : json['id'],
       id: json['id'],
+      currentUserRetweetId: json['currentUserRetweetId'],
       createdAt: json['createdAt'],
       user: user,
       retweetUser:
