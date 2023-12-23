@@ -23,6 +23,10 @@ class ForYouTweetsProvider extends StateNotifier<List<Tweet>> {
   void removeTweet(Tweet tweet) {
     state = state.where((t) => t.id != tweet.id).toList();
   }
+
+  void removeRetweet(Tweet tweet) {
+    state = state.where((t) => t.id != tweet.currentUserRetweetId).toList();
+  }
 }
 
 final forYouTweetsProvider =

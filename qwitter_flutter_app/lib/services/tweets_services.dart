@@ -103,6 +103,26 @@ class TweetsServices {
     return response;
   }
 
+    static Future<http.Response> deleteRetweetResponse(Tweet tweet) async {
+    user.getUserData();
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
+    final url = Uri.parse('$_baseUrl/api/v1/tweets/${tweet.currentUserRetweetId!}');
+
+    print(user.token);
+
+    final response = await http.delete(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
+    });
+
+    return response;
+  }
+
   static Future<http.Response> followTweetUser(String id) async {
     user.getUserData();
     cookies = {
@@ -353,21 +373,23 @@ class TweetsServices {
     }
   }
 
-  static void makeRepost(ref, Tweet tweet) {
+  static String makeRepost(ref, Tweet tweet) {
     try {
+      String retweeted_id = "";
       final response = retweetRequest(tweet).then((response){
         final responseBody = jsonDecode(response.body);
         print(responseBody['tweet']);
+        retweeted_id = responseBody['tweet']['id'];
         ref.read(timelineTweetsProvider.notifier).setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
         ref.read(forYouTweetsProvider.notifier).setForYouTweets([Tweet.fromJson(responseBody['tweet'])]);
       });
 
       ref.read(tweet.provider.notifier).toggleRetweet();
-
+      return retweeted_id;
     } catch (error, stackTrace) {
       print('Error fetching tweets: $error');
       print('StackTrace: $stackTrace');
-      return;
+      return "";
     }
     // ref.read(tweet.provider.notifier).toggleRetweet();
   }
@@ -426,6 +448,20 @@ class TweetsServices {
     try {
       final response = deleteTweetResponse(tweet);
       ref.read(timelineTweetsProvider.notifier).removeTweet(tweet);
+      Navigator.pop(context);
+    } catch (error, stackTrace) {
+      print('Error deleting tweets: $error');
+      print('StackTrace: $stackTrace');
+      return;
+    }
+  }
+
+  static void deleteRetweet(ref, context, Tweet tweet) {
+    try {
+      final response = deleteRetweetResponse(tweet);
+      ref.read(tweet.provider.notifier).undoRetweetEffect(tweet);
+      ref.read(timelineTweetsProvider.notifier).removeRetweet(tweet);
+      ref.read(forYouTweetsProvider.notifier).removeRetweet(tweet);
       Navigator.pop(context);
     } catch (error, stackTrace) {
       print('Error deleting tweets: $error');

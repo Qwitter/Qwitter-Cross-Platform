@@ -31,7 +31,9 @@ class _TweetCardState extends ConsumerState<TweetCard> {
   void _makeRepost(tweetProvider) {
     setState(() {
       // ref.read(tweetProvider.provider.notifier).toggleRetweet();
-      TweetsServices.makeRepost(ref, tweetProvider);
+      String retweeted_id = TweetsServices.makeRepost(ref, tweetProvider);
+      tweetProvider.currentUserRetweetId = retweeted_id;
+      tweetProvider.retweetsCount = tweetProvider.retweetsCount! + 1;
     });
   }
 
@@ -80,13 +82,11 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                   children: <Widget>[
                     TextButton.icon(
                       onPressed: () {
-                        
                         // print(tweetProvider.repostToId.toString() + " ${tweetProvider.toString()}");
                         if (widget.tweet.currentUserRetweetId != null) {
-                          TweetsServices.deleteTweet(
+                          TweetsServices.deleteRetweet(
                               ref, context, tweetProvider);
-                        } 
-                        else {
+                        } else {
                           Navigator.pop(context);
                           _makeRepost(tweetProvider);
                         }
@@ -108,11 +108,10 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                         Navigator.pop(context);
                         print(widget.tweet.currentUserRetweetId);
                         if (widget.tweet.currentUserRetweetId != null) {
-                          TweetsServices.deleteTweet(
+                          TweetsServices.deleteRetweet(
                               ref, context, tweetProvider);
-                        }
-                         else {
-                            Navigator.pop(context);
+                        } else {
+                          Navigator.pop(context);
 
                           _makeRepost(tweetProvider);
                         }
@@ -185,7 +184,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                               (tweetProvider.user!.isFollowed!
                                       ? "Unfollow"
                                       : "Follow") +
-                                  " @abdallah_aali",
+                                  " @" +
+                                  tweetProvider.user!.username.toString(),
                               style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.white,
@@ -329,7 +329,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            tweetProvider.currentUserRetweetId.toString() != "null"
+            tweetProvider.repostToId.toString() != "null"
                 ? Container(
                     padding: EdgeInsets.fromLTRB(40, 10, 10, 0),
                     child: Row(
@@ -420,7 +420,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                             openRepostModal: () =>
                                 _openRepostModal(tweetProvider),
                             makeLike: () => _makeLike(tweetProvider),
-                            reposted: (tweetProvider.currentUserRetweetId != null),
+                            reposted:
+                                (tweetProvider.currentUserRetweetId != null),
                             makeComment: () => TweetsServices.makeComment(
                                 context, tweetProvider),
                             liked: tweetProvider.isLiked ?? false,

@@ -41,6 +41,9 @@ class SingleTweetProvider extends StateNotifier<Tweet> {
   void removeTweet(Tweet tweet) {
     state.replies = state.replies.where((t) => t.id != tweet.id).toList();
   }
-
+  void undoRetweetEffect(Tweet tweet) {
+    state.currentUserRetweetId = null;
+    state.retweetsCount = state.retweetsCount! - 1;
+  }
   
 }
