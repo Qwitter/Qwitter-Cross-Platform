@@ -76,7 +76,7 @@ class _TweetMediaViewerScreenState
                         color: Colors.white,
                       ),
                       label: Text(
-                        tweetProvider.isRetweeted! ? "Undo Repost" : "Repost",
+                        tweetProvider.currentUserRetweetId ? "Undo Repost" : "Repost",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                     ),
@@ -227,7 +227,7 @@ class _TweetMediaViewerScreenState
                                           _openRepostModal(tweetProvider),
                                       icon: Icon(
                                         Icons.repeat_outlined,
-                                        color: tweetProvider.isRetweeted!
+                                        color: tweetProvider.currentUserRetweetId != null
                                             ? Colors.green
                                             : Colors.white,
                                         size: 18,
@@ -236,7 +236,7 @@ class _TweetMediaViewerScreenState
                                     Text(
                                       tweetProvider.retweetsCount.toString(),
                                       style: TextStyle(
-                                          color: tweetProvider.isRetweeted!
+                                          color: tweetProvider.currentUserRetweetId != null
                                               ? Colors.green
                                               : Colors.white),
                                     ),
@@ -370,7 +370,7 @@ class _TweetMediaViewerScreenState
                                                 _openRepostModal(tweetProvider),
                                             icon: Icon(
                                               Icons.repeat_outlined,
-                                              color: tweetProvider.isRetweeted!
+                                              color: tweetProvider.currentUserRetweetId != null
                                                   ? Colors.green
                                                   : Colors.white,
                                               size: 18,
@@ -381,7 +381,7 @@ class _TweetMediaViewerScreenState
                                                 .toString(),
                                             style: TextStyle(
                                                 color:
-                                                    tweetProvider.isRetweeted!
+                                                    tweetProvider.currentUserRetweetId != null
                                                         ? Colors.green
                                                         : Colors.white),
                                           ),

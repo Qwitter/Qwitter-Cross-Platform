@@ -252,7 +252,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                               (tweetProvider.user!.isFollowed!
                                       ? "Unfollow"
                                       : "Follow") +
-                                  " @abdallah_aali",
+                                  " @" + tweetProvider.user!.username.toString(),
                               style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.white,
