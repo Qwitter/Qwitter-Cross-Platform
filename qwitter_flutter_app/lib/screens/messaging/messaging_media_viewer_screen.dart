@@ -59,9 +59,7 @@ class MessagingMediaViewerScreenState
             tag: widget.tag,
             child: Image.network(
               widget.imageUrl,
-              width: 35,
-              height: 35,
-              fit: BoxFit.cover,
+            fit: BoxFit.cover,
               loadingBuilder: (BuildContext context, Widget child,
                   ImageChunkEvent? loadingProgress) {
                 if (loadingProgress == null) {
