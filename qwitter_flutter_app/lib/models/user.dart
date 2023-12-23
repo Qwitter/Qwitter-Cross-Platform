@@ -22,6 +22,7 @@ class User {
   bool? isVerified;
   bool? isMuted;
   bool? isBlocked;
+  bool? inConversation;
 
   User({
     this.id,
@@ -42,11 +43,11 @@ class User {
     this.isProtected,
     this.isVerified,
     this.isMuted,
-    this.isBlocked
+    this.isBlocked,
+    this.inConversation,
   });
 
   // Add all setters and return user
-
 
   User setToken(String? token) {
     this.token = token;
@@ -93,28 +94,26 @@ class User {
     return this;
   }
 
-  User setURL(String ? url){
-    this.url=url;
+  User setURL(String? url) {
+    this.url = url;
     return this;
   }
 
-  User setLocation(String? location){
-    this.location=location;
+  User setLocation(String? location) {
+    this.location = location;
     return this;
   }
 
-  User setDescription(String? description){
-    this.description=description;
+  User setDescription(String? description) {
+    this.description = description;
     return this;
   }
-
-
 
   User setUsernameSuggestions(List? usernameSuggestions) {
     this.usernameSuggestions = usernameSuggestions;
     return this;
   }
-  
+
   // Add all getters
 
   String? get getToken {
@@ -177,6 +176,7 @@ class User {
       isVerified: json['verified'],
       isMuted: json['isMuted'],
       isBlocked: json['isBlcoked'],
+      inConversation: json['inConversation'],
     );
   }
 
@@ -192,8 +192,8 @@ class User {
       'isProtected': isProtected,
       'isVerified': isVerified,
       'description': description,
-      'followersCount':followersCount,
-      'followingCount':followingCount,
+      'followersCount': followersCount,
+      'followingCount': followingCount,
       'createdAt': createdAt,
       // 'profileImageUrl':
     };

@@ -10,7 +10,11 @@ import 'package:qwitter_flutter_app/screens/trends/trends_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 
 class QwitterBottomNavigationBar extends StatefulWidget {
-  const QwitterBottomNavigationBar({super.key});
+  QwitterBottomNavigationBar({
+    super.key,
+    this.currentIndex = 0,
+  });
+  int currentIndex = 0;
 
   @override
   State<QwitterBottomNavigationBar> createState() =>
@@ -19,7 +23,6 @@ class QwitterBottomNavigationBar extends StatefulWidget {
 
 class _QwitterBottomNavigationBarState
     extends State<QwitterBottomNavigationBar> {
-  int _currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,7 +35,7 @@ class _QwitterBottomNavigationBarState
         ),
       ),
       child: BottomNavigationBar(
-        currentIndex: _currentIndex,
+        currentIndex: widget.currentIndex,
         backgroundColor: Colors.black,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white,
@@ -43,7 +46,7 @@ class _QwitterBottomNavigationBarState
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() {
-            _currentIndex = index;
+            widget.currentIndex = index;
           });
           if (index == 0) {
             Navigator.pushReplacement(
@@ -66,31 +69,31 @@ class _QwitterBottomNavigationBarState
         },
         items: [
           BottomNavigationBarItem(
-            icon: _currentIndex == 0
+            icon: widget.currentIndex == 0
                 ? const Icon(BootstrapIcons.house_fill)
                 : const Icon(BootstrapIcons.house),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: _currentIndex == 1
+            icon: widget.currentIndex == 1
                 ? const Icon(BootstrapIcons.search)
                 : const Icon(BootstrapIcons.search),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: _currentIndex == 2
+            icon: widget.currentIndex == 2
                 ? const Icon(BootstrapIcons.people_fill)
                 : const Icon(BootstrapIcons.people),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: _currentIndex == 3
+            icon: widget.currentIndex == 3
                 ? const Icon(BootstrapIcons.bell_fill)
                 : const Icon(BootstrapIcons.bell),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: _currentIndex == 4
+            icon: widget.currentIndex == 4
                 ? const Icon(BootstrapIcons.envelope_fill)
                 : const Icon(BootstrapIcons.envelope),
             label: '',

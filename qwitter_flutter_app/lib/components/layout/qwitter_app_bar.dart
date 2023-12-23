@@ -37,6 +37,7 @@ class QwitterAppBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       child: AppBar(
+        surfaceTintColor: Colors.black,
         toolbarHeight: 75,
         automaticallyImplyLeading: autoImplyLeading,
         centerTitle: showLogoOnly ? true : false,
