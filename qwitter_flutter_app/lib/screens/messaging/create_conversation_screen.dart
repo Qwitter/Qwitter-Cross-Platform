@@ -156,6 +156,7 @@ class _CreateConversationScreenState
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (widget.convo == null) {
           final jsonBody = jsonDecode(response.body);
+          print('testing create conversation');
           print(response.body);
           Conversation convo = Conversation.fromJson(jsonBody);
           ref.read(selectedUserProvider.notifier).deleteHistory();

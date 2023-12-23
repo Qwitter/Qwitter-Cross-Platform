@@ -32,9 +32,11 @@ class Conversation {
       lastMsg: json['lastMessage'] != null
           ? MessageData.fromJson(json['lastMessage'])
           : null,
-      users: (json['users'] as List<dynamic>)
-          .map((jsonUser) => User.fromJson(jsonUser))
-          .toList(),
+      users: (json['users'] as List<dynamic>).map((jsonUser) {
+        User temp = User.fromJson(jsonUser);
+        temp.isFollowed = jsonUser['isFollowed'];
+        return temp;
+      }).toList(),
     );
   }
 }

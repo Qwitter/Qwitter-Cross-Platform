@@ -37,7 +37,6 @@ class _UserCardState extends State<ConversationUserCard> {
             .join('; '),
       },
     );
-
     return response;
   }
 
@@ -58,17 +57,19 @@ class _UserCardState extends State<ConversationUserCard> {
             .join('; '),
       },
     );
-
+    print(response.body);
     return response;
   }
 
   @override
   Widget build(BuildContext context) {
-    String url = widget.userData.profilePicture?.path ??
-        "";
+    print(widget.userData.username);
+    // print(widget.userData.isFollowing);
+    print('is followed');
+    print(widget.userData.isFollowed);
+    String url = widget.userData.profilePicture?.path ?? "";
     if (url == "") {
-      url = widget.userData.profilePicture?.path ??
-          "";
+      url = widget.userData.profilePicture?.path ?? "";
     }
     return Column(children: [
       GestureDetector(

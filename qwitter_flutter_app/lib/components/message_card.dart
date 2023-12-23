@@ -208,7 +208,7 @@ class MessageCard extends StatelessWidget {
                 ),
               ],
             ),
-            msg.text != "" || msg.media != null
+            msg.text != "" || msg.media != null ||msg.media != 'video'
                 ? Padding(
                     padding: EdgeInsets.fromLTRB(3, 0, 10, 0),
                     child: Text(
