@@ -82,7 +82,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                       onPressed: () {
                         
                         // print(tweetProvider.repostToId.toString() + " ${tweetProvider.toString()}");
-                        if (widget.tweet.isRetweeted != null) {
+                        if (widget.tweet.currentUserRetweetId != null) {
                           TweetsServices.deleteTweet(
                               ref, context, tweetProvider);
                         } 
@@ -97,7 +97,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                         color: Colors.white,
                       ),
                       label: Text(
-                        widget.tweet.repostToId != null
+                        widget.tweet.currentUserRetweetId != null
                             ? "Undo Repost"
                             : "Repost",
                         style: TextStyle(fontSize: 20, color: Colors.white),
@@ -106,8 +106,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                     TextButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
-                        print(widget.tweet.repostToId);
-                        if (widget.tweet.isRetweeted!) {
+                        print(widget.tweet.currentUserRetweetId);
+                        if (widget.tweet.currentUserRetweetId != null) {
                           TweetsServices.deleteTweet(
                               ref, context, tweetProvider);
                         }
@@ -329,7 +329,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            tweetProvider.repostToId.toString() != "null"
+            tweetProvider.currentUserRetweetId.toString() != "null"
                 ? Container(
                     padding: EdgeInsets.fromLTRB(40, 10, 10, 0),
                     child: Row(
@@ -420,7 +420,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                             openRepostModal: () =>
                                 _openRepostModal(tweetProvider),
                             makeLike: () => _makeLike(tweetProvider),
-                            reposted: tweetProvider.isRetweeted ?? false,
+                            reposted: (tweetProvider.currentUserRetweetId != null),
                             makeComment: () => TweetsServices.makeComment(
                                 context, tweetProvider),
                             liked: tweetProvider.isLiked ?? false,
