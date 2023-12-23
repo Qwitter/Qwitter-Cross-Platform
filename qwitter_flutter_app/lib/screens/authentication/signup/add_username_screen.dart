@@ -14,9 +14,10 @@ import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 
 class AddUsernameScreen extends ConsumerStatefulWidget {
-  const AddUsernameScreen({super.key, this.user});
+  const AddUsernameScreen({super.key, this.user, this.previousScreen});
 
   final User? user;
+  final String? previousScreen;
 
   @override
   ConsumerState<AddUsernameScreen> createState() => _AddUsernameScreenState();
@@ -69,7 +70,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
   @override
   void initState() {
     super.initState();
-    usernameController.text = widget.user!.username!;
+    usernameController.text = widget.user!.username ?? '';
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
@@ -100,14 +101,16 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
               AppUser appUser = AppUser();
               appUser.copyUserData(widget.user!);
               appUser.saveUserData();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SuggestedFollowsScreen(),
-                ),
-              );
+              widget.previousScreen == "EditUsername"
+                  ? Navigator.pop(context)
+                  : Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SuggestedFollowsScreen(),
+                      ),
+                    );
             } else {
-              Toast.show('Error updating username. Please try anotherone.');
+              Toast.show('Error updating username. Please try another one.');
             }
           }).onError((error, stackTrace) {
             Toast.show('Error sending data $error');
@@ -176,7 +179,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
                       child: Row(
                         children: [
                           for (final suggestion
-                              in widget.user!.usernameSuggestions!)
+                              in widget.user!.usernameSuggestions ?? [])
                             TextButton(
                               onPressed: () {
                                 usernameController.text = suggestion;
@@ -208,7 +211,8 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
                     buttonFunction!(context);
                   },
             useProvider: true,
-            secondaryButtonText: 'Skip for now',
+            secondaryButtonText:
+                widget.previousScreen == "EditUsername" ? '' : 'Skip for now',
             secondaryButtonFunction: () {
               widget.user!.profilePicture = null;
               Navigator.push(

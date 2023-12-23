@@ -8,6 +8,7 @@ import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversation_users_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
@@ -15,20 +16,36 @@ import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 class ConversationWidget extends ConsumerWidget {
   const ConversationWidget({super.key, required this.convo});
   final Conversation convo;
+  static double radius = 30;
+
   @override
   Widget build(BuildContext context, ref) {
     String date = "";
 
     void switchToMessagingScreen() {
-      print("hello world");
-      ref.read(messagesProvider.notifier).DeleteHistory();
-      ref.read(imageProvider.notifier).setImage(null);
-      Navigator.of(context).push(
+      Navigator.of(context)
+          .push(
         MaterialPageRoute(
-            builder: (context) => MessagingScreen(
-                  convo: convo,
-                )),
+          builder: (context) => MessagingScreen(
+            convo: convo,
+          ),
+        ),
+      )
+          .then(
+        (value) {
+          print('popped');
+          MessagingServices.getConversations().then(
+            (list) {
+              ref.read(ConversationProvider.notifier).InitConversations(list);
+            },
+          ).onError(
+            (error, stackTrace) {
+              //print(error);
+            },
+          );
+        },
       );
+      ;
     }
 
     String imageUrl = "";
@@ -37,7 +54,6 @@ class ConversationWidget extends ConsumerWidget {
     } else if (convo.users.isNotEmpty) {
       imageUrl = convo.users.first.profilePicture?.path ?? "";
     }
-    double radius = 30;
     return SizedBox(
       height: 80,
       width: double.infinity,
@@ -53,7 +69,31 @@ class ConversationWidget extends ConsumerWidget {
             children: [
               InkWell(
                 onTap: convo.isGroup
-                    ? () {}
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConversationUsersScreen(
+                              users: convo.users,
+                            ),
+                          ),
+                        ).then(
+                          (value) {
+                            print('popped');
+                            MessagingServices.getConversations().then(
+                              (list) {
+                                ref
+                                    .read(ConversationProvider.notifier)
+                                    .InitConversations(list);
+                              },
+                            ).onError(
+                              (error, stackTrace) {
+                                //print(error);
+                              },
+                            );
+                          },
+                        );
+                      }
                     : () {
                         if (convo.users.isNotEmpty &&
                             convo.users.first.username != null) {
@@ -63,24 +103,56 @@ class ConversationWidget extends ConsumerWidget {
                               builder: (context) => ProfileDetailsScreen(
                                   username: convo.users.first.username!),
                             ),
+                          ).then(
+                            (value) {
+                              print('popped');
+                              MessagingServices.getConversations().then(
+                                (list) {
+                                  ref
+                                      .read(ConversationProvider.notifier)
+                                      .InitConversations(list);
+                                },
+                              ).onError(
+                                (error, stackTrace) {
+                                  //print(error);
+                                },
+                              );
+                            },
                           );
                         }
                       },
                 customBorder: const CircleBorder(),
-                child: (imageUrl != "")
-                    ? Container(
-                        width: radius * 2,
-                        child: CircleAvatar(
-                          radius: radius,
-                          backgroundImage: NetworkImage(imageUrl),
-                        ),
-                      )
-                    : ClipOval(
+                child: ClipOval(
+                  // borderRadius: BorderRadius.circular(30),
+                  child: Image.network(
+                    imageUrl,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        // Image has successfully loaded
+                        return child;
+                      } else {
+                        // Image is still loading
+                        return CircularProgressIndicator();
+                      }
+                    },
+                    errorBuilder: (BuildContext context, Object error,
+                        StackTrace? stackTrace) {
+                      // Handle image loading errors
+                      return ClipOval(
                         child: Image.asset(
                           "assets/images/def.jpg",
                           width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
                         ),
-                      ),
+                      );
+                    },
+                  ),
+                ),
               ),
               const SizedBox(
                 width: 10,
@@ -99,7 +171,9 @@ class ConversationWidget extends ConsumerWidget {
                       ),
                       children: [
                         TextSpan(
-                          text: "@" + convo.name,
+                          text: !convo.isGroup && convo.users.isNotEmpty
+                              ? "@" + convo.users.first.username!
+                              : "",
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 15,

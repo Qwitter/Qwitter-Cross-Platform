@@ -27,7 +27,6 @@ class _MessagingTextFieldState extends ConsumerState<MessagingTextField> {
 
   Future getImageFromGallery() async {
     final XFile? media = await picker.pickImage(source: ImageSource.gallery);
-    print(media?.path ?? "NULL");
     if (media == null) return;
     ref.read(imageProvider.notifier).setImage(File(media.path));
   }

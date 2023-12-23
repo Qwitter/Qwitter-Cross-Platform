@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/testing.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/create_conversation_screen.dart';
 import 'package:http/http.dart' as http;
@@ -13,10 +17,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          home: CreateConversationScreen(),
+          home: CreateConversationScreen(onUpdate: () {}),
         ),
       ),
     );
+    MockClient((request) async {
+      return http.Response(jsonEncode([]), 200);
+    });
     await tester.pumpAndSettle();
 
     // Find text elements on the screen
