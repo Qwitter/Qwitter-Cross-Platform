@@ -114,10 +114,15 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     }
   }
 
+  bool isWhitespaceOrNewline(String input) {
+    return RegExp(r'^[\s\n]*$').hasMatch(input);
+  }
+
   void sendMessage() {
     print('widget length');
     print(msgs.length);
-    if (textController.text == "" && imageFile == null) return;
+    if (textController.text == "" && imageFile == null ||
+        isWhitespaceOrNewline(textController.text)) return;
     MessagingServices.requestMessage(
             widget.convo.id, textController.text, imageFile)
         .then((msg) {
