@@ -157,7 +157,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                         color: Colors.white,
                       ),
                       label: Text(
-                        widget.tweet.isRetweeted! ? "Undo Repost" : "Repost",
+                        widget.tweet.currentUserRetweetId != null ? "Undo Repost" : "Repost",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                     ),
@@ -647,7 +647,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                   icon: Icon(
                                                     Icons.repeat_outlined,
                                                     color:
-                                                        tweetProvider.isRetweeted!
+                                                        tweetProvider.currentUserRetweetId != null
                                                             ? Colors.green
                                                             : Colors.grey[600],
                                                     size: 22,
@@ -720,7 +720,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                   },
                   itemCount: tweetProvider.replies.length + 2,
                 ),
-                Positioned(
+                Positioned(   
                   bottom: 0,
                   child: Container(
                     decoration: BoxDecoration(
