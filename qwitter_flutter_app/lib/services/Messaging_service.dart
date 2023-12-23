@@ -169,7 +169,7 @@ class MessagingServices {
   static Future<http.Response> fetchMessagesResponse(
       String conversationId, int page) async {
     final url = Uri.parse(
-        '$_baseUrl/api/v1/conversation/$conversationId?page=$page&limit=15');
+        '$_baseUrl/api/v1/conversation/$conversationId?page=$page&limit=100');
 
     final response = await http.get(
       url,
