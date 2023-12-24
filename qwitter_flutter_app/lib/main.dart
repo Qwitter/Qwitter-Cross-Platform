@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
@@ -58,10 +59,10 @@ class MyApp extends StatelessWidget {
               // Display a loading indicator while the future is loading
               return Center(
                 child: CircularProgressIndicator(),
-              );  
+              );
             } else if (user.username != null) {
               // //print(snapshot.data);
-              return ConversationScreen();
+              return QwitterBottomNavigationBar();
             } else {
               return SignupChooseMethodScreen();
             }

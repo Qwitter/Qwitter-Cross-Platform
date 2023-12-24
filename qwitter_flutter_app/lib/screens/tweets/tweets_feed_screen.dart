@@ -26,7 +26,8 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   List<Tweet> tweets = [];
   List<Tweet> tweetsForYou = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final ScrollController _scrollController = ScrollController(), _scrollControllerForYou = ScrollController();
+  final ScrollController _scrollController = ScrollController(),
+      _scrollControllerForYou = ScrollController();
   // final ScrollController _scrollControllerForYou = ScrollController();
   @override
   void initState() {
@@ -81,8 +82,6 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
   //   });
   // }
 
-
-
   void _scrollListener() {
     // print("${_scrollController.position.pixels} - ${_scrollController.position.maxScrollExtent}");
     if (_scrollController.position.pixels ==
@@ -100,7 +99,6 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
     }
   }
 
-  
   void _scrollListenerForYou() {
     // print("${_scrollControllerForYou.position.pixels} - ${_scrollControllerForYou.position.maxScrollExtent}");
     if (_scrollControllerForYou.position.pixels ==
@@ -113,7 +111,6 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
 
       // await Future.delayed(Duration(seconds: 10));
 
-      
       _incrementPageForYou();
       _fetchNewTweetsForYou(pageForYou);
     }
@@ -135,7 +132,6 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
     setState(() {
       _isFetching = false;
     });
-
   }
 
   Future<void> _onRefresh() async {
@@ -149,6 +145,7 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
     print('Refreshed!');
     print("token : " + AppUser().token.toString());
   }
+
   Future<void> _onRefreshForYou() async {
     // Simulating a refresh action with a delay
     final List<Tweet> newTweets = await TweetsServices.getForYou(1);
@@ -273,7 +270,6 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
                 ),
               ],
             ),
-            bottomNavigationBar: QwitterBottomNavigationBar(),
           ),
           TweetFloatingButton(
               isVisible: _isVisible,
