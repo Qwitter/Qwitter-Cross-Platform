@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
+import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/components/user_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
@@ -21,7 +22,6 @@ class _SuggestedFollowsScreenState extends State<SuggestedFollowsScreen> {
   Future<http.Response> getListOfSuggestions() async {
     final url = Uri.parse(
         'http://back.qwitter.cloudns.org:3000/api/v1/user/suggestions');
-
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -130,7 +130,7 @@ class _SuggestedFollowsScreenState extends State<SuggestedFollowsScreen> {
             Navigator.popUntil(context, (route) => route.isFirst);
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (ctx) {
-              return const TweetFeedScreen();
+              return QwitterBottomNavigationBar();
             }));
           },
         ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
+import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_next_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
@@ -229,7 +230,7 @@ class _ConfirmationCodeScreenState
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => TweetFeedScreen()),
+                          builder: (context) => QwitterBottomNavigationBar()),
                     );
                   } else {
                     buttonFunction = null;
