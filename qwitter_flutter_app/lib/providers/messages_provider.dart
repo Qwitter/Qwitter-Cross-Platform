@@ -46,7 +46,7 @@ class MessageNotifier extends StateNotifier<List<MessageData>> {
   }
 }
 
-final messagesProvider =
-    StateNotifierProvider<MessageNotifier, List<MessageData>>((ref) {
+final messagesProviderFamily = StateNotifierProvider.family
+    .autoDispose<MessageNotifier, List<MessageData>, int>((ref, id) {
   return MessageNotifier();
 });

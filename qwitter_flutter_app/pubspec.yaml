@@ -61,6 +61,7 @@ dependencies:
   geocoding: ^2.1.1
   path: ^1.8.0
   tuple: ^2.0.2
+  url_launcher: ^6.2.2
   
 
 dev_dependencies:

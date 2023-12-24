@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
 class NotificationsButton extends StatefulWidget {
-  const NotificationsButton({super.key, required this.isNotificationsEnabled});
+  const NotificationsButton(
+      {super.key,
+      required this.isNotificationsEnabled,
+      required this.toggleMuteState});
   final isNotificationsEnabled;
+  final Function toggleMuteState;
 
   @override
   State<NotificationsButton> createState() => _NotificationsButtonState();
@@ -17,23 +21,23 @@ class _NotificationsButtonState extends State<NotificationsButton> {
         child: IconButton(
           icon: Icon(
             widget.isNotificationsEnabled
-                ? Icons.notifications_active
-                : Icons.notification_add_outlined,
-            color: Colors.black,
+                ? Icons.notification_add_outlined
+                : Icons.notifications_active,
+            color: Colors.white,
             size: 25,
           ),
-          onPressed: () {},
+          onPressed: () {
+            widget.toggleMuteState();
+          },
           style: ButtonStyle(
             padding: MaterialStatePropertyAll(EdgeInsets.zero),
             shape: MaterialStatePropertyAll(
               CircleBorder(
                 eccentricity: 0,
                 side: BorderSide(
-                  color: Colors.grey.shade600,
-                  style: BorderStyle.solid,
-                  width: 1
-
-                ),
+                    color: Colors.grey.shade600,
+                    style: BorderStyle.solid,
+                    width: 1),
               ),
             ),
           ),

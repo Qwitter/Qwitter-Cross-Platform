@@ -6,6 +6,7 @@ class Conversation {
     required this.id,
     required this.isGroup,
     required this.name,
+    required this.fullName,
     this.status,
     this.photo,
     required this.lastMsg,
@@ -14,6 +15,7 @@ class Conversation {
   final String id;
   final bool isGroup;
   String name;
+  String fullName;
   String? status;
   String? photo;
   MessageData? lastMsg;
@@ -24,14 +26,17 @@ class Conversation {
       id: json['id'],
       isGroup: json['isGroup'],
       name: json['name'],
+      fullName: json['name'],
       status: json['status'],
       photo: json['photo'],
       lastMsg: json['lastMessage'] != null
-          ? MessageData.fromJson(json['lastMessage'])
+          ? MessageData.fromJson(json['lastMessage'],isReply: true)
           : null,
-      users: (json['users'] as List<dynamic>)
-          .map((jsonUser) => User.fromJson(jsonUser))
-          .toList(),
+      users: (json['users'] as List<dynamic>).map((jsonUser) {
+        User temp = User.fromJson(jsonUser);
+        temp.isFollowed = jsonUser['isFollowed'];
+        return temp;
+      }).toList(),
     );
   }
 }

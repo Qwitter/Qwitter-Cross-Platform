@@ -37,6 +37,7 @@ class QwitterAppBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       child: AppBar(
+        surfaceTintColor: Colors.black,
         toolbarHeight: 75,
         automaticallyImplyLeading: autoImplyLeading,
         centerTitle: showLogoOnly ? true : false,
@@ -46,7 +47,6 @@ class QwitterAppBar extends StatelessWidget {
             child: includeActions ? actionButton : const SizedBox(width: 1),
           )
         ],
-
         title: Stack(
           children: [
             showLogoOnly
@@ -54,8 +54,8 @@ class QwitterAppBar extends StatelessWidget {
                     width: 1,
                   )
                 : !isButton
-                    ? GestureDetector(
-                        onTap: () {
+                    ? TextButton(
+                        onPressed: () {
                           if (scaffoldKey != null &&
                               scaffoldKey!.currentState != null) {
                             scaffoldKey!.currentState!.openDrawer();
@@ -72,7 +72,6 @@ class QwitterAppBar extends StatelessWidget {
                                   as ImageProvider),
                         ),
                       )
-
                     : IconButton(
                         onPressed: onPressed,
                         icon: Icon(

@@ -7,15 +7,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
+import 'package:qwitter_flutter_app/components/conversation_user_card.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/components/messaging_text_field.dart';
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/components/scrollable_messages.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
+import 'package:qwitter_flutter_app/models/reply.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
+import 'package:qwitter_flutter_app/providers/reply_provider.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversation_info_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversation_users_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
@@ -38,9 +47,14 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   final ScrollController scrollController = ScrollController();
   bool _isFetching = false;
   bool allFetched = false;
-  File? imageFile;
+  Media? imageFile;
+  Reply? reply;
+  final messagesProvider = messagesProviderFamily(id);
+  static int id = 0;
   @override
   void initState() {
+    id += 1;
+    print(id);
     super.initState();
     scrollController.addListener(scrollListener);
     fecthMessages();
@@ -68,9 +82,9 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     scrollController.dispose();
     textController.dispose();
     MessagingServices.socket.off('ROOM_MESSAGE');
-    textController.dispose();
-    MessagingServices.socket.off('ROOM_MESSAGE');
     super.dispose();
+
+    // ref.read(messagesProvider.notifier).DeleteHistory();
   }
 
   void fecthMessages() async {
@@ -81,9 +95,12 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
       if (value['statusCode'] == 200) {
         print(msgs.length);
         print('first');
-        ref.watch(messagesProvider.notifier).addList(value['messages']);
+
+        print(value['messages'].length);
+        allFetched =
+            !ref.watch(messagesProvider.notifier).addList(value['messages']);
+        // print(allFetched);
         print(msgs.length);
-        allFetched = (value['messages'].length == 0);
       }
     });
     _isFetching = false;
@@ -102,25 +119,38 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     }
   }
 
-  void sendMessage() {
-    if (textController.text == "" && imageFile == null) return;
-    MessagingServices.requestMessage(
-            widget.convo.id, textController.text, imageFile)
-        .then((msg) {
-      Map<String, dynamic> mp = {};
-      mp['data'] = msg;
-      mp['conversationId'] = widget.convo.id;
-      print(jsonEncode(mp));
-      ref
-          .watch(messagesProvider.notifier)
-          .addMessage(MessageData.fromJson(msg));
-      print(MessagingServices.socket.connected);
-      MessagingServices.socket.emit(
-        'SEND_ROOM_MESSAGE',
-        jsonEncode(mp),
-      );
-    });
+  bool isWhitespaceOrNewline(String input) {
+    return RegExp(r'^[\s\n]*$').hasMatch(input);
+  }
 
+  void sendMessage() {
+    print('widget length');
+    print(msgs.length);
+    if (isWhitespaceOrNewline(textController.text) && imageFile == null) return;
+    ref.read(sendMessageProvider.notifier).setNextBarFunction(null);
+    MessagingServices.requestMessage(
+            widget.convo.id,
+            textController.text.trim(),
+            imageFile != null ? File(imageFile!.value) : null,
+            reply == null ? '' : (reply?.replyId ?? ""))
+        .then(
+      (msg) {
+        Map<String, dynamic> mp = {};
+        mp['data'] = msg;
+        mp['conversationId'] = widget.convo.id;
+        print(jsonEncode(mp));
+        ref
+            .watch(messagesProvider.notifier)
+            .addMessage(MessageData.fromJson(msg));
+        print(MessagingServices.socket.connected);
+        MessagingServices.socket.emit(
+          'SEND_ROOM_MESSAGE',
+          jsonEncode(mp),
+        );
+      },
+    );
+
+    ref.read(replyProvider.notifier).set(null);
     ref.read(imageProvider.notifier).setImage(null);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollController.animateTo(
@@ -136,105 +166,183 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     print('clear');
   }
 
+  void updateConvoList(List<User> list) {
+    setState(() {
+      widget.convo.users.addAll(list);
+    });
+  }
+
+  void updateConvo(Conversation convo) {
+    setState(() {
+      widget.convo = convo;
+    });
+  }
+
   @override
   Widget build(context) {
+    print(messagesProvider.runtimeType);
     double radius = 17.5;
     imageFile = ref.watch(imageProvider);
     MessagingServices.connectToConversation(widget.convo.id);
+    reply = ref.watch(replyProvider);
     msgs = ref.watch(messagesProvider);
-    // msgs = msgsss;
-    ref.listen(messagesProvider, (messagesProvider, messagesProvider2) {});
-    // widget.convo.name='asfklnhnaklfasklfnasklfnasklfnasklfnasklfnasaksfna';
     String imageUrl = "";
     if (widget.convo.isGroup) {
       imageUrl = widget.convo.photo ?? "";
     } else if (widget.convo.users.isNotEmpty) {
       imageUrl = widget.convo.users.first.profilePicture?.path ?? "";
     }
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50),
-        child: AppBar(
-          backgroundColor: black,
-          surfaceTintColor: black,
-          automaticallyImplyLeading: true,
-          title: Row(
-            children: [
-              InkWell(
-                onTap: widget.convo.isGroup == false
-                    ? () {
-                        if (widget.convo.users.isNotEmpty &&
-                            widget.convo.users.first.username != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProfileDetailsScreen(
-                                  username: widget.convo.users.first.username!),
-                            ),
+    print(imageUrl);
+    return ProviderScope(
+      child: WillPopScope(
+        onWillPop: () {
+          if (msgs.isNotEmpty) {
+            widget.convo.lastMsg = msgs.first;
+            ref.read(sendMessageProvider.notifier).setNextBarFunction(null);
+            ref.read(replyProvider.notifier).set(null);
+            ref
+                .read(ConversationProvider.notifier)
+                .updateConvo(widget.convo, widget.convo);
+          }
+          // ref.read(messagesProvider.notifier).DeleteHistory();
+          ref.read(imageProvider.notifier).setImage(null);
+          Navigator.pop(context, 'popped');
+          return Future(() => false);
+        },
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(50),
+            child: AppBar(
+              backgroundColor: black,
+              surfaceTintColor: black,
+              automaticallyImplyLeading: true,
+              title: Row(
+                children: [
+                  InkWell(
+                    onTap: widget.convo.isGroup == false
+                        ? () {
+                            if (widget.convo.users.isNotEmpty &&
+                                widget.convo.users.first.username != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfileDetailsScreen(
+                                      username:
+                                          widget.convo.users.first.username!),
+                                ),
+                              );
+                            }
+                          }
+                        : null,
+                    splashColor: Colors.red,
+                    customBorder: CircleBorder(),
+                    child: ClipOval(
+                      // borderRadius: BorderRadius.circular(30),
+                      child: Image.network(
+                        imageUrl,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            // Image has successfully loaded
+                            return child;
+                          } else {
+                            // Image is still loading
+                            return CircularProgressIndicator();
+                          }
+                        },
+                        errorBuilder: (BuildContext context, Object error,
+                            StackTrace? stackTrace) {
+                          // Handle image loading errors
+                          return Image.asset(
+                            "assets/images/def.jpg",
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
                           );
-                        }
-                      }
-                    : null,
-                splashColor: Colors.red,
-                customBorder: CircleBorder(),
-                child: (imageUrl != '')
-                    ? Container(
-                        width: radius * 2,
-                        child: CircleAvatar(
-                          radius: radius,
-                          backgroundImage: NetworkImage(imageUrl),
-                        ),
-                      )
-                    : ClipOval(
-                        child: Image.asset(
-                          "assets/images/def.jpg",
-                          width: 35,
-                        ),
+                        },
                       ),
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-              InkWell(
-                onTap: () {
-                  print('name');
-                },
-                child: SizedBox(
-                  width: 200,
-                  height: 35,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      widget.convo.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.white),
                     ),
                   ),
-                ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ConversationUsersScreen(
+                            users: widget.convo.users,
+                          ),
+                        ),
+                      );
+                    },
+                    child: SizedBox(
+                      width: 200,
+                      height: 35,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.convo.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.info,
+                    color: white,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConversationInfoScreen(
+                          convo: widget.convo,
+                          updateConvo: updateConvoList,
+                        ),
+                      ),
+                    ).then(
+                      (value) {
+                        if (value != null &&
+                            value.runtimeType == Conversation) {
+                          setState(() {
+                            widget.convo = value!;
+                          });
+                        }
+                      },
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+          body: Column(
+            children: [
+              // Container(height: 500,width: double.infinity,color: Colors.red,),
+              ScrollableMessages(
+                msgs: msgs,
+                scrollController: scrollController,
+                isGroup: widget.convo.isGroup,
+                converstaionID: widget.convo.id,
+                messageProvider: messagesProvider,
+              ),
+              MessagingTextField(
+                textController: textController,
+                sendMessage: sendMessage,
               ),
             ],
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.info),
-              onPressed: () {},
-            )
-          ],
         ),
-      ),
-      body: Column(
-        children: [
-          ScrollableMessages(
-            msgs: msgs,
-            scrollController: scrollController,
-            isGroup: widget.convo.isGroup,
-          ),
-          MessagingTextField(
-            textController: textController,
-            sendMessage: sendMessage,
-          ),
-        ],
       ),
     );
   }

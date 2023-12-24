@@ -329,7 +329,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            tweetProvider.repostToId.toString() != "null"
+            tweetProvider.currentUserRetweetId.toString() != "null"
                 ? Container(
                     padding: EdgeInsets.fromLTRB(40, 10, 10, 0),
                     child: Row(
@@ -420,8 +420,10 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                             openRepostModal: () =>
                                 _openRepostModal(tweetProvider),
                             makeLike: () => _makeLike(tweetProvider),
+
                             reposted:
                                 (tweetProvider.currentUserRetweetId != null),
+
                             makeComment: () => TweetsServices.makeComment(
                                 context, tweetProvider),
                             liked: tweetProvider.isLiked ?? false,

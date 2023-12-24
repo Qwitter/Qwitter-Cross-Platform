@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,7 @@ import 'package:qwitter_flutter_app/providers/user_search_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,19 +32,73 @@ class MessagingServices {
     _baseUrl,
     IO.OptionBuilder().setTransports(['websocket']).build(),
   );
-  static Future<http.Response> getConversationsRespone() async {
-    AppUser user = AppUser();
-    final url = Uri.parse('$_baseUrl/api/v1/conversation/');
 
-    //print(user.token);
+  static Future<http.Response> getSingleConversationsRespone(
+      String conversationId) async {
+    AppUser user = AppUser();
+    final url = Uri.parse('$_baseUrl/api/v1/conversation/$conversationId');
 
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'authorization': 'Bearer ${user.token}',
     });
-
     return response;
+  }
+
+  static Future<Conversation?> getSingleConversations(
+      String conversationId) async {
+    try {
+      final response = await getSingleConversationsRespone(conversationId);
+      print(response.body);
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+
+        Conversation conversation = Conversation.fromJson(jsonBody);
+        return conversation;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("gettingConversationError");
+      return null;
+    }
+  }
+
+  static Future<http.Response> getConversationsRespone() async {
+    AppUser user = AppUser();
+    final url = Uri.parse('$_baseUrl/api/v1/conversation/?limit=100');
+
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'authorization': 'Bearer ${user.token}',
+    });
+    print(user.token);
+    return response;
+  }
+
+  static Future<List<Conversation>> getConversations() async {
+    try {
+      print("getting convo");
+      final response = await getConversationsRespone();
+      print(response.body);
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        final List<dynamic> ConversationList = jsonBody as List<dynamic>;
+        List<Conversation> conversations = ConversationList.map(
+            (conversation) => Conversation.fromJson(conversation)).toList();
+        print("done");
+        return conversations;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print("gettingConversationError");
+      return [];
+    }
   }
 
   static void initSocket() {
@@ -50,15 +106,17 @@ class MessagingServices {
   }
 
   static Future<http.StreamedResponse> requestMessageResponse(
-      String conversationId, String Message, File? imageFile) async {
+      String conversationId,
+      String Message,
+      File? imageFile,
+      String replyId) async {
     final url =
         Uri.parse('$_baseUrl/api/v1/conversation/$conversationId/message');
 
     Map<String, String> fields = {
       'text': Message,
-      'replyId': "",
+      'replyId': replyId,
     };
-    print(jsonEncode(fields));
 
     final request = http.MultipartRequest('POST', url);
     request.headers.addAll({
@@ -84,26 +142,24 @@ class MessagingServices {
       );
 
       request.files.add(multipartFile);
-      print(request.files.first);
     }
+
     final response = await request.send();
-    print("message request done");
     return response;
   }
 
-  static Future<Map<String, dynamic>> requestMessage(
-      String converstaionID, String Message, File? imageFile) async {
+  static Future<Map<String, dynamic>> requestMessage(String converstaionID,
+      String Message, File? imageFile, String replyId) async {
     try {
       final response = await http.Response.fromStream(
         await requestMessageResponse(
           converstaionID,
           Message,
           imageFile,
+          replyId,
         ),
       );
-      print(response.statusCode);
-      print(response.body);
-
+      print('replyId is '+replyId);
       if (response.statusCode == 201) {
         final jsonBody = jsonDecode(response.body);
         return jsonBody['createdMessage'];
@@ -119,7 +175,7 @@ class MessagingServices {
   static Future<http.Response> fetchMessagesResponse(
       String conversationId, int page) async {
     final url = Uri.parse(
-        '$_baseUrl/api/v1/conversation/$conversationId?page=$page&limit=15');
+        '$_baseUrl/api/v1/conversation/$conversationId?page=$page&limit=100');
 
     final response = await http.get(
       url,
@@ -133,15 +189,14 @@ class MessagingServices {
     return response;
   }
 
-  static Future<Map<String, dynamic>> fetchMessages(  
+  static Future<Map<String, dynamic>> fetchMessages(
       String converstaionID, int page) async {
     try {
       final response = await fetchMessagesResponse(converstaionID, page);
-      // print(response.statusCode);
-      // print(jsonDecode(response.body)['messages']);
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonBody = jsonDecode(response.body)['messages'];
+        // log(response.body);
         List<MessageData> msgs =
             jsonBody.map((msg) => MessageData.fromJson(msg)).toList();
         return {
@@ -156,10 +211,45 @@ class MessagingServices {
       }
     } catch (e) {
       print("fetching Messages Error");
+      print(e);
       return {
         'statusCode': 'error',
         'messages': [],
       };
+    }
+  }
+
+  static Future<http.Response> deleteMessageResponse(
+      String conversationId, String messageId) async {
+    final url =
+        Uri.parse('$_baseUrl/api/v1/conversation/$conversationId/message');
+
+    Map<String, String> fields = {'message_id': messageId};
+
+    final response = http.delete(url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'authorization': 'Bearer ${AppUser().getToken}',
+        },
+        body: jsonEncode(fields));
+    return response;
+  }
+
+  static Future<int> deleteMessage(
+      String converstaionID, String messageId) async {
+    try {
+      // print('deleting');
+      final response = await await deleteMessageResponse(
+        converstaionID,
+        messageId,
+      );
+      // print(response.body);
+      // print(response.statusCode);
+      return response.statusCode;
+    } catch (e) {
+      print("deleting message error");
+      return -1;
     }
   }
 
@@ -170,45 +260,5 @@ class MessagingServices {
 
   static void connectToConversation(String conversationId) {
     socket.emit('JOIN_ROOM', conversationId);
-
-    // socket.emit(
-    //   'ROOM_MESSAGE',
-    //   (data) {
-    //     // print(data);
-    //     // final container = ProviderContainer();
-    //     // container.read(messagesProvider.notifier).addMessage(
-    //     //     MessageData(byMe: false, text: data['text'], date: DateTime.now()));
-    //   },
-    // );
-  }
-
-  static void test() {
-    print(socket.connected);
-  }
-
-  static Future<List<Conversation>> getConversations() async {
-    try {
-      final response = await getConversationsRespone();
-      print(response.statusCode);
-      print(response.body);
-      if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        // int unseen = jsonBody['unseen'];
-        final List<dynamic> ConversationList = jsonBody as List<dynamic>;
-        // for (var v in ConversationList) {
-        //   print(v);
-        // }
-
-        List<Conversation> conversations = ConversationList.map(
-            (conversation) => Conversation.fromJson(conversation)).toList();
-        print("doneS");
-        return conversations;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print("gettingConversationError");
-      return [];
-    }
   }
 }

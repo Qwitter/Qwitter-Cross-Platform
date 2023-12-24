@@ -15,3 +15,7 @@ final nextBarProvider =
     StateNotifierProvider<NextBarNotifier, void Function(BuildContext)?>((ref) {
   return NextBarNotifier();
 });
+final sendMessageProvider =
+    StateNotifierProvider.autoDispose<NextBarNotifier, void Function(BuildContext)?>((ref) {
+  return NextBarNotifier();
+});

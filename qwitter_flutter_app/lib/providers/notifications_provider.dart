@@ -14,6 +14,7 @@ class NotificationsProvider extends StateNotifier<List<QwitterNotification>> {
     }
   }
 
+
   void resetNotifications(List<QwitterNotification> notifications) {
     state = notifications;
   }

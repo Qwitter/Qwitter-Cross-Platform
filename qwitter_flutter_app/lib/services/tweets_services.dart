@@ -580,5 +580,34 @@ class TweetsServices {
       return [];
     }
   }
+
+  static Future<List<Tweet>> getSearchTweets(String query,String hashtag,int page) async{
+    final url = Uri.parse(
+        '$_baseUrl/api/v1/tweets?page=${page.toString()}&limit=10${query.isEmpty==false?"&q=$query":""}${hashtag.isEmpty==false?"&hashtag=${hashtag.replaceFirst("#", "%23")}":""}');
+    print(url);
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      // 'authorization': 'Bearer ${appUser.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
+    });
+    if (response.statusCode == 200) {
+      final jsonBody = jsonDecode(response.body);
+      final List<dynamic> tweetList = jsonBody["tweets"] as List<dynamic>;
+      List<Tweet> tweets =
+          tweetList.map((tweet) => Tweet.fromJson(tweet)).toList();
+      
+      for(var t in tweets){
+        print("tweeeeeet: $t");
+      }
+      return tweets;
+    } else {
+      
+      print("failed to fetch the search tweets status code:${response.statusCode} and the body:${response.body}");
+      return [];
+    }
+  }
   
 }
