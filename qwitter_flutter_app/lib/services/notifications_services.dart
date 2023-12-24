@@ -45,7 +45,7 @@ class NotificationsServices{
 
         print('N_List ${notificationList}');
         List<QwitterNotification> notifications =
-            notificationList.map((notification) => QwitterNotification.fromJson(notification  )).toList();
+            notificationList.map((notification) => QwitterNotification.fromJson(notification)).toList();
 
 
         print('${notifications.length} - ${notificationList.length} Notifications fetched');
