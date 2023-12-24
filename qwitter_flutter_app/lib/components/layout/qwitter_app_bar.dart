@@ -80,14 +80,17 @@ class QwitterAppBar extends StatelessWidget {
                         ),
                       ),
             showLogo
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize:
-                        showLogoOnly ? MainAxisSize.min : MainAxisSize.max,
-                    children: [
-                      Image.asset('assets/images/x_logo.png',
-                          width: 24, height: 24),
-                    ],
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 3),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize:
+                          showLogoOnly ? MainAxisSize.min : MainAxisSize.max,
+                      children: [
+                        Image.asset('assets/images/qwitter.png',
+                            width: 44, height: 44),
+                      ],
+                    ),
                   )
                 : const SizedBox(width: 1),
             showHeading
