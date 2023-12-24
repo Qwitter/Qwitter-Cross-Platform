@@ -126,13 +126,13 @@ class Tweet {
           ? json['retweetedTweet']['entities'] != null
               ? json['retweetedTweet']['entities']['mentions']
                   .map<String>(
-                      (hashtag) => hashtag['mentionedUsername'].toString())
+                      (hashtag) => hashtag.toString())
                   .toList()
               : []
           : json['entities'] != null
               ? json['entities']['mentions']
                   .map<String>(
-                      (mention) => mention['mentionedUsername'].toString())
+                      (mention) => mention.toString())
                   .toList()
               : [],
       urls: json['retweetedId'] != null
