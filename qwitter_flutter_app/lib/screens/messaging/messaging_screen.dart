@@ -14,11 +14,13 @@ import 'package:qwitter_flutter_app/components/profile/profile_details_screen.da
 import 'package:qwitter_flutter_app/components/scrollable_messages.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
 import 'package:qwitter_flutter_app/models/message_data.dart';
+import 'package:qwitter_flutter_app/models/reply.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/providers/reply_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversation_info_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversation_users_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
@@ -45,6 +47,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   bool _isFetching = false;
   bool allFetched = false;
   File? imageFile;
+  Reply? reply;
   final messagesProvider = messagesProviderFamily(id);
   static int id = 0;
   @override
@@ -93,9 +96,10 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
         print('first');
 
         print(value['messages'].length);
-        ref.watch(messagesProvider.notifier).addList(value['messages']);
+        allFetched =
+            !ref.watch(messagesProvider.notifier).addList(value['messages']);
+        // print(allFetched);
         print(msgs.length);
-        allFetched = (value['messages'].length == 0);
       }
     });
     _isFetching = false;
@@ -123,23 +127,26 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     print(msgs.length);
     if (textController.text == "" && imageFile == null ||
         isWhitespaceOrNewline(textController.text)) return;
-    MessagingServices.requestMessage(
-            widget.convo.id, textController.text, imageFile)
-        .then((msg) {
-      Map<String, dynamic> mp = {};
-      mp['data'] = msg;
-      mp['conversationId'] = widget.convo.id;
-      print(jsonEncode(mp));
-      ref
-          .watch(messagesProvider.notifier)
-          .addMessage(MessageData.fromJson(msg));
-      print(MessagingServices.socket.connected);
-      MessagingServices.socket.emit(
-        'SEND_ROOM_MESSAGE',
-        jsonEncode(mp),
-      );
-    });
+    MessagingServices.requestMessage(widget.convo.id, textController.text,
+            imageFile, reply == null ? '' : (reply?.replyId ?? ""))
+        .then(
+      (msg) {
+        Map<String, dynamic> mp = {};
+        mp['data'] = msg;
+        mp['conversationId'] = widget.convo.id;
+        print(jsonEncode(mp));
+        ref
+            .watch(messagesProvider.notifier)
+            .addMessage(MessageData.fromJson(msg));
+        print(MessagingServices.socket.connected);
+        MessagingServices.socket.emit(
+          'SEND_ROOM_MESSAGE',
+          jsonEncode(mp),
+        );
+      },
+    );
 
+    ref.read(replyProvider.notifier).set(null);
     ref.read(imageProvider.notifier).setImage(null);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollController.animateTo(
@@ -173,7 +180,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     double radius = 17.5;
     imageFile = ref.watch(imageProvider);
     MessagingServices.connectToConversation(widget.convo.id);
-
+    reply = ref.watch(replyProvider);
     msgs = ref.watch(messagesProvider);
     String imageUrl = "";
     if (widget.convo.isGroup) {
@@ -315,6 +322,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
           ),
           body: Column(
             children: [
+              // Container(height: 500,width: double.infinity,color: Colors.red,),
               ScrollableMessages(
                 msgs: msgs,
                 scrollController: scrollController,

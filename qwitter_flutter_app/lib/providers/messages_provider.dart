@@ -38,8 +38,6 @@ class MessageNotifier extends StateNotifier<List<MessageData>> {
         state = [...state, msg];
       }
     }
-    print('length is');
-    print(state.length);
     return added;
   }
 

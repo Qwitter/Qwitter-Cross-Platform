@@ -1,9 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qwitter_flutter_app/models/reply.dart';
+import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
+import 'package:qwitter_flutter_app/providers/reply_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/add_tweet_action_bar.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 
@@ -15,14 +19,13 @@ class MessagingTextField extends ConsumerStatefulWidget {
   });
   final sendMessage;
   final TextEditingController textController;
-
   @override
   ConsumerState<MessagingTextField> createState() => _MessagingTextFieldState();
 }
 
 class _MessagingTextFieldState extends ConsumerState<MessagingTextField> {
   File? image;
-
+  Reply? reply;
   final picker = ImagePicker();
 
   Future getImageFromGallery() async {
@@ -34,6 +37,7 @@ class _MessagingTextFieldState extends ConsumerState<MessagingTextField> {
   @override
   Widget build(context) {
     image = ref.watch(imageProvider);
+    reply = ref.watch(replyProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -49,6 +53,73 @@ class _MessagingTextFieldState extends ConsumerState<MessagingTextField> {
                     }),
               )
             : Container(
+                height: 0,
+              ),
+        reply != null
+            ? Container(
+                // height: 60,
+                width: double.infinity,
+                color: const Color.fromARGB(255, 50, 57, 64),
+                child: Row(
+                  // crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              reply!.replyName ?? "",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              reply!.replyText ?? "",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (reply!.replyMedia != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image.network(reply!.replyMedia!.value,
+                            height: 50,
+                            width: 50, loadingBuilder: (BuildContext context,
+                                Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            // Image has successfully loaded
+                            return child;
+                          } else {
+                            // Image is still loading
+                            return CircularProgressIndicator();
+                          }
+                        }, errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
+                          // Handle image loading errors
+                          return const SizedBox(
+                            height: 0,
+                          );
+                        }),
+                      )
+                    ],
+                    IconButton(
+                      onPressed: () {
+                        ref.read(replyProvider.notifier).set(null);
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : const SizedBox(
                 height: 0,
               ),
         Container(
@@ -95,7 +166,7 @@ class _MessagingTextFieldState extends ConsumerState<MessagingTextField> {
                       width: 40,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color.fromARGB(0, 33, 149, 243),
+                        color: Color.fromARGB(0, 95, 129, 157),
                       ),
                       child: IconButton(
                         splashRadius: 30,

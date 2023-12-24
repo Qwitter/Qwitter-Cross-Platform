@@ -243,21 +243,21 @@ class _ConversationInfoScreenState
               Divider(
                 height: 5,
               ),
-              InkWell(
-                  onTap: leave,
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    height: 60,
-                    width: double.infinity,
-                    child: const Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        "Leave Conversation",
-                        style: TextStyle(fontSize: 15, color: Colors.red),
-                      ),
-                    ),
-                  ))
             ],
+            InkWell(
+                onTap: leave,
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  height: 60,
+                  width: double.infinity,
+                  child: const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      "Leave Conversation",
+                      style: TextStyle(fontSize: 15, color: Colors.red),
+                    ),
+                  ),
+                ))
           ],
         ),
       ),

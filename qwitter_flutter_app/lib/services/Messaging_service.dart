@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart';
@@ -53,7 +54,7 @@ class MessagingServices {
       print(response.statusCode);
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
-  
+
         Conversation conversation = Conversation.fromJson(jsonBody);
         return conversation;
       } else {
@@ -105,13 +106,16 @@ class MessagingServices {
   }
 
   static Future<http.StreamedResponse> requestMessageResponse(
-      String conversationId, String Message, File? imageFile) async {
+      String conversationId,
+      String Message,
+      File? imageFile,
+      String replyId) async {
     final url =
         Uri.parse('$_baseUrl/api/v1/conversation/$conversationId/message');
 
     Map<String, String> fields = {
       'text': Message,
-      'replyId': "",
+      'replyId': replyId,
     };
 
     final request = http.MultipartRequest('POST', url);
@@ -144,16 +148,18 @@ class MessagingServices {
     return response;
   }
 
-  static Future<Map<String, dynamic>> requestMessage(
-      String converstaionID, String Message, File? imageFile) async {
+  static Future<Map<String, dynamic>> requestMessage(String converstaionID,
+      String Message, File? imageFile, String replyId) async {
     try {
       final response = await http.Response.fromStream(
         await requestMessageResponse(
           converstaionID,
           Message,
           imageFile,
+          replyId,
         ),
       );
+      print('replyId is '+replyId);
       if (response.statusCode == 201) {
         final jsonBody = jsonDecode(response.body);
         return jsonBody['createdMessage'];
@@ -190,6 +196,7 @@ class MessagingServices {
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonBody = jsonDecode(response.body)['messages'];
+        // log(response.body);
         List<MessageData> msgs =
             jsonBody.map((msg) => MessageData.fromJson(msg)).toList();
         return {
@@ -204,6 +211,7 @@ class MessagingServices {
       }
     } catch (e) {
       print("fetching Messages Error");
+      print(e);
       return {
         'statusCode': 'error',
         'messages': [],
