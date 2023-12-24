@@ -51,32 +51,37 @@ class MessagingMediaViewerScreenState
           ],
         ),
       ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        child: Center(
-          child: Hero(
-            tag: widget.tag,
-            child: Image.network(
-              widget.imageUrl,
-            fit: BoxFit.cover,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) {
-                  // Image has successfully loaded
-                  return child;
-                } else {
-                  // Image is still loading
-                  return CircularProgressIndicator();
-                }
-              },
-              errorBuilder:
-                  (BuildContext context, Object error, StackTrace? stackTrace) {
-                // Handle image loading errors
-                return const SizedBox(
-                  height: 0,
-                );
-              },
+      body: InteractiveViewer(
+        maxScale: 4,
+        // minScale: 0.5,
+        // boundaryMargin: EdgeInsets.all(50),
+        child: Container(
+          height: double.infinity,
+          width: double.infinity,
+          child: Center(
+            child: Hero(
+              tag: widget.tag,
+              child: Image.network(
+                widget.imageUrl,
+              // fit: BoxFit.cover,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    // Image has successfully loaded
+                    return child;
+                  } else {
+                    // Image is still loading
+                    return CircularProgressIndicator();
+                  }
+                },
+                errorBuilder:
+                    (BuildContext context, Object error, StackTrace? stackTrace) {
+                  // Handle image loading errors
+                  return const SizedBox(
+                    height: 0,
+                  );
+                },
+              ),
             ),
           ),
         ),

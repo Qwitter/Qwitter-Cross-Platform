@@ -30,7 +30,7 @@ class Conversation {
       status: json['status'],
       photo: json['photo'],
       lastMsg: json['lastMessage'] != null
-          ? MessageData.fromJson(json['lastMessage'])
+          ? MessageData.fromJson(json['lastMessage'],isReply: true)
           : null,
       users: (json['users'] as List<dynamic>).map((jsonUser) {
         User temp = User.fromJson(jsonUser);

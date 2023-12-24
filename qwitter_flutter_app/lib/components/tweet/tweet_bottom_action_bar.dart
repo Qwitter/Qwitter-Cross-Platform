@@ -23,7 +23,6 @@ class TweetBottomActionBar extends StatelessWidget {
     required this.makeLike,
     required this.reposted,
     required this.liked,
-
   });
 
   @override
