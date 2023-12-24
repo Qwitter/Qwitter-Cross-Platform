@@ -31,7 +31,7 @@ class _EditConversationScreenState
   final controller = TextEditingController();
   File? imageFile;
   void Function(BuildContext)? savebutton;
-  bool buttonPressed=false;
+  bool buttonPressed = false;
   final picker = ImagePicker();
   Future getImageFromGallery() async {
     final XFile? media = await picker.pickImage(source: ImageSource.gallery);
@@ -46,14 +46,14 @@ class _EditConversationScreenState
 
   void getConversation() async {}
   void save(context) async {
-    if(buttonPressed==true){
+    if (buttonPressed == true) {
       Fluttertoast.showToast(
         msg: "Request being processed",
         backgroundColor: Colors.grey[700],
       );
       return;
     }
-    buttonPressed=true;
+    buttonPressed = true;
     print('test');
     AppUser user = AppUser();
     String converstaionId = widget.convo.id;
@@ -106,7 +106,7 @@ class _EditConversationScreenState
           ref
               .read(ConversationProvider.notifier)
               .updateConvo(widget.convo, newConvo!);
-          Navigator.pop(context,newConvo);
+          Navigator.pop(context, newConvo);
           // setState(() {
           //   widget.convo = newConvo!;
           //   print(newConvo.fullName);
@@ -122,7 +122,7 @@ class _EditConversationScreenState
     } catch (e) {
       print("editing conversation error");
     }
-    buttonPressed=false;
+    buttonPressed = false;
   }
 
   textListener() {
@@ -140,6 +140,12 @@ class _EditConversationScreenState
       textListener,
     );
     controller.text = widget.convo.name;
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override

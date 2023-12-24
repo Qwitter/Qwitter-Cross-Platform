@@ -9,6 +9,7 @@ import 'package:qwitter_flutter_app/models/message_data.dart';
 import 'package:qwitter_flutter_app/models/reply.dart';
 import 'package:qwitter_flutter_app/providers/reply_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_media_viewer_screen.dart';
+import 'package:qwitter_flutter_app/screens/messaging/messaging_video_screen.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
@@ -27,9 +28,12 @@ class MessageCard extends ConsumerWidget {
   static const double radius = 15;
   @override
   Widget build(BuildContext context, ref) {
-    log(msg.text);
-    log(msg.reply == null ? "null" : "not null");
-
+    // log(msg.text);
+    // log(msg.reply == null ? "null" : "not null");
+    // if (msg.media != null) {
+    //   log(msg.media!.value);
+    //   log(msg.media!.type);
+    // }
     AppUser user = AppUser();
     return msg.isMessage != null && msg.isMessage
         ? Dismissible(
@@ -162,6 +166,26 @@ class MessageCard extends ConsumerWidget {
                                   ? CrossAxisAlignment.end
                                   : CrossAxisAlignment.start,
                               children: [
+                                if (msg.media != null &&
+                                    msg.media!.type == 'video') ...[
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              MessagingVideoScreen(
+                                            video: msg.media!.value,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(
+                                      Icons.play_circle_outlined,
+                                    size: 100,
+                                    ),
+                                  )
+                                ],
                                 msg.media != null
                                     ? (msg.media!.type == 'image'
                                         ? GestureDetector(

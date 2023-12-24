@@ -20,6 +20,7 @@ import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/conversations_provider.dart';
 import 'package:qwitter_flutter_app/providers/image_provider.dart';
 import 'package:qwitter_flutter_app/providers/messages_provider.dart';
+import 'package:qwitter_flutter_app/providers/next_bar_provider.dart';
 import 'package:qwitter_flutter_app/providers/reply_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversation_info_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversation_users_screen.dart';
@@ -46,7 +47,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   final ScrollController scrollController = ScrollController();
   bool _isFetching = false;
   bool allFetched = false;
-  File? imageFile;
+  Media? imageFile;
   Reply? reply;
   final messagesProvider = messagesProviderFamily(id);
   static int id = 0;
@@ -125,10 +126,13 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
   void sendMessage() {
     print('widget length');
     print(msgs.length);
-    if (textController.text == "" && imageFile == null ||
-        isWhitespaceOrNewline(textController.text)) return;
-    MessagingServices.requestMessage(widget.convo.id, textController.text,
-            imageFile, reply == null ? '' : (reply?.replyId ?? ""))
+    if (isWhitespaceOrNewline(textController.text) && imageFile == null) return;
+    ref.read(sendMessageProvider.notifier).setNextBarFunction(null);
+    MessagingServices.requestMessage(
+            widget.convo.id,
+            textController.text.trim(),
+            imageFile != null ? File(imageFile!.value) : null,
+            reply == null ? '' : (reply?.replyId ?? ""))
         .then(
       (msg) {
         Map<String, dynamic> mp = {};
@@ -194,6 +198,8 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
         onWillPop: () {
           if (msgs.isNotEmpty) {
             widget.convo.lastMsg = msgs.first;
+            ref.read(sendMessageProvider.notifier).setNextBarFunction(null);
+            ref.read(replyProvider.notifier).set(null);
             ref
                 .read(ConversationProvider.notifier)
                 .updateConvo(widget.convo, widget.convo);
