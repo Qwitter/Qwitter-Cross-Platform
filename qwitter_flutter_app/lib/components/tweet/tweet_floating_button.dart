@@ -29,7 +29,7 @@ class TweetFloatingButton extends StatelessWidget {
               )
             : Container(),
         Positioned(
-          bottom: 260,
+          bottom: 210,
           right: 30,
           child: Row(
             children: [
@@ -70,7 +70,7 @@ class TweetFloatingButton extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 205,
+          bottom: 155,
           right: 30,
           child: Row(
             children: [
@@ -111,7 +111,7 @@ class TweetFloatingButton extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 150,
+          bottom: 100,
           right: 30,
           child: Row(
             children: [
@@ -152,7 +152,7 @@ class TweetFloatingButton extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 80,
+          bottom: 30,
           right: 30,
           child: Row(
             children: [
@@ -171,7 +171,7 @@ class TweetFloatingButton extends StatelessWidget {
               FilledButton(
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(
-                    EdgeInsets.all(20),
+                    EdgeInsets.all(17),
                   ),
                   shape: MaterialStateProperty.all<OutlinedBorder>(
                       CircleBorder()), // Set the shape to CircleBorder()
