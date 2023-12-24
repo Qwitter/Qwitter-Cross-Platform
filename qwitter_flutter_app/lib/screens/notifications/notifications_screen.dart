@@ -62,17 +62,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ref
             .read(notificationsProvider.notifier)
             .setNotifications([notification]);
-        
       });
-      displayNotification(
-          QwitterNotification.fromJson(data));
+      displayNotification(QwitterNotification.fromJson(data));
     });
-    if(socket.connected)
-    {
+    if (socket.connected) {
       socket.disconnect();
     }
     socket.connect();
-    
+
     socket.emit('JOIN_ROOM', user.username);
   }
 
@@ -117,7 +114,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       desc,
       platformChannelSpecifics,
       payload: 'item x',
-
     );
   }
 
@@ -221,7 +217,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: QwitterBottomNavigationBar(),
       ),
     );
   }

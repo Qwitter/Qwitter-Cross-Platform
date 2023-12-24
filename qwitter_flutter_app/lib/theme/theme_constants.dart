@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 
+class Palette {
+  static const MaterialColor blackColor = MaterialColor(
+    0x000000, // 0% comes in  here, this will be color picked if no shade is selected when defining a Color property which doesn’t require a swatch.
+    <int, Color>{
+      50: Color(0x00000000), //10%
+      100: Color(0x00000000), //20%
+      200: Color(0x00000000), //30%
+      300: Color(0x00000000), //40%
+      400: Color(0x00000000), //50%
+      500: Color(0x00000000), //60%
+      600: Color(0x00000000), //70%
+      700: Color(0x00000000), //80%
+      800: Color(0x00000000), //90%
+      900: Color(0x00000000), //100%
+    },
+  );
+}
+
 const mainColor = Color.fromRGBO(29, 155, 240, 1.0);
 const titleColor = Color.fromRGBO(119, 119, 119, 1.0);
 const black = Colors.black;
@@ -21,6 +39,11 @@ const TextTheme _baseTextTheme = TextTheme(
 ThemeData _buildThemeData(Brightness brightness) {
   return ThemeData(
     brightness: brightness,
+    primarySwatch: Palette.blackColor,
+    colorScheme: ColorScheme.fromSwatch(
+      primarySwatch: Palette.blackColor,
+      brightness: brightness,
+    ),
     scaffoldBackgroundColor: brightness == Brightness.light ? white : black,
     appBarTheme: AppBarTheme(
       color: brightness == Brightness.light ? white : black,

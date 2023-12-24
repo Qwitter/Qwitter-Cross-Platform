@@ -175,9 +175,7 @@ class NotificationCard extends StatelessWidget {
                                         color: Colors.white, fontSize: 16),
                                   )
                                 ]),
-                              )
-                             
-                              ),
+                              )),
                           notification.type == NotificationType.like_type ||
                                   notification.type ==
                                       NotificationType.retweet_type

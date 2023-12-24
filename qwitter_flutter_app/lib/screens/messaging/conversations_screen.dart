@@ -110,9 +110,6 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
           },
         ),
       ),
-      bottomNavigationBar: QwitterBottomNavigationBar(
-        currentIndex: 4,
-      ),
       backgroundColor: Colors.black,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 13),

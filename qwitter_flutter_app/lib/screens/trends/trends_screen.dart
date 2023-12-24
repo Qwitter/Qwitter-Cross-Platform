@@ -31,7 +31,8 @@ class _TrendsScreenState extends State<TrendsScreen> {
       });
     });
   }
-    String formatNumber(int number) {
+
+  String formatNumber(int number) {
     return NumberFormat.compact(explicitSign: false).format(number);
   }
 
@@ -123,7 +124,6 @@ class _TrendsScreenState extends State<TrendsScreen> {
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
       ),
-      bottomNavigationBar: QwitterBottomNavigationBar(),
       body: (trendsList != null)
           ? RefreshIndicator(
               onRefresh: _onRefresh,
@@ -143,14 +143,18 @@ class _TrendsScreenState extends State<TrendsScreen> {
                           },
                           child: Container(
                             padding: EdgeInsets.all(5),
-                            margin: EdgeInsets.only(left: 20,top: 10,bottom: 10),
+                            margin:
+                                EdgeInsets.only(left: 20, top: 10, bottom: 10),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "${index + 1}. Trending",
-                                  style: TextStyle(color: Colors.grey.shade600, fontSize: 15,fontWeight: FontWeight.w900),
+                                  style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w900),
                                 ),
                                 Text(
                                   "${trendsList![index].hashtag.replaceFirst("#", "")}",
@@ -162,7 +166,8 @@ class _TrendsScreenState extends State<TrendsScreen> {
                                 Text(
                                   "${formatNumber(trendsList![index].count)} posts",
                                   style: TextStyle(
-                                      color: Colors.grey.shade600, fontSize: 15),
+                                      color: Colors.grey.shade600,
+                                      fontSize: 15),
                                 ),
                               ],
                             ),
