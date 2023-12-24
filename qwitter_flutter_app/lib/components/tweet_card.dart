@@ -85,7 +85,6 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                         // print(tweetProvider.repostToId.toString() + " ${tweetProvider.toString()}");
                         if (widget.tweet.currentUserRetweetId != null) {
                           TweetsServices.deleteRetweet(
-
                               ref, context, tweetProvider);
                         } else {
                           Navigator.pop(context);

@@ -9,10 +9,12 @@ class NotificationsProvider extends StateNotifier<List<QwitterNotification>> {
   void setNotifications(List<QwitterNotification> notifications) {
     for (var notification in notifications) {
       if (state.where((element) => element.date == notification.date).isEmpty) {
-        state = [...state, notification];
+        state = [notification, ...state];
       }
     }
   }
+
+
   void resetNotifications(List<QwitterNotification> notifications) {
     state = notifications;
   }
