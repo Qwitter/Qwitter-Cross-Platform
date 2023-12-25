@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/components/basic_widgets/decorated_text_field.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
+import 'package:qwitter_flutter_app/components/layout/qwitter_bottom_navigation.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
 import 'package:qwitter_flutter_app/providers/secondary_button_provider.dart';
@@ -86,7 +87,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
               Navigator.popUntil(context, (route) => route.isFirst);
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (ctx) {
-                return TweetFeedScreen();
+                return QwitterBottomNavigationBar();
               }));
             } else {
               Fluttertoast.showToast(
