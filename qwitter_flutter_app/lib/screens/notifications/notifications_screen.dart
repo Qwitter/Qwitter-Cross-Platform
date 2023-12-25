@@ -135,6 +135,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     });
     // socket.disconnect();
     // socket.connect();
+    socket.connect();
     socket.emit('JOIN_ROOM', user.username);
     print("refreshed");
   }
