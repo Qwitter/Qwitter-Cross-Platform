@@ -5,14 +5,9 @@ class SideDropDownMenu extends StatelessWidget {
       {super.key, required this.isBlocked, required this.toggleBlockState});
   final bool isBlocked;
   final Function toggleBlockState;
+
   @override
   Widget build(BuildContext context) {
-    TextStyle style = const TextStyle(
-      color: Colors.black,
-      fontSize: 17,
-      fontWeight: FontWeight.w400,
-    );
-
     return Align(
       alignment: Alignment.topRight,
       child: Container(
@@ -35,13 +30,20 @@ class SideDropDownMenu extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextButton(
-                onPressed: () {
-                  toggleBlockState();
-                },
-                child: Text(
-                  isBlocked ? "unblock" : "Block",
-                  style: style,
-                )),
+              onPressed: () {
+                toggleBlockState();
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                isBlocked ? "unblock" : "Block",
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                  
+                ),
+              ),
+            ),
           ],
         ),
       ),
