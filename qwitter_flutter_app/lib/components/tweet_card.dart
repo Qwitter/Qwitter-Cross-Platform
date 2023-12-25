@@ -329,7 +329,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            tweetProvider.currentUserRetweetId.toString() != "null"
+            (tweetProvider.repostToId != null && tweetProvider.currentUserRetweetId.toString() != "null")
                 ? Container(
                     padding: EdgeInsets.fromLTRB(40, 10, 10, 0),
                     child: Row(
