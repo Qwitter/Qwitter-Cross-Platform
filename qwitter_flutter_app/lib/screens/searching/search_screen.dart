@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qwitter_flutter_app/components/profile/follow_button.dart';
-import 'package:qwitter_flutter_app/components/profile/profile_card.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
+import 'package:qwitter_flutter_app/components/user_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
@@ -27,7 +26,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   late int page;
   late ScrollController _scrollController;
-  List<User>? _usersList = null;
+  List? _usersList = null;
   @override
   void initState() {
     page = 1;
@@ -39,7 +38,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       });
       searchUser(widget.query).then((value) {
         setState(() {
-        _usersList = value;
+          _usersList = value;
         });
       });
       page++;
@@ -76,7 +75,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     ref.read(searchTweetsProvider.notifier).updateSearchTweets(newTweets);
   }
 
-  Future<List<User>> searchUser(String data) async {
+  Future<List<dynamic>> searchUser(String data) async {
     final url = Uri.parse(
         'http://back.qwitter.cloudns.org:3000/api/v1/user/search?q=$data');
 
@@ -92,8 +91,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     });
 
     if (response.statusCode == 200) {
-      List<dynamic> result = jsonDecode(response.body)['users'];
-      List<User> users = result.map((user) => User.fromJson(user)).toList();
+      List<dynamic> users = jsonDecode(response.body)['users'];
+
       return users;
     } else {
       return [];
@@ -273,61 +272,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         SliverList.builder(
                           itemBuilder: (context, index) {
                             return Container(
-                              margin: EdgeInsets.all(15),
-                              child: Column(children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 21,
-                                      backgroundImage: (_usersList![index]
-                                              .profilePicture!
-                                              .path
-                                              .isEmpty
-                                          ? const AssetImage(
-                                              "assets/images/def.jpg")
-                                          : NetworkImage(_usersList![index]
-                                              .profilePicture!
-                                              .path) as ImageProvider),
-                                    ),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-
-                                      children: [
-                                        Text(
-                                          "${_usersList![index].fullName}",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                        Text(
-                                          "@${_usersList![index].username}",
-                                          style: TextStyle(
-                                              color: Colors.grey.shade500,
-                                              fontSize: 15,
-                                              height: 1,
-                                              fontWeight: FontWeight.w400),
-                                        )
-                                      ],
-                                    ),
-                                    Spacer(),
-
-                                    if(_usersList![index].username!=AppUser().username)
-                                    FollowButton(
-                                        isFollowed:
-                                            _usersList![index].isFollowed!,
-                                        onTap: () async {_toggleFollowState(_usersList![index]);}),
-                                  ],
-                                )
-                              ]),
-                            );
+                              padding: EdgeInsets.only(left:15,right: 15),
+                                child: UserCard(
+                              isFollowed:
+                                  _usersList![index]["isFollowing"] ?? false,
+                              userData: _usersList![index],
+                            ));
                           },
                           itemCount: _usersList!.length,
                         )

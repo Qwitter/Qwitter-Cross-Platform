@@ -29,8 +29,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _websiteFieldController;
   late ImageProvider _profilePicture;
   late ImageProvider _profileBanner;
-  File? _profilePictureFile;
-  File? _profilebannerFile;
+  File? _profilePictureFile=null;
+  File? _profilebannerFile=null;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -40,20 +40,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _birthDateFieldController = TextEditingController(
         text: formatDate(DateTime.parse(appUser.birthDate!)));
     _nameFieldController = TextEditingController(text: appUser.fullName);
-    _bioFieldController = TextEditingController(text: appUser.description);
-    _websiteFieldController = TextEditingController(text: appUser.url);
-    _locationFieldController = TextEditingController(text: appUser.location);
+    _bioFieldController = TextEditingController(text: appUser.description??"");
+    _websiteFieldController = TextEditingController(text: appUser.url??"");
+    _locationFieldController = TextEditingController(text: appUser.location??"");
     _profileBanner = (appUser.profileBannerUrl!.path.isEmpty
         ? const AssetImage("assets/images/def_banner.png")
-        : NetworkImage(appUser.profileBannerUrl!.path.startsWith("http")
-            ? appUser.profileBannerUrl!.path
-            : "http://" + appUser.profileBannerUrl!.path) as ImageProvider);
+        : NetworkImage(appUser.profileBannerUrl!.path) as ImageProvider);
 
     _profilePicture = (appUser.profilePicture!.path.isEmpty
         ? const AssetImage("assets/images/def.jpg")
-        : NetworkImage(appUser.profilePicture!.path.startsWith("http")
-            ? appUser.profilePicture!.path
-            : "http://" + appUser.profilePicture!.path) as ImageProvider);
+        : NetworkImage(appUser.profilePicture!.path) as ImageProvider);
     _birthDate = DateTime.parse(appUser.birthDate!);
   }
 
@@ -87,11 +83,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _exit(BuildContext context) {
     if (_profilePictureFile != null ||
         _profilebannerFile != null ||
-        DateTime.parse(appUser.birthDate!) != _birthDate ||
+        appUser.birthDate != "${_birthDate.toIso8601String()}${_birthDate.toIso8601String().endsWith("Z")?"":"Z"}"||
         _nameFieldController.text != appUser.fullName ||
-        _bioFieldController.text != appUser.description ||
-        _locationFieldController.text != appUser.location ||
-        _websiteFieldController != appUser.url) {
+        _bioFieldController.text != (appUser.description??"") ||
+        _locationFieldController.text != (appUser.location??"" )||
+        _websiteFieldController.text !=(appUser.url??"")) {
       showDialog(
           context: context,
           builder: (context) {
@@ -104,13 +100,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
                     },
-                    child: Text("Discard"),
+                    child: Text("Discard",style: TextStyle(color: Colors.white),),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text("Cancel"),
+                    child: Text("Cancel",style: TextStyle(color: Colors.white),),
                   ),
                 ]);
           });
@@ -327,15 +323,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 maximumYear: DateTime.now().year-18,
                 onDateTimeChanged: (value) {
                   _birthDate = value;
-                  print(_birthDate.toUtc().toIso8601String());
+                  // print(_birthDate.toUtc().toIso8601String());
 
                   setState(() {
                     _birthDateFieldController.text = formatDate(_birthDate);
                   });
                 },
-                initialDateTime: DateTime.now(),
-                maximumDate: DateTime.now(),
-                minimumDate: DateTime(1930),
+                initialDateTime: _birthDate,
+                // maximumDate: DateTime.now(),
+                // minimumDate: DateTime(1930),
                 mode: CupertinoDatePickerMode.date,
                 showDayOfWeek: false,
                 dateOrder: DatePickerDateOrder.mdy,
