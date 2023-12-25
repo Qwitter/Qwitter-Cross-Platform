@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SideDropDownMenu extends StatelessWidget {
-  const SideDropDownMenu({
-    super.key,
-    required this.isBlocked,
-    required this.toggleBlockState
-  });
+  const SideDropDownMenu(
+      {super.key, required this.isBlocked, required this.toggleBlockState});
   final bool isBlocked;
   final Function toggleBlockState;
   @override
@@ -38,18 +35,13 @@ class SideDropDownMenu extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextButton(
-              onPressed: () {},
-              child: Text(
-                'Share',
-                style: style,
-              ),
-            ),
-            TextButton(onPressed: () {}, child: Text('Add/remove from Lists',style: style,)),
-            TextButton(onPressed: () {}, child: Text('View Lists',style: style,)),
-            TextButton(onPressed: () {}, child: Text('Lists they\'re on',style: style,)),
-            TextButton(onPressed: () {toggleBlockState();}, child: Text(isBlocked?"unblock":"Block",style: style,)),
-            TextButton(onPressed: () {}, child: Text('Block',style: style,)),
-            TextButton(onPressed: () {}, child: Text('Report',style: style,)),
+                onPressed: () {
+                  toggleBlockState();
+                },
+                child: Text(
+                  isBlocked ? "unblock" : "Block",
+                  style: style,
+                )),
           ],
         ),
       ),

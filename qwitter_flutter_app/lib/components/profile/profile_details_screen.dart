@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.dart';
 import 'package:qwitter_flutter_app/components/profile/edit_profile_button.dart';
 import 'package:qwitter_flutter_app/components/profile/follow_button.dart';
@@ -13,24 +12,23 @@ import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
-import 'package:qwitter_flutter_app/providers/profile_tweets_provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:http/http.dart' as http;
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'side_drop_down_menu.dart';
 import 'package:intl/intl.dart';
 
-class ProfileDetailsScreen extends ConsumerStatefulWidget {
+class ProfileDetailsScreen extends StatefulWidget {
   const ProfileDetailsScreen({super.key, required this.username});
   final String username;
 
   @override
-  ConsumerState<ProfileDetailsScreen> createState() =>
+  State<ProfileDetailsScreen> createState() =>
       _ProfileDetailsScreenState();
 }
 
-class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
+class _ProfileDetailsScreenState extends 
+State<ProfileDetailsScreen>
     with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
   late TabController _tabController;
@@ -39,6 +37,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   late User user;
   final AppUser appUser = AppUser();
   List<int> pages = [1, 1, 1, 1];
+  List<List<Tweet>?> tweetsLists=[null,null,null,null];
 
   @override
   void initState() {
@@ -48,13 +47,12 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
     _scrollController.addListener(_scrollListener);
     _tabController.addListener(_changeTab);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(profileTweetsProvider.notifier).reset();
       TweetsServices.getTweetsPostedByUser(widget.username, pages[0])
           .then((list) {
-        ref.read(profileTweetsProvider.notifier).updatePostedTweets(list);
-        print(list);
         pages[0]++;
-        setState(() {});
+        setState(() {
+        tweetsLists[0]=list;
+        });
       });
     });
   }
@@ -69,8 +67,8 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
   Future<User?> _getUserData() async {
     /////// if(user.username==appUser.username) no need to request the data
-    String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
-    Uri url = Uri.parse('$_baseUrl/api/v1/user/${widget.username}');
+    String baseUrl = 'http://back.qwitter.cloudns.org:3000';
+    Uri url = Uri.parse('$baseUrl/api/v1/user/${widget.username}');
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
     };
@@ -85,7 +83,12 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
 
     if (response.statusCode == 200) {
       final jsonBody = jsonDecode(response.body);
+      print(response.body);
       User user = User.fromJson(jsonBody);
+      
+      print("is user followed${user.isFollowed}");
+      print("is user followed${user.followersCount}");
+      print("is user followed${user.followingCount}");
       if (user.username == AppUser().username) {
         //update the app user stored data
         appUser.updataUserData(user);
@@ -109,21 +112,26 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
     if (tabIndex == 0) {
       newTweets =
           await TweetsServices.getTweetsPostedByUser(user.username!, page);
-      ref.read(profileTweetsProvider.notifier).updatePostedTweets(newTweets);
     } else if (tabIndex == 1) {
       newTweets =
           await TweetsServices.getRepliesSectionTweets(user.username!, page);
-      ref.read(profileTweetsProvider.notifier).updateRepliedTweets(newTweets);
     } else if (tabIndex == 2) {
       newTweets =
           await TweetsServices.getMediaSectionTweets(user.username!, page);
-      ref.read(profileTweetsProvider.notifier).updateMediaTweets(newTweets);
-    } else if (tabIndex == 3) {
+    } else{
       newTweets =
           await TweetsServices.getTweetsLikedByUser(user.username!, page);
-      ref.read(profileTweetsProvider.notifier).updateLikedTweets(newTweets);
     }
-    setState(() {});
+    
+    setState(() {
+      if(tweetsLists[tabIndex]==null){
+        tweetsLists[tabIndex]=newTweets;
+      }
+      else{
+        tweetsLists[tabIndex]!.addAll(newTweets);
+      }
+      
+    });
   }
 
   @override
@@ -148,17 +156,18 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   }
 
   void _openSideDropDown() {
+    print("user blocked: ${user.isBlocked}");
     showDialog(
         context: context,
         builder: (context) => SideDropDownMenu(
-            isBlocked: user.isBlocked!, toggleBlockState: _toggleBlockState),
+            isBlocked: user.isBlocked??false, toggleBlockState: _toggleBlockState),
         useSafeArea: true,
         barrierColor: Colors.transparent);
   }
 
   Future<void> _toggleFollowState() async {
-    String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
-    Uri url = Uri.parse('$_baseUrl/api/v1/user/follow/${widget.username}');
+    String baseUrl = 'http://back.qwitter.cloudns.org:3000';
+    Uri url = Uri.parse('$baseUrl/api/v1/user/follow/${widget.username}');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
@@ -205,8 +214,8 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   }
 
   Future<void> _toggleMuteState() async {
-    String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
-    Uri url = Uri.parse('$_baseUrl/api/v1/user/mute/${widget.username}');
+    String baseUrl = 'http://back.qwitter.cloudns.org:3000';
+    Uri url = Uri.parse('$baseUrl/api/v1/user/mute/${widget.username}');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
@@ -253,8 +262,8 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
   }
 
   Future<void> _toggleBlockState() async {
-    String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
-    Uri url = Uri.parse('$_baseUrl/api/v1/user/block/${widget.username}');
+    String baseUrl = 'http://back.qwitter.cloudns.org:3000';
+    Uri url = Uri.parse('$baseUrl/api/v1/user/block/${widget.username}');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${appUser.getToken}',
@@ -300,18 +309,13 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
     }
   }
 
-  Future<bool> _onPop() async {
-    ref.read(profileTweetsProvider.notifier).reset();
-    return true;
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    ProfileTweets profileTweets = ref.watch(profileTweetsProvider);
+
     // print("is user followed? ${user.isFollowed}");
-    return WillPopScope(
-      onWillPop: _onPop,
-      child: FutureBuilder(
+    return  FutureBuilder(
         future: _getUserData(),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
@@ -350,9 +354,6 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                             pinned: true,
                             leading: IconButton(
                               onPressed: () {
-                                ref
-                                    .read(profileTweetsProvider.notifier)
-                                    .reset();
                                 Navigator.of(context).pop();
                               },
                               icon: const Icon(
@@ -415,30 +416,30 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                       MainAxisAlignment.spaceBetween,
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 10),
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.search_rounded),
-                                        color: Colors.white,
-                                        padding: const EdgeInsets.all(0),
-                                        style: ButtonStyle(
-                                          iconSize:
-                                              const MaterialStatePropertyAll(
-                                                  25),
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                            Color.fromARGB(255, 7, 7, 7)
-                                                .withOpacity(0.5),
-                                          ),
-                                          shape: const MaterialStatePropertyAll(
-                                            CircleBorder(
-                                              eccentricity: 0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    // Container(
+                                    //   margin: const EdgeInsets.only(top: 10),
+                                    //   child: IconButton(
+                                    //     onPressed: () {},
+                                    //     icon: const Icon(Icons.search_rounded),
+                                    //     color: Colors.white,
+                                    //     padding: const EdgeInsets.all(0),
+                                    //     style: ButtonStyle(
+                                    //       iconSize:
+                                    //           const MaterialStatePropertyAll(
+                                    //               25),
+                                    //       backgroundColor:
+                                    //           MaterialStatePropertyAll(
+                                    //         Color.fromARGB(255, 7, 7, 7)
+                                    //             .withOpacity(0.5),
+                                    //       ),
+                                    //       shape: const MaterialStatePropertyAll(
+                                    //         CircleBorder(
+                                    //           eccentricity: 0,
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                     Container(
                                       margin: const EdgeInsets.only(
                                           top: 10, right: 10, left: 10),
@@ -817,16 +818,18 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                     },
                     child: TabBarView(
                       controller: _tabController,
-                      children: [
-                        ref.watch(profileTweetsProvider).postedTweets != null
+                      children: 
+                        tweetsLists.map((list) {
+                          return 
+                          (list!= null)
                             ? ListView.builder(
                                 key: GlobalKey(),
                                 itemBuilder: (context, index) {
                                   return TweetCard(
                                       tweet:
-                                          profileTweets.postedTweets![index]);
+                                          list[index]);
                                 },
-                                itemCount: profileTweets.postedTweets!.length,
+                                itemCount: list.length,
                               )
                             : const Center(
                                 child: SizedBox(
@@ -834,57 +837,11 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
                                   height: 24,
                                   child: CircularProgressIndicator(),
                                 ),
-                              ),
-                        profileTweets.repliedTweets != null
-                            ? ListView.builder(
-                                key: GlobalKey(),
-                                itemBuilder: (context, index) {
-                                  return TweetCard(
-                                      tweet:
-                                          profileTweets.repliedTweets![index]);
-                                },
-                                itemCount: profileTweets.repliedTweets!.length,
-                              )
-                            : const Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
-                        profileTweets.mediaTweets != null
-                            ? ListView.builder(
-                                key: GlobalKey(),
-                                itemBuilder: (context, index) {
-                                  return TweetCard(
-                                      tweet: profileTweets.mediaTweets![index]);
-                                },
-                                itemCount: profileTweets.mediaTweets!.length,
-                              )
-                            : const Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
-                        profileTweets.likedTweets != null
-                            ? ListView.builder(
-                                key: GlobalKey(),
-                                itemBuilder: (context, index) {
-                                  return TweetCard(
-                                      tweet: profileTweets.likedTweets![index]);
-                                },
-                                itemCount: profileTweets.likedTweets!.length,
-                              )
-                            : const Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
-                      ],
+                              );
+                        }).toList()
+                       
+                        
+                      ,
                     ),
                   ),
                 ),
@@ -892,7 +849,7 @@ class _ProfileDetailsScreenState extends ConsumerState<ProfileDetailsScreen>
             );
           }
         },
-      ),
+      
     );
   }
 }

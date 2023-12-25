@@ -175,7 +175,7 @@ class User {
       isProtected: json['protected'],
       isVerified: json['verified'],
       isMuted: json['isMuted'],
-      isBlocked: json['isBlcoked'],
+      isBlocked: json['isBlocked'],
       inConversation: json['inConversation'],
     );
   }
