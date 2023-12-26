@@ -139,7 +139,6 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 keyboardType: TextInputType.visiblePassword,
                 placeholder: widget.passedInput,
                 controller: emailController,
-                isPassword: true,
                 enabled: false,
                 paddingValue: const EdgeInsets.all(0),
               ),

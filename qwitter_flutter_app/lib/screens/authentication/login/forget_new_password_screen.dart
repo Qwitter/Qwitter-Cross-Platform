@@ -72,7 +72,7 @@ class _ForgetNewPasswordScreenState
       "passwordConfirmation": confirmPassController.text,
     };
     final Map<String, String> cookies = {
-      'qwitter_jwt': 'Bearer ${AppUser().getToken}',
+      'qwitter_jwt': 'Bearer ${widget.token}',
     };
     //printwidget.token);
     final response = await http.post(
@@ -114,6 +114,7 @@ class _ForgetNewPasswordScreenState
                       MaterialPageRoute(
                           builder: (context) => const LoginEmailScreen()));
                 } else {
+                  print(value.body);
                   Fluttertoast.showToast(
                       msg: "couldn't change password, try again!");
                 }
