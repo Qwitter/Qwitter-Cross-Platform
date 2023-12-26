@@ -11,6 +11,7 @@ import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_birthdate_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
@@ -44,7 +45,12 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     passController.clear();
   }
 
-  void forgotPassword() {}
+  void forgotPassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => const ForgetPasswordScreenEmail()),
+    );
+  }
 
   void signupApple() {
     Navigator.of(context).push(

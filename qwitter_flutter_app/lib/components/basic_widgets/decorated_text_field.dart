@@ -33,12 +33,12 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
   Color borderColor = Colors.grey.shade500;
   @override
   void initState() {
-    isVisible = widget.isPassword ? true : false;
     super.initState();
     _focusNode = FocusNode();
     _focusNode.addListener(() {
       setState(() {});
     });
+    isVisible = widget.isPassword;
   }
 
   @override
@@ -92,7 +92,7 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
                       },
                       icon: Icon(
                         isVisible ? Icons.visibility : Icons.visibility_off,
-                        color: Theme.of(context).primaryColorDark,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                     if (myController.text.isNotEmpty)

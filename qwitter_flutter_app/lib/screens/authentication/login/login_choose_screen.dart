@@ -13,6 +13,9 @@ import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.da
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/screens/authentication/complements/forget_password_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_new_password_screen.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_main_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_birthdate_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
@@ -172,7 +175,13 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
     emailController.clear();
   }
 
-  void forgotPassword() {}
+  void forgotPassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const ForgetPasswordScreenEmail(),
+      ),
+    );
+  }
 
   void signInApple() {}
 
