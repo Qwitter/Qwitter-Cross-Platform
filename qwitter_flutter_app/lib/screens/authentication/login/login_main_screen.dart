@@ -182,6 +182,7 @@ class _LoginMainScreenState extends ConsumerState<LoginMainScreen> {
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
               buttonFunction = ref.watch(secondaryButtonProvider);
               return SecondaryButton(
+                key: const Key('login_button_key'),
                 text: "Login",
                 onPressed: buttonFunction == null
                     ? null

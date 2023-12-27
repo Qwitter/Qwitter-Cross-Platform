@@ -118,6 +118,7 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
               const SizedBox(height: 10),
               DecoratedTextField(
                 keyboardType: TextInputType.emailAddress,
+                key: const Key("emailField"),
                 placeholder: "Phone,email address or username",
                 controller: emailController,
                 paddingValue: const EdgeInsets.all(0),
@@ -130,6 +131,7 @@ class _LoginEmailScreenState extends ConsumerState<LoginEmailScreen> {
           builder: (BuildContext context, WidgetRef ref, Widget? child) {
         buttonFunction = ref.watch(nextBarProvider);
         return QwitterNextBar(
+          key: const Key("nextBarLoginEmail"),
           buttonFunction: buttonFunction == null
               ? null
               : () {
