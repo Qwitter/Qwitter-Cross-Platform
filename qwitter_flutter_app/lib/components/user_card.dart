@@ -4,7 +4,6 @@ import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button.da
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
-import 'package:qwitter_flutter_app/providers/profile_tweets_provider.dart';
 
 class UserCard extends StatefulWidget {
   UserCard({super.key, this.onPressed, this.isFollowed = false, this.userData});

@@ -71,6 +71,9 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
   void initState() {
     super.initState();
     usernameController.text = widget.user!.username ?? '';
+    print("username ${widget.user!.username}");
+    ToastContext ctx = ToastContext();
+    ctx.init(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(nextBarProvider.notifier).setNextBarFunction(null);
     });
@@ -96,7 +99,7 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
             if (value.statusCode == 200) {
               Toast.show('Username updated successfully.');
               widget.user!.setUsername(usernameController.text);
-              print(widget.user!.username);
+              print("Updated username : ${widget.user!.username}");
               // Perform Sign Up Logic
               AppUser appUser = AppUser();
               appUser.copyUserData(widget.user!);
@@ -129,11 +132,12 @@ class _AddUsernameScreenState extends ConsumerState<AddUsernameScreen> {
         return true;
       },
       child: Scaffold(
-        appBar: const PreferredSize(
+        appBar: PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: QwitterAppBar(
             showLogoOnly: true,
-            autoImplyLeading: false,
+            autoImplyLeading:
+                widget.previousScreen == 'EditUsername' ? true : false,
           ),
         ),
         body: Container(

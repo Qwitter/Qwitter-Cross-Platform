@@ -48,7 +48,7 @@ class _LikersScreenState extends State<LikersScreen> {
         print(value.reasonPhrase);
         print(value.body);
         setState(() {
-          likersList = jsonDecode(value.body)['likers'];
+          likersList = jsonDecode(value.body)['ret'];
         });
       });
     });
@@ -87,7 +87,6 @@ class _LikersScreenState extends State<LikersScreen> {
                       isFollowed: false,
                     );
             },
-
           ),
         ),
       ),
