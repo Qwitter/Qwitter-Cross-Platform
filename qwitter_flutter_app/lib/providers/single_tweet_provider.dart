@@ -18,8 +18,9 @@ class SingleTweetProvider extends StateNotifier<Tweet> {
 
   void toggleRetweet() {
     Tweet tweet = state;
-    tweet.retweetsCount = tweet.retweetsCount! + (tweet.isRetweeted! == false ? 1 : -1);
-    tweet.isRetweeted = !tweet.isRetweeted!;
+    tweet.retweetsCount =
+        tweet.retweetsCount! + (tweet.currentUserRetweetId == null ? 1 : -1);
+    tweet.isRetweeted = (tweet.currentUserRetweetId != null);
     state = tweet;
   }
 
@@ -29,21 +30,31 @@ class SingleTweetProvider extends StateNotifier<Tweet> {
     state = tweet;
   }
 
-  void resetReplies(List<Tweet> replies){
+  void resetReplies(List<Tweet> replies) {
     state.replies = [...replies];
   }
-  void setReplies(List<Tweet> replies){
-    Tweet tweet = state;
-    tweet.replies = [...tweet.replies, ...replies];
-    state = tweet;
+
+  void setReplies(List<Tweet> replies) {
+    // Tweet tweet = state;
+    for (var reply in replies) {
+      if (state.replies.where((element) => element.id == reply.id).isEmpty) {
+        // tweet.replies = [...tweet.replies, reply];
+        state.replies = state.replies.where((element) => element.id != reply.id).toList();
+      }
+    }
+    
   }
 
   void removeTweet(Tweet tweet) {
     state.replies = state.replies.where((t) => t.id != tweet.id).toList();
   }
+
   void undoRetweetEffect(Tweet tweet) {
     state.currentUserRetweetId = null;
     state.retweetsCount = state.retweetsCount! - 1;
   }
-  
+
+  void increamentReplies() {
+    state.repliesCount = state.repliesCount ?? 0 + 1;
+  }
 }

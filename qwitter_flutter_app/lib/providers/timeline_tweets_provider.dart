@@ -12,6 +12,8 @@ class TimelineTweetsProvider extends StateNotifier<List<Tweet>> {
         state = [...state, tweet];
       }
     }
+    // state = tweets;
+
   }
   void resetTimelineTweets(List<Tweet> tweets) {
     state = tweets;

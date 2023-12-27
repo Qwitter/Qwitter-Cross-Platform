@@ -7,6 +7,8 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/for_you_tweets_provider.dart';
+import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/add_tweet_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/likers_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/retweeters_screen.dart';
@@ -112,7 +114,17 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
       //print(error);
     });
   }
-
+  void _makeRepost(tweetProvider) {
+    setState(() {
+      // ref.read(tweetProvider.provider.notifier).toggleRetweet();
+      String retweeted_id = TweetsServices.makeRepost(ref, tweetProvider);
+      tweetProvider.currentUserRetweetId = retweeted_id;
+      tweetProvider.retweetsCount = tweetProvider.retweetsCount! + 1;
+      TweetsServices.getTimeline(1).then((tweets) => ref.read(timelineTweetsProvider.notifier).setTimelineTweets(tweets));
+      TweetsServices.getForYou(1).then((tweets) => ref.read(forYouTweetsProvider.notifier).setForYouTweets(tweets));
+    });
+    
+  }
   void _openRepostModal() {
     showModalBottomSheet(
       context: context,
@@ -146,10 +158,18 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                   children: <Widget>[
                     TextButton.icon(
                       onPressed: () {
-                        Navigator.pop(context);
-                        setState(() {
-                          TweetsServices.makeRepost(ref, widget.tweet);
-                        });
+                        if (widget.tweet.currentUserRetweetId != null) {
+                          TweetsServices.deleteRetweet(
+                              ref, context, widget.tweet);
+                          setState(() {
+                            ref.read(timelineTweetsProvider.notifier).removeTweet(widget.tweet);
+                            ref.read(forYouTweetsProvider.notifier).removeTweet(widget.tweet);
+                          });
+                        } else {
+                          Navigator.pop(context);
+                          _makeRepost(widget.tweet);
+                          
+                        }
                       },
                       icon: Icon(
                         Icons.repeat,
@@ -157,7 +177,9 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                         color: Colors.white,
                       ),
                       label: Text(
-                        widget.tweet.currentUserRetweetId != null ? "Undo Repost" : "Repost",
+                        widget.tweet.currentUserRetweetId != null
+                            ? "Undo Repost"
+                            : "Repost",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                     ),
@@ -197,7 +219,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
 
   Future<void> _onRefresh() async {
     // Simulating a refresh action with a delay
-    final List<Tweet> newTweets = await TweetsServices.getTweetReplies(widget.tweet);
+    final List<Tweet> newTweets =
+        await TweetsServices.getTweetReplies(widget.tweet);
     setState(() {
       print(newTweets.length);
       ref.read(widget.tweet.provider.notifier).resetReplies(newTweets);
@@ -205,6 +228,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
       print("token : " + AppUser().token.toString());
     });
   }
+
   void _opentweetMenuModal(Tweet tweetProvider) {
     showModalBottomSheet(
       context: context,
@@ -252,7 +276,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                               (tweetProvider.user!.isFollowed!
                                       ? "Unfollow"
                                       : "Follow") +
-                                  " @" + tweetProvider.user!.username.toString(),
+                                  " @" +
+                                  tweetProvider.user!.username.toString(),
                               style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.white,
@@ -268,8 +293,11 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                               setState(() {
                                 TweetsServices.deleteTweet(
                                     ref, context, tweetProvider);
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TweetFeedScreen()));
-
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            TweetFeedScreen()));
                               });
                             },
                             icon: Icon(
@@ -305,18 +333,20 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
           buttonFunction = null;
         });
       } else {
-        setState(() {
+          setState(() {
           buttonFunction = () {
-            TweetsServices.makeReply(
-                ref, tweetProvider, textEditingController.text).then((tweet) {
-                  final t = Tweet.fromJson(tweet['tweet']);
-                  tweetProvider.replies = [ ...tweetProvider.replies,t];
-                  // ref.watch(tweetProvider.provider.notifier).setReplies([t]);
-                });
-              
-            textEditingController.text = "";
+              TweetsServices.makeReply(
+                      ref, tweetProvider, textEditingController.text)
+                  .then((tweet) {
+                final t = Tweet.fromJson(tweet['tweet']);
+                tweetProvider.replies = [t,...tweetProvider.replies];
+                ref.read(tweetProvider.provider.notifier).setReplies([t]);
+                // tweetProvider.repliesCount = tweetProvider.repliesCount ?? 0 +  1;
+              });
+
+              textEditingController.text = "";
           };
-        });
+          });
       }
     });
     print(tweetProvider.id);
@@ -358,15 +388,16 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                         TweetAvatar(
                                           avatar: widget
                                               .tweet.user!.profilePicture!.path,
-                                          username: widget.tweet.user!.username!,
+                                          username:
+                                              widget.tweet.user!.username!,
                                         ),
                                         Expanded(
                                           child: TweetHeader.stretched(
                                             tweet: tweetProvider,
                                             opentweetMenuModal: () {
-                                              _opentweetMenuModal(tweetProvider);
+                                              _opentweetMenuModal(
+                                                  tweetProvider);
                                             },
-        
                                           ),
                                         ),
                                       ],
@@ -377,7 +408,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                       stretched: true,
                                     ),
                                     Container(
-                                      padding: EdgeInsets.fromLTRB(15, 20, 15, 0),
+                                      padding:
+                                          EdgeInsets.fromLTRB(15, 20, 15, 0),
                                       child: Row(
                                         children: [
                                           Text(
@@ -422,7 +454,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                           ),
                                           Text(
                                             "45K",
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                           SizedBox(
                                             width: 5,
@@ -441,7 +474,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                       decoration: BoxDecoration(
                                         border: Border(
                                           bottom: BorderSide(
-                                              color: Colors.grey[900]!, width: 1),
+                                              color: Colors.grey[900]!,
+                                              width: 1),
                                         ),
                                       ),
                                       child: Column(
@@ -466,7 +500,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                               .toDouble(),
                                                   child: TextButton(
                                                     onPressed: () {
-                                                      Navigator.of(context).push(
+                                                      Navigator.of(context)
+                                                          .push(
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               RetweetersScreen(
@@ -477,13 +512,15 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                       );
                                                     },
                                                     child: Text(
-                                                      tweetProvider.retweetsCount
+                                                      tweetProvider
+                                                          .retweetsCount
                                                           .toString(),
                                                       style: TextStyle(
                                                           color: Colors.white),
                                                     ),
                                                     style: ButtonStyle(
-                                                      alignment: Alignment.center,
+                                                      alignment:
+                                                          Alignment.center,
                                                       // overlayColor: MaterialStateProperty.all(Colors.transparent),
                                                       padding:
                                                           MaterialStateProperty
@@ -514,7 +551,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                           color: Colors.white),
                                                     ),
                                                     style: ButtonStyle(
-                                                      alignment: Alignment.center,
+                                                      alignment:
+                                                          Alignment.center,
                                                       // overlayColor: MaterialStateProperty.all(Colors.transparent),
                                                       padding:
                                                           MaterialStateProperty
@@ -542,7 +580,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                               .toDouble(),
                                                   child: TextButton(
                                                     onPressed: () {
-                                                      Navigator.of(context).push(
+                                                      Navigator.of(context)
+                                                          .push(
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               LikersScreen(
@@ -559,7 +598,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                           color: Colors.white),
                                                     ),
                                                     style: ButtonStyle(
-                                                      alignment: Alignment.center,
+                                                      alignment:
+                                                          Alignment.center,
                                                       // overlayColor: MaterialStateProperty.all(Colors.transparent),
                                                       padding:
                                                           MaterialStateProperty
@@ -603,7 +643,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                           color: Colors.white),
                                                     ),
                                                     style: ButtonStyle(
-                                                      alignment: Alignment.center,
+                                                      alignment:
+                                                          Alignment.center,
                                                       // overlayColor: MaterialStateProperty.all(Colors.transparent),
                                                       padding:
                                                           MaterialStateProperty
@@ -638,7 +679,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                   ),
                                                   onPressed: () {
                                                     FocusScope.of(context)
-                                                        .requestFocus(focusNode);
+                                                        .requestFocus(
+                                                            focusNode);
                                                   },
                                                 ),
                                               ),
@@ -646,10 +688,11 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                 child: IconButton(
                                                   icon: Icon(
                                                     Icons.repeat_outlined,
-                                                    color:
-                                                        tweetProvider.currentUserRetweetId != null
-                                                            ? Colors.green
-                                                            : Colors.grey[600],
+                                                    color: tweetProvider
+                                                                .currentUserRetweetId !=
+                                                            null
+                                                        ? Colors.green
+                                                        : Colors.grey[600],
                                                     size: 22,
                                                   ),
                                                   onPressed: _openRepostModal,
@@ -661,9 +704,10 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                     tweetProvider.isLiked!
                                                         ? Icons.favorite
                                                         : Icons.favorite_border,
-                                                    color: tweetProvider.isLiked!
-                                                        ? Colors.pink
-                                                        : Colors.grey[600],
+                                                    color:
+                                                        tweetProvider.isLiked!
+                                                            ? Colors.pink
+                                                            : Colors.grey[600],
                                                     size: 22,
                                                   ),
                                                   onPressed: () {
@@ -708,19 +752,22 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                             ? SizedBox(
                                 height: focusNode.hasFocus ? 150 : 80,
                               )
-                            : TweetCard(tweet: tweetProvider.replies[index - 1], removeReply: (){
-                              Navigator.pop(context);
-                              setState(() {
-                                TweetsServices.deleteTweet(
-                                    ref, context, tweetProvider);
-                                ref.read(tweetProvider.provider.notifier).removeTweet(tweetProvider);
-                              });
-                            } );
-        
+                            : TweetCard(
+                                tweet: tweetProvider.replies[index - 1],
+                                removeReply: () {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    TweetsServices.deleteTweet(
+                                        ref, context, tweetProvider);
+                                    ref
+                                        .read(tweetProvider.provider.notifier)
+                                        .removeTweet(tweetProvider);
+                                  });
+                                });
                   },
                   itemCount: tweetProvider.replies.length + 2,
                 ),
-                Positioned(   
+                Positioned(
                   bottom: 0,
                   child: Container(
                     decoration: BoxDecoration(
@@ -737,7 +784,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                       children: [
                         focusNode.hasFocus
                             ? Container(
-                                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 10, 10, 0),
                                 alignment: Alignment.centerLeft,
                                 child: Row(
                                   children: [
@@ -764,7 +812,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                               hintText: "Post your reply",
                               labelStyle: TextStyle(
                                   color: Colors.grey,
-                                  fontSize: 14), // Text color// Placeholder text
+                                  fontSize:
+                                      14), // Text color// Placeholder text
                               hintStyle: TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400,
@@ -815,7 +864,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                             onPressed: () {
                                               print(
                                                   "tweetID:  ${widget.tweet.id}");
-        
+
                                               print(
                                                   "text:  ${textEditingController.text}");
                                               Navigator.of(context).push(

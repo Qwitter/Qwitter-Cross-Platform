@@ -380,11 +380,14 @@ class TweetsServices {
         final responseBody = jsonDecode(response.body);
         print(responseBody['tweet']);
         retweeted_id = responseBody['tweet']['id'];
-        ref.read(timelineTweetsProvider.notifier).setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
-        ref.read(forYouTweetsProvider.notifier).setForYouTweets([Tweet.fromJson(responseBody['tweet'])]);
+        // ref.read(timelineTweetsProvider.notifier).setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
+        // ref.read(forYouTweetsProvider.notifier).setForYouTweets([Tweet.fromJson(responseBody['tweet'])]);
+        ref.read(tweet.provider.notifier).toggleRetweet();
+
+        // make toast retweeted successfully
+
       });
 
-      ref.read(tweet.provider.notifier).toggleRetweet();
       return retweeted_id;
     } catch (error, stackTrace) {
       print('Error fetching tweets: $error');

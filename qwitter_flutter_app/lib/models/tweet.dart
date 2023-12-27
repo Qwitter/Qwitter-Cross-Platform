@@ -84,7 +84,7 @@ class Tweet {
               ? User.fromJson(json['author'])
               : null,
       replyUser:
-          json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'].containsKey('author')
+          json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null && json['replyToTweet'].containsKey('author')
               ? User.fromJson(json["replyToTweet"]['author'])
               : null,
       source: json['retweetedId'] != null
@@ -108,7 +108,7 @@ class Tweet {
       text: json['retweetedId'] != null
           ? json["retweetedTweet"]['text']
           : json['text'],
-      replyToId: json['replyToTweetId'],
+      replyToId: json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null && json['replyToTweet'].containsKey('author') ? json['replyToTweetId'] : null,
       repostToId: json['retweetedId'],
       quoteToId: json['qouteTweetedId'],
       hashtags: json['retweetedId'] != null

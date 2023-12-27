@@ -10,6 +10,8 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_menu.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_reply.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/for_you_tweets_provider.dart';
+import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
@@ -34,7 +36,10 @@ class _TweetCardState extends ConsumerState<TweetCard> {
       String retweeted_id = TweetsServices.makeRepost(ref, tweetProvider);
       tweetProvider.currentUserRetweetId = retweeted_id;
       tweetProvider.retweetsCount = tweetProvider.retweetsCount! + 1;
+      TweetsServices.getTimeline(1).then((tweets) => ref.read(timelineTweetsProvider.notifier).setTimelineTweets(tweets));
+      TweetsServices.getForYou(1).then((tweets) => ref.read(forYouTweetsProvider.notifier).setForYouTweets(tweets));
     });
+    
   }
 
   void _makeLike(tweetProvider) {
@@ -86,9 +91,14 @@ class _TweetCardState extends ConsumerState<TweetCard> {
                         if (widget.tweet.currentUserRetweetId != null) {
                           TweetsServices.deleteRetweet(
                               ref, context, tweetProvider);
+                          setState(() {
+                            ref.read(timelineTweetsProvider.notifier).removeTweet(tweetProvider);
+                            ref.read(forYouTweetsProvider.notifier).removeTweet(tweetProvider);
+                          });
                         } else {
                           Navigator.pop(context);
                           _makeRepost(tweetProvider);
+                          
                         }
                       },
                       icon: Icon(
@@ -299,6 +309,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
   @override
   Widget build(BuildContext context) {
     final tweetProvider = ref.watch(widget.tweet.provider);
+    final timelineTweets = ref.watch(timelineTweetsProvider);
+    final forYouTweets = ref.watch(forYouTweetsProvider);
     AppUser user = AppUser();
     user.getUserData();
 
@@ -329,7 +341,7 @@ class _TweetCardState extends ConsumerState<TweetCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            (tweetProvider.repostToId != null && tweetProvider.currentUserRetweetId.toString() != "null")
+            (tweetProvider.repostToId != null)
                 ? Container(
                     padding: EdgeInsets.fromLTRB(40, 10, 10, 0),
                     child: Row(
