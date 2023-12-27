@@ -9,8 +9,7 @@ import 'package:qwitter_flutter_app/providers/user_profile_search_provider.dart'
 import 'package:qwitter_flutter_app/screens/searching/search_screen.dart';
 
 class SearchUserScreen extends ConsumerStatefulWidget {
-  const SearchUserScreen({super.key, this.token});
-  final String? token;
+  const SearchUserScreen({super.key});
 
   @override
   ConsumerState<SearchUserScreen> createState() => _SearchUserScreenState();
