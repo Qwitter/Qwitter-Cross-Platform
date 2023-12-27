@@ -11,6 +11,7 @@ import 'package:qwitter_flutter_app/components/basic_widgets/custom_icon_button.
 import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_outlined.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
+import 'package:qwitter_flutter_app/screens/authentication/login/forget_password_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/login/login_choose_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/add_birthdate_screen.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/select_languages_screen.dart';
@@ -44,7 +45,12 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     passController.clear();
   }
 
-  void forgotPassword() {}
+  void forgotPassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => const ForgetPasswordScreenEmail()),
+    );
+  }
 
   void signupApple() {
     Navigator.of(context).push(
@@ -104,9 +110,9 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
     // Sign it
     token = jwt.sign(SecretKey(private));
 
-    //print('Signed token: $token\n');
+    print('Signed token: $token\n');
     final Map<String, String> cookies = {
-      'qwitter_jwt': 'Bearer $token}',
+      'qwitter_jwt': 'Bearer $token',
     };
 
     final response = await http.post(
@@ -159,11 +165,13 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
               final userJson = jsonDecode(value.body);
               // //print(userJson);
               User user = User.fromJson(userJson["user"]);
-              final String rawCookies = (value.headers['set-cookie']) ?? '';
-              print("rawCookies: $rawCookies");
-              final String token =
-                  rawCookies.split(';')[0].split('=')[1].split('%20')[1];
+              // final String rawCookies = (value.headers['set-cookie']) ?? '';
+              // print("rawCookies: $rawCookies");
+              final token = jsonDecode(value.body)["token"];
+
               user.token = token;
+
+              print("Token : $token");
               // user.printUserData();
               final appUser = AppUser().copyUserData(user);
               appUser.saveUserData();
