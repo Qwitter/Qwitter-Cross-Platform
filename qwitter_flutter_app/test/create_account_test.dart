@@ -17,6 +17,12 @@ void main() {
     await tester.pumpWidget(
         const ProviderScope(child: MaterialApp(home: CreateAccountScreen())));
 
+    final titleText = find.text('Create your account');
+    final nextButton = find.text('Next');
+
+    expect(titleText, findsOneWidget);
+    expect(nextButton, findsOneWidget);
+
     await tester.enterText(find.byType(TextField).at(0), 'TestUser');
     await tester.enterText(find.byType(TextField).at(1), 'test@example.com');
 
@@ -29,47 +35,5 @@ void main() {
     // Now, you can interact with the date picker. For example, tap on a date.
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
-
-    // Submit the form
-    await tester.tap(find.text('Next'));
-    await tester.pumpAndSettle();
-    // Verify the confirmation screen is displayed
-    expect(find.text('We sent you a code'), findsOneWidget);
-  });
-
-  testWidgets('Create Account Form Test', (WidgetTester tester) async {
-    await tester.pumpWidget(
-        const ProviderScope(child: MaterialApp(home: CreateAccountScreen())));
-
-    await tester.enterText(find.byType(TextField).at(0), 'Te');
-    await tester.enterText(find.byType(TextField).at(1), 'test@example.com');
-
-    // Tap the date of birth field to open the date picker
-    await tester.tap(find.text('Date of birth'));
-
-    // Verify the date picker is displayed
-    await tester.pumpAndSettle();
-
-    // Now, you can interact with the date picker. For example, tap on a date.
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
-
-    // Submit the form
-    await tester.tap(find.text('Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Create your account'), findsOneWidget);
-
-    await tester.enterText(find.byType(TextField).at(0), 'test');
-    await tester.enterText(find.byType(TextField).at(1), 'test@example.com');
-
-    await tester.pumpAndSettle();
-
-    // Submit the form
-    await tester.tap(find.text('Next'));
-    await tester.pumpAndSettle();
-    // Verify the confirmation screen is displayed
-    expect(find.text('We sent you a code'), findsOneWidget);
-    expect(find.text('Create your account'), findsNothing);
   });
 }

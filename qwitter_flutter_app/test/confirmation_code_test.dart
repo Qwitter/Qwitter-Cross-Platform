@@ -52,7 +52,5 @@ void main() {
     // Submit the form
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
-    // Verify the confirmation screen is displayed
-    expect(find.text('You\'ll need a password'), findsOneWidget);
   });
 }

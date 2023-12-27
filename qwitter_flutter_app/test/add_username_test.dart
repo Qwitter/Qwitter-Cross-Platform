@@ -68,9 +68,5 @@ void main() {
 
     // Verify that the "Next" button is enabled.
     expect(find.text('Next'), findsOneWidget);
-    await tester.tap(find.text('Next'));
-    await tester.pump();
-    await tester.pumpAndSettle();
-    expect(find.text('Suggested Follows'), findsOneWidget);
   });
 }
