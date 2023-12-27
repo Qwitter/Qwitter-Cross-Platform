@@ -1,40 +1,40 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qwitter_flutter_app/components/tweet_card.dart';
 import 'package:qwitter_flutter_app/components/user_card.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/models/user.dart';
-import 'package:qwitter_flutter_app/providers/search_tweets_provider.dart';
 import 'package:qwitter_flutter_app/screens/searching/searching_user_screen.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 import 'package:http/http.dart' as http;
 
-class SearchScreen extends ConsumerStatefulWidget {
+class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.hastag, required this.query});
   final String query;
   final String hastag;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() {
+  State<SearchScreen> createState() {
     return _SearchScreenState();
   }
 }
 
-class _SearchScreenState extends ConsumerState<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen> {
   late int page;
   late ScrollController _scrollController;
   List? _usersList = null;
+  List<Tweet>? _tweets = null;
+
   @override
   void initState() {
     page = 1;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(searchTweetsProvider.notifier).reset();
       TweetsServices.getSearchTweets(widget.query, widget.hastag, page)
           .then((tweets) {
-        ref.read(searchTweetsProvider.notifier).updateSearchTweets(tweets);
+        setState(() {
+          _tweets = tweets;
+        });
       });
       searchUser(widget.query).then((value) {
         setState(() {
@@ -64,15 +64,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     print(page);
   }
 
-  Future<bool> _onPop() async {
-    ref.read(searchTweetsProvider.notifier).reset();
-    return true;
-  }
-
   Future<void> _fetchTweets(int page) async {
-    List<Tweet> newTweets =
-        await TweetsServices.getSearchTweets(widget.query, widget.hastag, page);
-    ref.read(searchTweetsProvider.notifier).updateSearchTweets(newTweets);
+    TweetsServices.getSearchTweets(widget.query, widget.hastag, page)
+        .then((tweets) {
+      setState(() {
+        if (_tweets != null) {
+          _tweets!.addAll(tweets);
+        } else {
+          _tweets = tweets;
+        }
+      });
+    });
   }
 
   Future<List<dynamic>> searchUser(String data) async {
@@ -99,58 +101,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
   }
 
-  Future<void> _toggleFollowState(User user) async {
-    String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
-    Uri url = Uri.parse('$_baseUrl/api/v1/user/follow/${user.username}');
-    AppUser appUser = AppUser();
 
-    final Map<String, String> cookies = {
-      'qwitter_jwt': 'Bearer ${appUser.getToken}',
-    };
-    if (user.isFollowed == false) {
-      http.Response response = await http.post(url, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'authorization': 'Bearer ${appUser.token}',
-        'Cookie': cookies.entries
-            .map((entry) => '${entry.key}=${entry.value}')
-            .join('; '),
-      });
-
-      if (response.statusCode == 200) {
-        print("follow done successfully");
-        setState(() {
-          user.isFollowed = true;
-        });
-      } else {
-        print(
-            "an error occured when trying to follow ${user.username} and the status code : ${response.statusCode}");
-      }
-    } else {
-      http.Response response = await http.delete(url, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'authorization': 'Bearer ${appUser.token}',
-        'Cookie': cookies.entries
-            .map((entry) => '${entry.key}=${entry.value}')
-            .join('; '),
-      });
-
-      if (response.statusCode == 200) {
-        print("unfollow done");
-        setState(() {
-          user.isFollowed = false;
-        });
-      } else {
-        print(
-            "an error occured when trying to unfollow ${user.username} and the status code : ${response.statusCode}");
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    List<Tweet>? tweets = ref.watch(searchTweetsProvider);
 
     return DefaultTabController(
       length: 2,
@@ -165,7 +119,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 size: 30,
               ),
               onPressed: () {
-                ref.read(searchTweetsProvider.notifier).reset();
                 Navigator.of(context).pop();
               },
             ),
@@ -243,53 +196,57 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
           body: TabBarView(
             children: [
-              (tweets != null)
-                  ? WillPopScope(
-                      onWillPop: _onPop,
-                      child: CustomScrollView(
-                          controller: _scrollController,
-                          slivers: [
-                            SliverList.builder(
-                              itemBuilder: (context, index) {
-                                return TweetCard(
-                                  tweet: tweets[index],
-                                );
-                              },
-                              itemCount: tweets.length,
-                            )
-                          ]),
-                    )
+              (_tweets != null)
+                  ? CustomScrollView(controller: _scrollController, slivers: [
+                      SliverList.builder(
+                        itemBuilder: (context, index) {
+                          return TweetCard(
+                            tweet: _tweets![index],
+                          );
+                        },
+                        itemCount: _tweets!.length,
+                      )
+                    ])
                   : const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(),
-                      ),
+                  child: SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      //// need more work
+                      color: Colors.white,
+                      backgroundColor: Colors.blue,
                     ),
-              (_usersList != null)
+                  ),
+                ),
+              ( _usersList != null)
                   ? CustomScrollView(
                       slivers: [
                         SliverList.builder(
                           itemBuilder: (context, index) {
                             return Container(
-                              padding: EdgeInsets.only(left:15,right: 15),
+                                padding: EdgeInsets.only(left: 15, right: 15),
                                 child: UserCard(
-                              isFollowed:
-                                  _usersList![index]["isFollowing"] ?? false,
-                              userData: _usersList![index],
-                            ));
+                                  isFollowed: _usersList![index]
+                                          ["isFollowing"] ??
+                                      false,
+                                  userData: _usersList![index],
+                                ));
                           },
                           itemCount: _usersList!.length,
                         )
                       ],
                     )
                   : const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(),
-                      ),
+                  child: SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      //// need more work
+                      color: Colors.white,
+                      backgroundColor: Colors.blue,
                     ),
+                  ),
+                ),
             ],
           )),
     );
