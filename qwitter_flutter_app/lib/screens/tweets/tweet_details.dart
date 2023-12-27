@@ -29,6 +29,8 @@ class TweetDetailsScreen extends ConsumerStatefulWidget {
 }
 
 class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
+  late GlobalKey firstTweetKey;
+  late GlobalKey secondTweetKey;
   TextEditingController textEditingController = TextEditingController();
   final focusNode = FocusNode();
   VoidCallback? buttonFunction;
@@ -103,7 +105,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
   @override
   void initState() {
     super.initState();
-
+    firstTweetKey = GlobalKey();
+    secondTweetKey = GlobalKey();
     print("Token : " + AppUser().token.toString());
     TweetsServices.getTweetReplies(widget.tweet).then((replies) {
       print("reppp: " + replies.length.toString());
@@ -114,17 +117,20 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
       //print(error);
     });
   }
+
   void _makeRepost(tweetProvider) {
     setState(() {
       // ref.read(tweetProvider.provider.notifier).toggleRetweet();
       String retweeted_id = TweetsServices.makeRepost(ref, tweetProvider);
       tweetProvider.currentUserRetweetId = retweeted_id;
       tweetProvider.retweetsCount = tweetProvider.retweetsCount! + 1;
-      TweetsServices.getTimeline(1).then((tweets) => ref.read(timelineTweetsProvider.notifier).setTimelineTweets(tweets));
-      TweetsServices.getForYou(1).then((tweets) => ref.read(forYouTweetsProvider.notifier).setForYouTweets(tweets));
+      TweetsServices.getTimeline(1).then((tweets) =>
+          ref.read(timelineTweetsProvider.notifier).setTimelineTweets(tweets));
+      TweetsServices.getForYou(1).then((tweets) =>
+          ref.read(forYouTweetsProvider.notifier).setForYouTweets(tweets));
     });
-    
   }
+
   void _openRepostModal() {
     showModalBottomSheet(
       context: context,
@@ -162,13 +168,16 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                           TweetsServices.deleteRetweet(
                               ref, context, widget.tweet);
                           setState(() {
-                            ref.read(timelineTweetsProvider.notifier).removeTweet(widget.tweet);
-                            ref.read(forYouTweetsProvider.notifier).removeTweet(widget.tweet);
+                            ref
+                                .read(timelineTweetsProvider.notifier)
+                                .removeTweet(widget.tweet);
+                            ref
+                                .read(forYouTweetsProvider.notifier)
+                                .removeTweet(widget.tweet);
                           });
                         } else {
                           Navigator.pop(context);
                           _makeRepost(widget.tweet);
-                          
                         }
                       },
                       icon: Icon(
@@ -227,6 +236,36 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
       print('Refreshed!');
       print("token : " + AppUser().token.toString());
     });
+  }
+
+  int getInitialVerticalDistance() {
+    final RenderBox? firstBox =
+        firstTweetKey.currentContext?.findRenderObject() as RenderBox?;
+    final Offset? firstTweetPosition =
+        firstBox != null ? firstBox.localToGlobal(Offset.zero) : null;
+
+    final double verticalDistance = firstTweetPosition?.dy ?? 0;
+    return verticalDistance.toInt();
+  }
+
+  int calculateVerticalDistance() {
+    final RenderBox? firstBox =
+        firstTweetKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? secondBox =
+        secondTweetKey.currentContext?.findRenderObject() as RenderBox?;
+
+    final Offset? firstTweetPosition =
+        firstBox != null ? firstBox.localToGlobal(Offset.zero) : null;
+    final Offset? secondTweetPosition =
+        secondBox != null ? secondBox.localToGlobal(Offset.zero) : null;
+
+    if (firstTweetPosition == null || secondTweetPosition == null) {
+      return 0; // Handle case where one or both positions are unavailable
+    }
+
+    final double verticalDistance =
+        (secondTweetPosition.dy - firstTweetPosition.dy).abs();
+    return verticalDistance.toInt();
   }
 
   void _opentweetMenuModal(Tweet tweetProvider) {
@@ -327,26 +366,27 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
 
   Widget build(BuildContext context) {
     final tweetProvider = ref.watch(widget.tweet.provider);
+    final lineHeight = calculateVerticalDistance().toDouble();
     textEditingController.addListener(() {
       if (textEditingController.text.isEmpty) {
         setState(() {
           buttonFunction = null;
         });
       } else {
-          setState(() {
+        setState(() {
           buttonFunction = () {
-              TweetsServices.makeReply(
-                      ref, tweetProvider, textEditingController.text)
-                  .then((tweet) {
-                final t = Tweet.fromJson(tweet['tweet']);
-                tweetProvider.replies = [t,...tweetProvider.replies];
-                ref.read(tweetProvider.provider.notifier).setReplies([t]);
-                // tweetProvider.repliesCount = tweetProvider.repliesCount ?? 0 +  1;
-              });
+            TweetsServices.makeReply(
+                    ref, tweetProvider, textEditingController.text)
+                .then((tweet) {
+              final t = Tweet.fromJson(tweet['tweet']);
+              tweetProvider.replies = [t, ...tweetProvider.replies];
+              ref.read(tweetProvider.provider.notifier).setReplies([t]);
+              // tweetProvider.repliesCount = tweetProvider.repliesCount ?? 0 +  1;
+            });
 
-              textEditingController.text = "";
+            textEditingController.text = "";
           };
-          });
+        });
       }
     });
     print(tweetProvider.id);
@@ -375,10 +415,121 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                 ListView.builder(
                   itemBuilder: (ctx, index) {
                     print("replies" + tweetProvider.replies.toString());
+                    if (tweetProvider.replyToId != null &&
+                        tweetProvider.repliedToTweet != null) {
+                      print("object");
+                      print(tweetProvider.repliedToTweet!.text);
+                    }
                     return index == 0
                         ? Column(
                             children: [
+                              tweetProvider.replyToId != null
+                                  ? tweetProvider.repliedToTweet != null
+                                      ? Container(
+                                          key: firstTweetKey,
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          // alignment: Alignment.topLeft,
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  TweetAvatar(
+                                                    avatar: tweetProvider
+                                                        .repliedToTweet!
+                                                        .user!
+                                                        .profilePicture!
+                                                        .path,
+                                                    username: tweetProvider
+                                                        .repliedToTweet!
+                                                        .user!
+                                                        .username!,
+                                                  ),
+                                                  Expanded(
+                                                    child:
+                                                        TweetHeader.stretched(
+                                                      tweet: tweetProvider
+                                                          .repliedToTweet!,
+                                                      opentweetMenuModal: () {
+                                                        _opentweetMenuModal(
+                                                            tweetProvider
+                                                                .repliedToTweet!);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            20, 0, 0, 0),
+                                                    child: Container(
+                                                      width: 3,
+                                                      height: lineHeight > 100.0
+                                                          ? lineHeight - 100.0
+                                                          : lineHeight,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey[600],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              20, 0, 0, 0),
+                                                      child: TweetBody(
+                                                        tweet: widget.tweet
+                                                            .repliedToTweet!,
+                                                        pushMediaViewerFunc:
+                                                            pushMediaViewer,
+                                                        stretched: true,
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          padding: EdgeInsets.fromLTRB(
+                                              20, 10, 20, 0),
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            alignment: Alignment.center,
+                                            padding: EdgeInsets.fromLTRB(
+                                                20, 10, 20, 10),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10)),
+                                              color: Colors.blueGrey[900],
+                                            ),
+                                            child: Text(
+                                              "The original tweet was deleted",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        )
+                                  : SizedBox(),
+                              SizedBox(
+                                height:
+                                    tweetProvider.replyToId != null && tweetProvider.repliedToTweet != null ? 20 : 0,
+                              ),
                               Container(
+                                key: secondTweetKey,
                                 // alignment: Alignment.topLeft,
                                 alignment: Alignment.center,
                                 child: Column(
@@ -914,3 +1065,30 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     );
   }
 }
+
+// class TweetsConnectorPainter extends CustomPainter {
+//   final int y1, y2;
+//   TweetsConnectorPainter({required this.y1, required this.y2});
+
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     print("y1");
+//     print(y1.toDouble());
+//     print("y2");
+//     print(y2.toDouble());
+//     final paint = Paint()
+//       ..color = Colors.grey // Set the line color
+//       ..strokeWidth = 2; // Set the line thickness
+
+//     final startPoint = Offset(30, -20); // Set the starting point of the line
+//     final endPoint = Offset(
+//         30, (y2).toDouble()); // Set the ending point of the line
+
+//     canvas.drawLine(startPoint, endPoint, paint); // Draw the line
+//   }
+
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) {
+//     return false;
+//   }
+// }
