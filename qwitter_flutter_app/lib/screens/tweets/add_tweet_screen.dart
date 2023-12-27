@@ -91,7 +91,9 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseFromStream = await http.Response.fromStream(response);
         final responseBody = jsonDecode(responseFromStream.body);
-        ref.read(timelineTweetsProvider.notifier).setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
+        ref
+            .read(timelineTweetsProvider.notifier)
+            .setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
         print("Successfully uploaded tweet: $responseBody");
         return true;
       } else {
@@ -137,20 +139,23 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Discard Tweet?'),
+              title: const Text('Discard Tweet?',
+                  style: TextStyle(color: Colors.white)),
               content:
                   const Text('Are you sure you want to discard this tweet?'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('Cancel'),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.white)),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, 'Discard');
                     Navigator.pop(context);
                   },
-                  child: const Text('Discard'),
+                  child: const Text('Discard',
+                      style: TextStyle(color: Colors.red)),
                 ),
               ],
             ),
