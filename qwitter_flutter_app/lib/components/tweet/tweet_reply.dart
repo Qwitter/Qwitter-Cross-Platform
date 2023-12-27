@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 
 class TweetReply extends StatelessWidget {
   final String tweetReplyTo;
@@ -41,7 +42,14 @@ class TweetReply extends StatelessWidget {
                                 fontWeight: FontWeight.w400),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfileDetailsScreen(
+                                    username: tweetReplytoUsername),
+                              ));
+                        },
                       ),
                     ],
                   ),
