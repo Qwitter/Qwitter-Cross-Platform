@@ -101,11 +101,13 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
         final responseBody = jsonDecode(responseFromStream.body);
         print("Error uploading tweet: $responseBody");
         print(response.statusCode);
+        ref.read(tweetImagesProvider.notifier).clearTweetImages();
         return false;
       }
     } catch (e, stackTrace) {
       print("Error uploading profile pictures: $e");
       print(stackTrace);
+      ref.read(tweetImagesProvider.notifier).clearTweetImages();
       return false;
     }
   }
@@ -132,7 +134,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
   @override
   Widget build(BuildContext context) {
     final tweetImages = ref.watch(tweetImagesProvider);
-
+    print("Tweet images: $tweetImages");
     return WillPopScope(
       onWillPop: () {
         if (_tweetController.text.isNotEmpty) {
@@ -210,6 +212,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
                 onPressed: () {
                   if (_tweetController.text.isNotEmpty) {
                     addTweet(tweetImages).then((value) {
+                      ref.read(tweetImagesProvider.notifier).clearTweetImages();
                       if (value) {
                         Fluttertoast.showToast(
                             msg: 'Tweet posted successfully!',

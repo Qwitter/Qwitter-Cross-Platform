@@ -10,6 +10,10 @@ class TweetImagesNotifier extends StateNotifier<List<File>?> {
   void setTweetImages(List<File> images) {
     state = images;
   }
+
+  void clearTweetImages() {
+    state = null;
+  }
 }
 
 final tweetImagesProvider =
