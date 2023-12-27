@@ -5,7 +5,6 @@ import 'package:qwitter_flutter_app/components/basic_widgets/secondary_button_ou
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/user.dart';
-import 'package:qwitter_flutter_app/providers/profile_tweets_provider.dart';
 import 'package:qwitter_flutter_app/providers/user_profile_search_provider.dart';
 
 class ConversationUserCard extends StatefulWidget {
