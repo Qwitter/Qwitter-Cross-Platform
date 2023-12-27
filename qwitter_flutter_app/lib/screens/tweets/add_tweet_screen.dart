@@ -30,7 +30,7 @@ class AddTweetScreen extends ConsumerStatefulWidget {
 
 class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
   final TextEditingController _tweetController = TextEditingController();
-
+  bool isPressed = false;
   Future<bool> addTweet(List<File>? imageFiles) async {
     final url = Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/tweets');
 
@@ -51,7 +51,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
 
     request.headers.addAll(headers);
     Map<String, String> fields = {
-      "text": _tweetController.text.toString(),
+      "text": _tweetController.text.trim().toString(),
       "source": Platform.isAndroid ? "Android" : "iOS",
       "coordinates": "0,0",
       "replyToTweetId": widget.replyToTweetId ?? "",
@@ -91,7 +91,9 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseFromStream = await http.Response.fromStream(response);
         final responseBody = jsonDecode(responseFromStream.body);
-        ref.read(timelineTweetsProvider.notifier).setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
+        ref
+            .read(timelineTweetsProvider.notifier)
+            .setTimelineTweets([Tweet.fromJson(responseBody['tweet'])]);
         print("Successfully uploaded tweet: $responseBody");
         return true;
       } else {
@@ -99,11 +101,13 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
         final responseBody = jsonDecode(responseFromStream.body);
         print("Error uploading tweet: $responseBody");
         print(response.statusCode);
+        ref.read(tweetImagesProvider.notifier).clearTweetImages();
         return false;
       }
     } catch (e, stackTrace) {
       print("Error uploading profile pictures: $e");
       print(stackTrace);
+      ref.read(tweetImagesProvider.notifier).clearTweetImages();
       return false;
     }
   }
@@ -130,27 +134,30 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
   @override
   Widget build(BuildContext context) {
     final tweetImages = ref.watch(tweetImagesProvider);
-
+    print("Tweet images: $tweetImages");
     return WillPopScope(
       onWillPop: () {
         if (_tweetController.text.isNotEmpty) {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Discard Tweet?'),
+              title: const Text('Discard Tweet?',
+                  style: TextStyle(color: Colors.white)),
               content:
                   const Text('Are you sure you want to discard this tweet?'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('Cancel'),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.white)),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, 'Discard');
                     Navigator.pop(context);
                   },
-                  child: const Text('Discard'),
+                  child: const Text('Discard',
+                      style: TextStyle(color: Colors.red)),
                 ),
               ],
             ),
@@ -203,8 +210,12 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
                 key: const Key('postTweetButton'),
                 text: 'Post',
                 onPressed: () {
-                  if (_tweetController.text.isNotEmpty) {
+                  if (isPressed) return;
+                  if (_tweetController.text.trim().isNotEmpty ||
+                      (tweetImages != null && tweetImages.isNotEmpty)) {
+                    isPressed = true;
                     addTweet(tweetImages).then((value) {
+                      ref.read(tweetImagesProvider.notifier).clearTweetImages();
                       if (value) {
                         Fluttertoast.showToast(
                             msg: 'Tweet posted successfully!',
