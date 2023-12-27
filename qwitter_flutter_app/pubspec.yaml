@@ -94,6 +94,7 @@ flutter:
     - assets/images/x_logo.png
     - assets/images/def.jpg
     - assets/
+    - assets/images/qwitter.png
     - assets/images/def_banner.png
     # - assets/private.txt
     - assets/images/abo.jpeg
