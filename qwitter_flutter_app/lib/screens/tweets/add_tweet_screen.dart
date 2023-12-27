@@ -51,7 +51,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
 
     request.headers.addAll(headers);
     Map<String, String> fields = {
-      "text": _tweetController.text.toString(),
+      "text": _tweetController.text.trim().toString(),
       "source": Platform.isAndroid ? "Android" : "iOS",
       "coordinates": "0,0",
       "replyToTweetId": widget.replyToTweetId ?? "",
@@ -211,7 +211,7 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
                 text: 'Post',
                 onPressed: () {
                   if (isPressed) return;
-                  if (_tweetController.text.isNotEmpty ||
+                  if (_tweetController.text.trim().isNotEmpty ||
                       (tweetImages != null && tweetImages.isNotEmpty)) {
                     isPressed = true;
                     addTweet(tweetImages).then((value) {
