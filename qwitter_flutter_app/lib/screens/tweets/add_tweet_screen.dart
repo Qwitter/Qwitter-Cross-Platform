@@ -30,7 +30,7 @@ class AddTweetScreen extends ConsumerStatefulWidget {
 
 class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
   final TextEditingController _tweetController = TextEditingController();
-
+  bool isPressed = false;
   Future<bool> addTweet(List<File>? imageFiles) async {
     final url = Uri.parse('http://back.qwitter.cloudns.org:3000/api/v1/tweets');
 
@@ -210,7 +210,10 @@ class _AddTweetScreenState extends ConsumerState<AddTweetScreen> {
                 key: const Key('postTweetButton'),
                 text: 'Post',
                 onPressed: () {
-                  if (_tweetController.text.isNotEmpty) {
+                  if (isPressed) return;
+                  if (_tweetController.text.isNotEmpty ||
+                      (tweetImages != null && tweetImages.isNotEmpty)) {
+                    isPressed = true;
                     addTweet(tweetImages).then((value) {
                       ref.read(tweetImagesProvider.notifier).clearTweetImages();
                       if (value) {
