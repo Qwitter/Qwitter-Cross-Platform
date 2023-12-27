@@ -30,6 +30,7 @@ class Tweet {
   String? replyToId;
   String? repostToId;
   String? quoteToId;
+  Tweet? repliedToTweet;
   List<String>? hashtags;
   List<String>? mentions;
   List<String>? urls;
@@ -44,6 +45,7 @@ class Tweet {
     required this.user,
     required this.retweetUser,
     required this.replyUser,
+    required this.repliedToTweet,
     required this.source,
     required this.coordinates,
     required this.repliesCount,
@@ -84,9 +86,11 @@ class Tweet {
               ? User.fromJson(json['author'])
               : null,
       replyUser:
-          json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'].containsKey('author')
+          json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null && json['replyToTweet'].containsKey('author')
               ? User.fromJson(json["replyToTweet"]['author'])
               : null,
+      repliedToTweet: json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null ?
+          Tweet.fromJson(json['replyToTweet']) : null,
       source: json['retweetedId'] != null
           ? json["retweetedTweet"]["source"]
           : json['source'],
@@ -108,7 +112,7 @@ class Tweet {
       text: json['retweetedId'] != null
           ? json["retweetedTweet"]['text']
           : json['text'],
-      replyToId: json['replyToTweetId'],
+      replyToId: json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null && json['replyToTweet'].containsKey('author') ? json['replyToTweetId'] : null,
       repostToId: json['retweetedId'],
       quoteToId: json['qouteTweetedId'],
       hashtags: json['retweetedId'] != null

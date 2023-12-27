@@ -244,7 +244,8 @@ class _TweetVideoState extends State<TweetVideo> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        SizedBox(
+                                        Container(
+                                          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
                                           height: MediaQuery.of(context)
                                                   .size
                                                   .width /
@@ -257,7 +258,8 @@ class _TweetVideoState extends State<TweetVideo> {
                                         )
                                       ],
                                     )
-                                  : SizedBox(
+                                  : Container(
+                                      
                                       width: double.infinity,
                                       child:
                                           VideoPlayer(_videoPlayerController),

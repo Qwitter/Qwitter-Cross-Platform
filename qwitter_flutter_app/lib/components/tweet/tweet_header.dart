@@ -231,7 +231,7 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
         alignment: Alignment.centerRight,
         child: Column(
           children: [
-            Container(
+            Expanded(
               child: Row(
                 children: [
                   if (appUser.username != tweetProvider.user!.username!)

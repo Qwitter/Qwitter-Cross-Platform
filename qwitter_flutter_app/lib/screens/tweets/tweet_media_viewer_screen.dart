@@ -4,6 +4,8 @@ import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/components/tweet/tweet_video.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
+import 'package:qwitter_flutter_app/providers/for_you_tweets_provider.dart';
+import 'package:qwitter_flutter_app/providers/timeline_tweets_provider.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweet_details.dart';
 import 'package:qwitter_flutter_app/services/tweets_services.dart';
 
@@ -31,7 +33,17 @@ class _TweetMediaViewerScreenState
   TextEditingController textEditingController = TextEditingController();
 
   final focusNode = FocusNode();
-
+  void _makeRepost(tweetProvider) {
+    setState(() {
+      // ref.read(tweetProvider.provider.notifier).toggleRetweet();
+      String retweeted_id = TweetsServices.makeRepost(ref, tweetProvider);
+      tweetProvider.currentUserRetweetId = retweeted_id;
+      tweetProvider.retweetsCount = tweetProvider.retweetsCount! + 1;
+      TweetsServices.getTimeline(1).then((tweets) => ref.read(timelineTweetsProvider.notifier).setTimelineTweets(tweets));
+      TweetsServices.getForYou(1).then((tweets) => ref.read(forYouTweetsProvider.notifier).setForYouTweets(tweets));
+    });
+    
+  }
   void _openRepostModal(tweetProvider) {
     showModalBottomSheet(
       context: context,
@@ -65,10 +77,18 @@ class _TweetMediaViewerScreenState
                   children: <Widget>[
                     TextButton.icon(
                       onPressed: () {
-                        Navigator.pop(context);
-                        setState(() {
-                          TweetsServices.makeRepost(ref, tweetProvider);
-                        });
+                        if (widget.tweet.currentUserRetweetId != null) {
+                          TweetsServices.deleteRetweet(
+                              ref, context, widget.tweet);
+                          setState(() {
+                            ref.read(timelineTweetsProvider.notifier).removeTweet(widget.tweet);
+                            ref.read(forYouTweetsProvider.notifier).removeTweet(widget.tweet);
+                          });
+                        } else {
+                          Navigator.pop(context);
+                          _makeRepost(widget.tweet);
+                          
+                        }
                       },
                       icon: Icon(
                         Icons.repeat,
@@ -76,16 +96,24 @@ class _TweetMediaViewerScreenState
                         color: Colors.white,
                       ),
                       label: Text(
-                        tweetProvider.currentUserRetweetId ? "Undo Repost" : "Repost",
+                        tweetProvider.currentUserRetweetId != null ? "Undo Repost" : "Repost",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                     ),
                     TextButton.icon(
                       onPressed: () {
-                        Navigator.pop(context);
-                        setState(() {
-                          TweetsServices.makeRepost(ref, tweetProvider);
-                        });
+                        if (widget.tweet.currentUserRetweetId != null) {
+                          TweetsServices.deleteRetweet(
+                              ref, context, widget.tweet);
+                          setState(() {
+                            ref.read(timelineTweetsProvider.notifier).removeTweet(widget.tweet);
+                            ref.read(forYouTweetsProvider.notifier).removeTweet(widget.tweet);
+                          });
+                        } else {
+                          Navigator.pop(context);
+                          _makeRepost(widget.tweet);
+                          
+                        }
                       },
                       icon: Icon(
                         Icons.mode_edit_outlined,
