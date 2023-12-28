@@ -163,7 +163,7 @@ class Tweet {
               ? json['entities']['media'].map((media) =>
                   Media(media['value'] as String, media['type'] as String))
               : []),
-      isLiked: json["liked"],
+      isLiked: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null ? json['retweetedTweet']["liked"] : json["liked"] ,
       isRetweeted: json['isRetweeted'],
       isQuoted: false,
       isBookmarked: false,

@@ -28,8 +28,7 @@ class QwitterBottomNavigationBar extends StatefulWidget {
 
 class _QwitterBottomNavigationBarState
     extends State<QwitterBottomNavigationBar> {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final socketManager = SocketManager();
   int currentPageIndex = 0;
@@ -51,49 +50,6 @@ class _QwitterBottomNavigationBarState
     super.dispose();
   }
 
-  Future<void> displayNotification(QwitterNotification notification) async {
-    AppUser user = AppUser();
-    user.getUserData();
-    String text = notification.type == NotificationType.follow_type
-        ? "New Follow"
-        : notification.type == NotificationType.login_type
-            ? "Recent Login"
-            : notification.type == NotificationType.like_type
-                ? "Got New Likes"
-                : notification.type == NotificationType.retweet_type
-                    ? "New Retweet"
-                    : " ";
-    String desc = notification.type == NotificationType.follow_type
-        ? "${notification.user!.fullName!} followed you"
-        : notification.type == NotificationType.login_type
-            ? "There was a recent login to your account @${user.username ?? ''}"
-            : notification.type == NotificationType.like_type
-                ? "${notification.user!.fullName!} liked your tweet"
-                : notification.type == NotificationType.retweet_type
-                    ? "${notification.user!.fullName!} reposted your post"
-                    : " ";
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'qwitter_channel', // Replace with your own channel ID
-      'Qwitter', // Replace with your own channel name
-      channelDescription:
-          'Qwitter App Notification', // Replace with your own channel description
-      importance: Importance.max,
-      priority: Priority.high,
-      icon: 'qwitter',
-    );
-
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      text,
-      desc,
-      platformChannelSpecifics,
-      payload: 'item x',
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
