@@ -60,7 +60,11 @@ class QwitterNotification{
     if(json['type'] == 'like'){
       tweetText = json['like']['text'].toString();
     }else if(json['type'] == 'retweet'){
-      tweetText = json['retweet']['retweetedTweet']['text'].toString();
+      if (json['retweet'].containsKey('retweetedTweet') && json['retweet']['retweetedTweet'] != null) {
+        tweetText = json['retweet']['retweetedTweet']['text'].toString();
+      } else {
+        tweetText = "OLD DELETED TWEET";
+      }
     }else{
       tweetText = "";
     }
