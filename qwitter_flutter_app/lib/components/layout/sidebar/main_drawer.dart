@@ -301,7 +301,7 @@ class MainDrawer extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
-              _openChangeThemeOverLay(context);
+              // _openChangeThemeOverLay(context);
             },
             icon: const Icon(
               Icons.brightness_4_outlined,

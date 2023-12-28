@@ -94,6 +94,7 @@ class Tweet {
       repliedToTweet: json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null ?
           Tweet.fromJson(json['replyToTweet']) : null,
       source: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
+
           ? json["retweetedTweet"]["source"]
           : json['source'],
       coordinates: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
