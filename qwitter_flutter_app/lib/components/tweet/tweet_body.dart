@@ -28,8 +28,8 @@ class _TweetBodyState extends ConsumerState<TweetBody> {
     final List<InlineSpan> textWithButtons = [];
     final RegExp wordBoundaryRegex = RegExp(r'\s+');
     final List<String> splitBySpace = text.split(wordBoundaryRegex);
-    final RegExp mentionRegex = RegExp(r'@\w+');
-    final RegExp hashtagRegex = RegExp(r'#\w+');
+    final RegExp mentionRegex = RegExp(r'@[\w\u0600-\u06FF]+');
+    final RegExp hashtagRegex = RegExp(r'#[\w\u0600-\u06FF]+');
 
     for (String segment in splitBySpace) {
       if (mentionRegex.hasMatch(segment)) {

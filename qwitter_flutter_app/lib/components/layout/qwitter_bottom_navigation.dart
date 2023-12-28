@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:bootstrap_icons/bootstrap_icons.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:qwitter_flutter_app/components/layout/qwitter_app_bar.dart';
 import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/models/conversation_data.dart';
+import 'package:qwitter_flutter_app/models/notification.dart';
 import 'package:qwitter_flutter_app/screens/messaging/conversations_screen.dart';
 import 'package:qwitter_flutter_app/screens/notifications/notifications_screen.dart';
 import 'package:qwitter_flutter_app/screens/searching/search_screen.dart';
-import 'package:qwitter_flutter_app/screens/searching/searching_user_screen.dart';
+import 'package:qwitter_flutter_app/utils/enums.dart';
 import 'package:qwitter_flutter_app/screens/trends/trends_screen.dart';
 // import 'package:qwitter_flutter_app/screens/notifications/notifications_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
+import 'package:qwitter_flutter_app/services/socket_manager.dart';
 
 class QwitterBottomNavigationBar extends StatefulWidget {
   QwitterBottomNavigationBar({
@@ -25,7 +28,29 @@ class QwitterBottomNavigationBar extends StatefulWidget {
 
 class _QwitterBottomNavigationBarState
     extends State<QwitterBottomNavigationBar> {
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final socketManager = SocketManager();
   int currentPageIndex = 0;
+
+  @override
+  void initState() {
+    AppUser user = AppUser();
+    user.getUserData();
+    super.initState();
+    if (!socketManager.isConnected) {
+      socketManager.initializeSocket();
+    }
+    // socketManager.initializeSocket();
+  }
+
+  @override
+  void dispose() {
+    socketManager.disposeSocket();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

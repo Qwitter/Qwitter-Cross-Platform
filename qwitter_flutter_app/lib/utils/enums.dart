@@ -6,5 +6,6 @@ enum NotificationType {
   reply_type,
   follow_type,
   mention_type,
-  login_type
+  login_type,
+  post_type
 }
