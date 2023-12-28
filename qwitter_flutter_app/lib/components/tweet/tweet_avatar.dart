@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:qwitter_flutter_app/components/profile/profile_details_screen.dart';
-import 'package:qwitter_flutter_app/models/app_user.dart';
 
 class TweetAvatar extends StatelessWidget {
   final String username;
   final String avatar;
   final double radius;
 
-  TweetAvatar(
+  const TweetAvatar(
       {Key? key,
       required this.avatar,
       this.radius = 20,
@@ -47,7 +46,7 @@ class TweetAvatar extends StatelessWidget {
                   return Center(
                     child: Text(
                       username[0].toUpperCase(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,

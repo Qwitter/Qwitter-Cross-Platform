@@ -1,10 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_avatar.dart';
-import 'package:qwitter_flutter_app/components/tweet/tweet_header.dart';
 import 'package:qwitter_flutter_app/models/tweet.dart';
-import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -17,8 +14,8 @@ class TweetVideo extends StatefulWidget {
   final Tweet tweet;
   final List<Widget> tweetSection;
 
-  TweetVideo(
-      {required this.video,
+  const TweetVideo(
+      {super.key, required this.video,
       required this.aspectRatio,
       required this.height,
       required this.tweet,
@@ -42,7 +39,7 @@ class _TweetVideoState extends State<TweetVideo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("vid:" + widget.video);
+    // print("vid:" + widget.video);
     _videoPlayerController = VideoPlayerController.networkUrl(
       Uri.parse(widget.video),
       videoPlayerOptions: VideoPlayerOptions(
@@ -52,8 +49,8 @@ class _TweetVideoState extends State<TweetVideo> {
 
     _initializeVideoPlayerFuture =
         _videoPlayerController.initialize().then((_) {
-      print("autoPlay:" + widget.autoPlay.toString());
-      print("vid DS:" + _videoPlayerController.dataSource.toString());
+      // print("autoPlay:" + widget.autoPlay.toString());
+      // print("vid DS:" + _videoPlayerController.dataSource.toString());
 
       if (widget.autoPlay) {
         _videoPlayerController.play();
@@ -73,7 +70,7 @@ class _TweetVideoState extends State<TweetVideo> {
             _videoPlayerController.value.position != null) {
           Duration remaining = _videoPlayerController.value.duration -
               _videoPlayerController.value.position;
-          print("rem: " + remaining.inSeconds.toString());
+          // print("rem: " + remaining.inSeconds.toString());
           setState(() {
             _sliderMaxValue =
                 _videoPlayerController.value.duration.inSeconds.toDouble();
@@ -90,8 +87,8 @@ class _TweetVideoState extends State<TweetVideo> {
         });
       });
     }).onError((error, stackTrace) {
-      print("error: " + error.toString());
-      print("stackTrace: " + stackTrace.toString());
+      // print("error: " + error.toString());
+      // print("stackTrace: " + stackTrace.toString());
     });
     // _videoPlayerController.addListener(() {
 
@@ -196,23 +193,23 @@ class _TweetVideoState extends State<TweetVideo> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        "stats: aspect" + _videoPlayerController.value.aspectRatio.toString());
-    print("stats: width" + MediaQuery.of(context).size.width.toString());
-    print("stats: height" +
-        (MediaQuery.of(context).size.width /
-                _videoPlayerController.value.aspectRatio)
-            .toString());
+    // print(
+    //     "stats: aspect" + _videoPlayerController.value.aspectRatio.toString());
+    // print("stats: width" + MediaQuery.of(context).size.width.toString());
+    // print("stats: height" +
+    //     (MediaQuery.of(context).size.width /
+    //             _videoPlayerController.value.aspectRatio)
+    //         .toString());
     if (widget.video.isNotEmpty && _videoPlayerController != null) {
       return FutureBuilder(
         future: _initializeVideoPlayerFuture,
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return Container(
+            return SizedBox(
               child: Stack(
                 children: [
                   !widget.fullScreen
-                      ? Container(
+                      ? SizedBox(
                           width: double.infinity,
                           child: VisibilityDetector(
                             key: Key(widget.video),
@@ -225,7 +222,7 @@ class _TweetVideoState extends State<TweetVideo> {
                                 _videoPlayerController.pause();
                               }
                             },
-                            child: Container(
+                            child: SizedBox(
                               // width: double.infinity,
                               height: widget.height,
                               child: AspectRatio(
@@ -235,7 +232,7 @@ class _TweetVideoState extends State<TweetVideo> {
                             ),
                           ),
                         )
-                      : Container(
+                      : SizedBox(
                           child: Column(
                           children: [
                             Expanded(
@@ -258,7 +255,7 @@ class _TweetVideoState extends State<TweetVideo> {
                                         )
                                       ],
                                     )
-                                  : Container(
+                                  : SizedBox(
                                       
                                       width: double.infinity,
                                       child:
@@ -282,12 +279,12 @@ class _TweetVideoState extends State<TweetVideo> {
                                 decoration: BoxDecoration(
                                   color: Colors.black.withOpacity(0.5),
                                 ),
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
                                   children: [
                                     GestureDetector(
                                       onTap: _toggleVideoPlayback,
-                                      child: Container(
+                                      child: SizedBox(
                                         child: Center(
                                           child: Icon(
                                             _videoPlayerController
@@ -309,7 +306,7 @@ class _TweetVideoState extends State<TweetVideo> {
                                           _onVideoDrag(dragPosition);
                                         },
                                         child: SliderTheme(
-                                          data: SliderThemeData(
+                                          data: const SliderThemeData(
                                             trackHeight: 1,
                                             thumbShape: RoundSliderThumbShape(
                                                 enabledThumbRadius: 5),
@@ -346,7 +343,7 @@ class _TweetVideoState extends State<TweetVideo> {
                                     ),
                                     Text(
                                       _remainingTime,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
                                       ),
@@ -376,7 +373,7 @@ class _TweetVideoState extends State<TweetVideo> {
                             ),
                             child: Text(
                               _remainingTime,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
                               ),
@@ -384,9 +381,9 @@ class _TweetVideoState extends State<TweetVideo> {
                           ),
                         )
                       : Positioned(
-                          child: Container(),
                           bottom: 10,
                           right: 10,
+                          child: Container(),
                         ),
                   !widget.fullScreen
                       ? Positioned(
@@ -400,7 +397,7 @@ class _TweetVideoState extends State<TweetVideo> {
                             },
                             child: Container(
                               padding:
-                                  EdgeInsets.all(8), // Adjust padding as needed
+                                 const EdgeInsets.all(8), // Adjust padding as needed
                               decoration: BoxDecoration(
                                 shape:
                                     BoxShape.circle, // Shape of the background
@@ -420,9 +417,9 @@ class _TweetVideoState extends State<TweetVideo> {
                           ),
                         )
                       : Positioned(
-                          child: Container(),
                           bottom: 10,
                           right: 10,
+                          child: Container(),
                         ),
                 ],
               ),
@@ -435,7 +432,7 @@ class _TweetVideoState extends State<TweetVideo> {
         },
       );
     } else {
-      return Container(
+      return const SizedBox(
         // You can provide a placeholder or message here
         child: Text('No valid video URL available'),
       );

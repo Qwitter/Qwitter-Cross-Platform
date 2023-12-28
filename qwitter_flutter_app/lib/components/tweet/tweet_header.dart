@@ -14,6 +14,7 @@ class TweetHeader extends ConsumerStatefulWidget {
   final bool followed;
   final bool stretched;
   final bool stretchedMenu;
+  // ignore: prefer_typing_uninitialized_variables
   final opentweetMenuModal;
   final Tweet tweet;
 
@@ -55,7 +56,6 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
   }
 
   List<Widget> headerRowWidgets(width, context, Tweet tweetProvider) {
-    final appUser = AppUser();
     return [
       Container(
         alignment: Alignment.centerLeft,
@@ -109,7 +109,7 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
         child: SizedBox(
           width: width * 0.2,
           child: Text(
-            "@" + tweetProvider.user!.username!,
+            "@${tweetProvider.user!.username!}",
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(
@@ -217,7 +217,7 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
             ),
             FittedBox(
               child: Text(
-                "@" + tweetProvider.user!.username!,
+                "@${tweetProvider.user!.username!}",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: TextStyle(
@@ -287,7 +287,7 @@ class _TweetHeaderState extends ConsumerState<TweetHeader> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: headerColumnWidgets(() {
-                print("handle : " + tweetProvider.user!.username!);
+                //print("handle : ${tweetProvider.user!.username!}");
                 Navigator.push(
                     context,
                     MaterialPageRoute(

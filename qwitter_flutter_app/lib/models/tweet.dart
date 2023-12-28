@@ -69,7 +69,9 @@ class Tweet {
   }
 
   factory Tweet.fromJson(Map<String, dynamic> json) {
-    User user = User.fromJson(json['retweetedId'] != null
+    User user = User.fromJson(json['retweetedId'] != null &&
+            json.containsKey('retweetedTweet') &&
+            json['retweetedTweet'] != null
         ? json["retweetedTweet"]['author']
         : json['author']);
     user.isFollowed = json['isFollowing'];
@@ -91,31 +93,32 @@ class Tweet {
               : null,
       repliedToTweet: json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null ?
           Tweet.fromJson(json['replyToTweet']) : null,
-      source: json['retweetedId'] != null
+      source: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
+
           ? json["retweetedTweet"]["source"]
           : json['source'],
-      coordinates: json['retweetedId'] != null
+      coordinates: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json["retweetedTweet"]["coordinates"]
           : json['coordinates'],
-      repliesCount: json['retweetedId'] != null
+      repliesCount: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json["retweetedTweet"]["replyCount"]
           : json['replyCount'],
-      retweetsCount: json['retweetedId'] != null
+      retweetsCount: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json["retweetedTweet"]["retweetCount"]
           : json['retweetCount'],
-      likesCount: json['retweetedId'] != null
+      likesCount: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json["retweetedTweet"]["likesCount"]
           : json['likesCount'],
-      quotesCount: json['retweetedId'] != null
+      quotesCount: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json["retweetedTweet"]["qouteCount"]
           : json['qouteCount'],
-      text: json['retweetedId'] != null
+      text: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json["retweetedTweet"]['text']
           : json['text'],
       replyToId: json['replyToTweetId'] != null && json.containsKey('replyToTweet') && json['replyToTweet'] != null && json['replyToTweet'].containsKey('author') ? json['replyToTweetId'] : null,
       repostToId: json['retweetedId'],
       quoteToId: json['qouteTweetedId'],
-      hashtags: json['retweetedId'] != null
+      hashtags: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json['retweetedTweet']['entities'] != null
               ? json['retweetedTweet']['entities']['hashtags']
                   .map<String>((hashtag) => hashtag['value'].toString())
@@ -126,7 +129,7 @@ class Tweet {
                   .map<String>((hashtag) => hashtag['value'].toString())
                   .toList()
               : [],
-      mentions: json['retweetedId'] != null
+      mentions: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json['retweetedTweet']['entities'] != null
               ? json['retweetedTweet']['entities']['mentions']
                   .map<String>(
@@ -139,7 +142,7 @@ class Tweet {
                       (mention) => mention.toString())
                   .toList()
               : [],
-      urls: json['retweetedId'] != null
+      urls: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? json['retweetedTweet']['entities'] != null
               ? json['retweetedTweet']['entities']['urls']
                   .map<String>((hashtag) => hashtag['value'].toString())
@@ -151,7 +154,7 @@ class Tweet {
                   .toList()
               : [],
       // media: json['entities']['media'].map<String, String>((media) => MapEntry(media['value'], media['type'])),
-      media: json['retweetedId'] != null
+      media: json['retweetedId'] != null && json.containsKey('retweetedTweet') && json['retweetedTweet'] != null
           ? List<Media>.from(json['retweetedTweet']['entities'] != null
               ? json['retweetedTweet']['entities']['media'].map((media) =>
                   Media(media['value'] as String, media['type'] as String))

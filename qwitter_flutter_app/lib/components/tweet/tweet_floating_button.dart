@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwitter_flutter_app/screens/authentication/signup/signup_choose_method_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/add_tweet_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TweetFloatingButton extends StatelessWidget {
   final bool isVisible;
@@ -35,19 +33,19 @@ class TweetFloatingButton extends StatelessWidget {
             children: [
               AnimatedScale(
                 scale: isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
-                child: Text("Spaces",
+                duration: const Duration(milliseconds: 200),
+                child: const Text("Spaces",
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 18,
                         color: Colors.white)),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               AnimatedScale(
                 scale: isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 200),
                 child: FilledButton(
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all<EdgeInsets>(
@@ -57,7 +55,7 @@ class TweetFloatingButton extends StatelessWidget {
                     backgroundColor: MaterialStateColor.resolveWith(
                         (states) => Colors.white),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.mic,
                     color: Colors.blue,
                   ),
@@ -76,29 +74,29 @@ class TweetFloatingButton extends StatelessWidget {
             children: [
               AnimatedScale(
                 scale: isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
-                child: Text("GIF",
+                duration: const Duration(milliseconds: 200),
+                child: const Text("GIF",
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 18,
                         color: Colors.white)),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               AnimatedScale(
                 scale: isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 200),
                 child: FilledButton(
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.all(5)),
+                        const EdgeInsets.all(5)),
                     shape: MaterialStateProperty.all<OutlinedBorder>(
-                        CircleBorder()), // Set the shape to CircleBorder()
+                        const CircleBorder()), // Set the shape to CircleBorder()
                     backgroundColor: MaterialStateColor.resolveWith(
                         (states) => Colors.white),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.gif_box_outlined,
                     color: Colors.blue,
                   ),
@@ -117,29 +115,29 @@ class TweetFloatingButton extends StatelessWidget {
             children: [
               AnimatedScale(
                 scale: isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
-                child: Text("Photos",
+                duration: const Duration(milliseconds: 200),
+                child: const Text("Photos",
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 18,
                         color: Colors.white)),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               AnimatedScale(
                 scale: isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 200),
                 child: FilledButton(
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.all(5)),
+                        const EdgeInsets.all(5)),
                     shape: MaterialStateProperty.all<OutlinedBorder>(
-                        CircleBorder()), // Set the shape to CircleBorder()
+                        const CircleBorder()), // Set the shape to CircleBorder()
                     backgroundColor: MaterialStateColor.resolveWith(
                         (states) => Colors.white),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.image_outlined,
                     color: Colors.blue,
                   ),
@@ -158,33 +156,33 @@ class TweetFloatingButton extends StatelessWidget {
             children: [
               AnimatedScale(
                 scale: isVisible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
-                child: Text("Post",
+                duration: const Duration(milliseconds: 200),
+                child: const Text("Post",
                     style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: 18,
                         color: Colors.white)),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               FilledButton(
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(
-                    EdgeInsets.all(17),
+                    const EdgeInsets.all(17),
                   ),
                   shape: MaterialStateProperty.all<OutlinedBorder>(
-                      CircleBorder()), // Set the shape to CircleBorder()
+                      const CircleBorder()), // Set the shape to CircleBorder()
                   backgroundColor:
                       MaterialStateColor.resolveWith((states) => Colors.blue),
                 ),
                 child: AnimatedRotation(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   turns: isVisible ? 1 : 0,
                   child: isVisible
-                      ? Icon(Icons.post_add,
+                      ? const Icon(Icons.post_add,
                           color: Colors.white) // Icon when button is visible
-                      : Icon(Icons.add, color: Colors.white),
+                      : const Icon(Icons.add, color: Colors.white),
                 ),
                 onPressed: () {
                   if (isVisible) {
