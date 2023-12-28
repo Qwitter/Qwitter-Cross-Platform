@@ -124,9 +124,8 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen>
     setState(() {
       if (tweetsLists[tabIndex] == null) {
         tweetsLists[tabIndex] = newTweets;
-      } 
-      else {
-       tweetsLists[tabIndex]!.addAll(newTweets);
+      } else {
+        tweetsLists[tabIndex]!.addAll(newTweets);
       }
     });
   }
@@ -684,8 +683,9 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen>
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const FollowingScreen(),
+                                        builder: (context) => FollowingScreen(
+                                          username: widget.username,
+                                        ),
                                       ),
                                     );
                                   },
@@ -718,8 +718,8 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen>
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const FollowersScreen(),
+                                        builder: (context) => FollowersScreen(
+                                            username: widget.username),
                                       ),
                                     );
                                   },
@@ -772,13 +772,13 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen>
                             color: Colors.black,
                             fontWeight: FontWeight.w600,
                           ),
-                          indicatorPadding: EdgeInsets.symmetric(horizontal: 10),
+                          indicatorPadding:
+                              EdgeInsets.symmetric(horizontal: 10),
                           indicatorSize: TabBarIndicatorSize.tab,
                           tabAlignment: TabAlignment.fill,
                           tabs: const [
                             Tab(
                               text: 'Posts',
-
                             ),
                             Tab(
                               text: 'Replies',

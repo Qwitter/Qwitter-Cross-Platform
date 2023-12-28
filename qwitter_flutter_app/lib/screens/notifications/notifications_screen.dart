@@ -23,6 +23,7 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
+
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -37,40 +38,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     AppUser user = AppUser();
     user.getUserData();
     super.initState();
-    setState(() {
-      NotificationsServices.getNotifications().then((notifications) {
-        ref
-            .read(notificationsProvider.notifier)
-            .resetNotifications(notifications);
-      });
-    });
-    socket.onConnect((data) => print("connected to notification socket"));
-
-    socket.on('disconnect', (_) {
-      print('Socket Disconnected');
-    });
-
-    socket.on('error', (data) {
-      print('Socket Error: $data');
-    });
-    socket.on('NOTIFICATION', (data) {
-      print("socket received $data");
-      // print('Socket Received:');
-      var notification = QwitterNotification.fromJson(data);
-      print(notification.user!.username);
-      setState(() {
-        ref
-            .read(notificationsProvider.notifier)
-            .setNotifications([notification]);
-      });
-      displayNotification(QwitterNotification.fromJson(data));
-    });
-    if (socket.connected) {
-      socket.disconnect();
-    }
-    socket.connect();
-
-    socket.emit('JOIN_ROOM', user.username);
   }
 
   Future<void> displayNotification(QwitterNotification notification) async {
@@ -86,13 +53,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     ? "New Retweet"
                     : " ";
     String desc = notification.type == NotificationType.follow_type
-        ? notification.user!.fullName! + " followed you"
+        ? "${notification.user!.fullName!} followed you"
         : notification.type == NotificationType.login_type
             ? "There was a recent login to your account @${user.username ?? ''}"
             : notification.type == NotificationType.like_type
-                ? notification.user!.fullName! + " liked your tweet"
+                ? "${notification.user!.fullName!} liked your tweet"
                 : notification.type == NotificationType.retweet_type
-                    ? notification.user!.fullName! + " reposted your post"
+                    ? "${notification.user!.fullName!} reposted your post"
                     : " ";
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -128,8 +95,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     user.getUserData();
     setState(() {
       NotificationsServices.getNotifications().then((notifications) {
-        ref
-            .read(notificationsProvider.notifier)
+        ref.read(notificationsProvider.notifier)
             .resetNotifications(notifications);
       });
     });

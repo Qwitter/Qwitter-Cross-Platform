@@ -18,9 +18,11 @@ class LikersScreen extends StatefulWidget {
 
 class _LikersScreenState extends State<LikersScreen> {
   List likersList = [];
+  ScrollController _scrollController = ScrollController();
+  int page = 1;
   Future<http.Response> getListOfLikers() async {
     final url = Uri.parse(
-        'http://back.qwitter.cloudns.org:3000/api/v1/tweets/${widget.tweetId}/like');
+        'http://back.qwitter.cloudns.org:3000/api/v1/tweets/${widget.tweetId}/like?page=${page.toString()}&limit=10');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -44,11 +46,27 @@ class _LikersScreenState extends State<LikersScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.addListener(() {
+        // Check if the user has reached the end of the list
+        if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+          // Fetch new data (e.g., from an API) and update the list
+          page++;
+          getListOfLikers().then((value) {
+            print(value.reasonPhrase);
+            print(value.body);
+            final newLikersList = jsonDecode(value.body);
+            setState(() {
+              likersList.addAll(newLikersList);
+            });
+          });
+        }
+      });
       getListOfLikers().then((value) {
         print(value.reasonPhrase);
         print(value.body);
         setState(() {
-          likersList = jsonDecode(value.body)['ret'];
+          likersList = jsonDecode(value.body)['likers'];
         });
       });
     });
@@ -77,6 +95,7 @@ class _LikersScreenState extends State<LikersScreen> {
           color: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
           child: ListView.builder(
+            controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: likersList.length,
             itemBuilder: (BuildContext context, int index) {

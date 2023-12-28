@@ -32,6 +32,10 @@ class QwitterNotification{
       type = NotificationType.retweet_type;
     }else if(json['type'] == 'reply'){
       type = NotificationType.reply_type;
+    }else if(json['type'] == 'post'){
+      type = NotificationType.post_type;
+    }else if(json['type'] == 'mention'){
+      type = NotificationType.mention_type;
     }else{
       type = NotificationType.login_type;
     }
@@ -75,6 +79,9 @@ class QwitterNotification{
   static Tweet? getTweet(Map<String, dynamic> json){
     if (json['type'] == 'reply') {
       return Tweet.fromJson(json['reply']);
+    }
+    else if(json['type'] == 'post'){
+      return Tweet.fromJson(json['post']);
     } else {
       return null;
     }

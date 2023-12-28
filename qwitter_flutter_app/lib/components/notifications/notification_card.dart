@@ -54,7 +54,7 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     AppUser? user = AppUser();
     user.getUserData();
-    return notification.type == NotificationType.reply_type
+    return notification.type == NotificationType.reply_type || notification.type == NotificationType.post_type
         ? TweetCard(tweet: notification.tweet!)
         : Container(
             decoration: BoxDecoration(
