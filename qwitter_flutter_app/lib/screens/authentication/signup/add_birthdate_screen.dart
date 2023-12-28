@@ -183,13 +183,17 @@ class _AddBirthdateScreenState extends ConsumerState<AddBirthdateScreen> {
                                         // //print(userJson);
                                         User user =
                                             User.fromJson(userJson["user"]);
-                                        final String rawCookies =
-                                            (value.headers['set-cookie']) ?? '';
-                                        final String token = rawCookies
-                                            .split(';')[0]
-                                            .split('=')[1]
-                                            .split('%20')[1];
+                                        // final String rawCookies =
+                                        //     (value.headers['set-cookie']) ?? '';
+                                        final token =
+                                            jsonDecode(value.body)["token"];
+
                                         user.token = token;
+                                        // final String token = rawCookies
+                                        //     .split(';')[0]
+                                        //     .split('=')[1]
+                                        //     .split('%20')[1];
+                                        // user.token = token;
                                         // user.printUserData();
                                         final appUser =
                                             AppUser().copyUserData(user);

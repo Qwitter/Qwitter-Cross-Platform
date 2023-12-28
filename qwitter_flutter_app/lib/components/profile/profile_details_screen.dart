@@ -36,6 +36,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen>
   final AppUser appUser = AppUser();
   List<int> pages = [1, 1, 1, 1];
   List<List<Tweet>?> tweetsLists = [null, null, null, null];
+  int tweetsCount = 0;
 
   @override
   void initState() {
@@ -83,6 +84,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen>
       final jsonBody = jsonDecode(response.body);
       print(response.body);
       User user = User.fromJson(jsonBody);
+      tweetsCount = jsonBody['tweetCount'];
 
       print("is user followed${user.isFollowed}");
       print("is user followed${user.followersCount}");
@@ -379,7 +381,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen>
                                           color: Colors.white, fontSize: 24),
                                     ),
                                     Text(
-                                      "${formatNumber(0)} posts", //////// need more work
+                                      "${formatNumber(tweetsCount)} posts", //////// need more work
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 17),
                                     )
