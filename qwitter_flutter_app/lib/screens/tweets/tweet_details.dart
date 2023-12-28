@@ -368,7 +368,7 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     final tweetProvider = ref.watch(widget.tweet.provider);
     final lineHeight = calculateVerticalDistance().toDouble();
     textEditingController.addListener(() {
-      if (textEditingController.text.isEmpty) {
+      if (textEditingController.text.trim().isEmpty) {
         setState(() {
           buttonFunction = null;
         });
