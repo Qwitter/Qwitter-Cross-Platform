@@ -226,12 +226,8 @@ class _SignupChooseMethodScreenState extends State<SignupChooseMethodScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
-                child: Image.network(
-                    'https://freelogopng.com/images/all_img/1690643777twitter-x%20logo-png-white.png',
-                    width: 24,
-                    height: 24),
-              ),
+                  padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
+                  child: Image.asset('assets/images/qwitter.png', height: 50)),
               const SizedBox(
                 height: 50,
               ),
