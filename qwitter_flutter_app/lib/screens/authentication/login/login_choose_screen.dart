@@ -268,7 +268,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
                 height: 60,
                 child: CustomIconButton(
                   text: "Sign in with Google",
-                  onPressed: signInGoogle,
+                  onPressed: () {},
                   image: googleImagePath,
                 ),
               ),
@@ -278,7 +278,7 @@ class _LoginChooseScreenState extends State<LoginChooseScreen> {
                 height: 60,
                 child: CustomIconButton(
                   text: "Sign in with Apple",
-                  onPressed: signInGoogle,
+                  onPressed: () {},
                   image: appleImagePath,
                 ),
               ),
