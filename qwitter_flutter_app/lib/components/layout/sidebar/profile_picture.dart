@@ -75,7 +75,9 @@ class ProfilePicture extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => const FollowingScreen()),
+                      builder: (context) => FollowingScreen(
+                            username: AppUser().username,
+                          )),
                 );
               },
               style: const ButtonStyle(
@@ -108,7 +110,8 @@ class ProfilePicture extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => const FollowersScreen()),
+                      builder: (context) =>
+                          FollowersScreen(username: AppUser().username)),
                 );
               },
               style: const ButtonStyle(

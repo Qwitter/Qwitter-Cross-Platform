@@ -220,8 +220,6 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
     );
   }
 
-
-
   void _makeFollow(tweetProvider) {
     setState(() {
       TweetsServices.makeFollow(ref, tweetProvider);
@@ -527,8 +525,10 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                         )
                                   : SizedBox(),
                               SizedBox(
-                                height:
-                                    tweetProvider.replyToId != null && tweetProvider.repliedToTweet != null ? 20 : 0,
+                                height: tweetProvider.replyToId != null &&
+                                        tweetProvider.repliedToTweet != null
+                                    ? 20
+                                    : 0,
                               ),
                               Container(
                                 key: secondTweetKey,
@@ -658,7 +658,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               RetweetersScreen(
-                                                                  tweetId:
+                                                                  tweetId: tweetProvider
+                                                                          .repostToId ??
                                                                       tweetProvider
                                                                           .id!),
                                                         ),
@@ -738,7 +739,8 @@ class _TweetDetailsScreenState extends ConsumerState<TweetDetailsScreen> {
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               LikersScreen(
-                                                                  tweetId:
+                                                                  tweetId: tweetProvider
+                                                                          .repostToId ??
                                                                       tweetProvider
                                                                           .id!),
                                                         ),
