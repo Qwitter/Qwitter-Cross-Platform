@@ -10,7 +10,9 @@ import 'package:qwitter_flutter_app/models/app_user.dart';
 import 'package:qwitter_flutter_app/screens/authentication/signup/suggested_follows_screen.dart';
 
 class FollowersScreen extends StatefulWidget {
-  const FollowersScreen({super.key});
+  const FollowersScreen({super.key, this.username});
+
+  final String? username;
 
   @override
   State<FollowersScreen> createState() => _FollowersScreenState();
@@ -18,11 +20,12 @@ class FollowersScreen extends StatefulWidget {
 
 class _FollowersScreenState extends State<FollowersScreen> {
   List followersList = [];
-  Future<http.Response> getListOfFollowers() async {
-    final username = AppUser().getUsername;
+  final ScrollController _scrollController = ScrollController();
+  int page = 1;
 
+  Future<http.Response> getListOfFollowers() async {
     final url = Uri.parse(
-        'http://back.qwitter.cloudns.org:3000/api/v1/user/followers/$username');
+        'http://back.qwitter.cloudns.org:3000/api/v1/user/followers/${widget.username}?page=${page.toString()}&limit=10');
 
     final Map<String, String> cookies = {
       'qwitter_jwt': 'Bearer ${AppUser().getToken}',
@@ -45,6 +48,23 @@ class _FollowersScreenState extends State<FollowersScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(() {
+      // Check if the user has reached the end of the list
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        // Fetch new data (e.g., from an API) and update the list
+        page++;
+        getListOfFollowers().then((value) {
+          print(value.reasonPhrase);
+          print(value.body);
+          final newFollowersList = jsonDecode(value.body);
+          setState(() {
+            followersList.addAll(newFollowersList);
+          });
+        });
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getListOfFollowers().then((value) {
         print(value.reasonPhrase);
@@ -79,6 +99,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
           color: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
           child: ListView.builder(
+            controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: followersList.length,
             itemBuilder: (BuildContext context, int index) {
