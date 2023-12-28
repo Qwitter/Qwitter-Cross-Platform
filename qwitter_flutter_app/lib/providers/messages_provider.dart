@@ -42,7 +42,12 @@ class MessageNotifier extends StateNotifier<List<MessageData>> {
   }
 
   void addMessage(MessageData msg) {
+    bool sort= (state.isNotEmpty&&state.first!.date.compareTo(msg.date) > 0);
+
     state = [msg, ...state];
+    if(sort){
+      
+    }
   }
 }
 

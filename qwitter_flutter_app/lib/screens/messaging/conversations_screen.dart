@@ -34,11 +34,23 @@ class conversationScreenState extends ConsumerState<ConversationScreen> {
     super.initState();
     // MessagingServices.connect("47a89388-ebc8-4e2f-af2f-b2c075b540ac");
     MessagingServices.initSocket();
+    MessagingServices.socket.on(
+      'CONVERSATION',
+      (data) {
+        print(data);
+      },
+    );
     MessagingServices.getConversations().then((list) {
       ref.read(ConversationProvider.notifier).InitConversations(list);
     }).onError((error, stackTrace) {
       //print(error);
     });
+  }
+
+  @override
+  void dispose() {
+    MessagingServices.socket.off('CONVERSATION');
+    super.dispose();
   }
 
   Future<void> refresh() async {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:qwitter_flutter_app/components/conversation_user_card.dart';
@@ -58,6 +59,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
     super.initState();
     scrollController.addListener(scrollListener);
     fecthMessages();
+    MessagingServices.reConnect();
     MessagingServices.socket.on('ROOM_MESSAGE', (data) {
       print(data);
       print(data['text']);
@@ -139,6 +141,10 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen> {
         mp['data'] = msg;
         mp['conversationId'] = widget.convo.id;
         print(jsonEncode(mp));
+        if (msg['text'] == null) {
+          Fluttertoast.showToast(msg: 'error sending Message');
+          return;
+        }
         ref
             .watch(messagesProvider.notifier)
             .addMessage(MessageData.fromJson(msg));
