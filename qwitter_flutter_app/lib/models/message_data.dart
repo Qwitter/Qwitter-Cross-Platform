@@ -56,7 +56,9 @@ class MessageData {
       text: json['text'],
       name: json['userName'],
       profileImageUrl: json['profileImageUrl'],
-      date: DateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ").parseUTC(json['date']),
+      date: DateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ")
+          .parseUTC(json['date'])
+          .add(DateTime.now().timeZoneOffset),
       media: list.isNotEmpty ? list.first : null,
       byMe: isReply && parentByMe != null
           ? parentByMe!

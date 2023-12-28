@@ -12,6 +12,7 @@ import 'package:qwitter_flutter_app/screens/messaging/conversation_users_screen.
 import 'package:qwitter_flutter_app/screens/messaging/messaging_screen.dart';
 import 'package:qwitter_flutter_app/screens/tweets/tweets_feed_screen.dart';
 import 'package:qwitter_flutter_app/services/Messaging_service.dart';
+import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
 class ConversationWidget extends ConsumerWidget {
   const ConversationWidget({super.key, required this.convo});
@@ -179,6 +180,17 @@ class ConversationWidget extends ConsumerWidget {
                             fontSize: 15,
                           ),
                         ),
+                        TextSpan(
+                          text: " . " +
+                              (convo.lastMsg != null
+                                  ? DateHelper.formatDateString(
+                                      convo.lastMsg!.date.add(-DateTime.now().timeZoneOffset).toString())
+                                  : ""),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 15,
+                          ),
+                        )
                       ],
                     ),
                     overflow: TextOverflow.ellipsis,

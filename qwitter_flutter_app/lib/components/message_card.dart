@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +11,7 @@ import 'package:qwitter_flutter_app/models/reply.dart';
 import 'package:qwitter_flutter_app/providers/reply_provider.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_media_viewer_screen.dart';
 import 'package:qwitter_flutter_app/screens/messaging/messaging_video_screen.dart';
+import 'package:qwitter_flutter_app/screens/searching/search_screen.dart';
 import 'package:qwitter_flutter_app/theme/theme_constants.dart';
 import 'package:qwitter_flutter_app/utils/date_humanizer.dart';
 
@@ -26,6 +28,83 @@ class MessageCard extends ConsumerWidget {
   final longHold;
   final bool isGroup;
   static const double radius = 15;
+  List<InlineSpan> buildTextWithButton(context, String text, bool byMe) {
+    final List<InlineSpan> textWithButtons = [];
+    final RegExp wordBoundaryRegex = RegExp(r'\s+');
+    final List<String> splitBySpace = text.split(wordBoundaryRegex);
+    List<String> result = [];
+
+    text.splitMapJoin(wordBoundaryRegex, onMatch: (value) {
+      result.add(value.group(0)!);
+      return value.group(0)!;
+    }, onNonMatch: (value) {
+      result.add(value);
+      return value;
+    });
+    final RegExp mentionRegex = RegExp(r'@[\w\u0600-\u06FF]+');
+    final RegExp hashtagRegex = RegExp(r'#[\w\u0600-\u06FF]+');
+
+    for (String segment in result) {
+      if (mentionRegex.hasMatch(segment)) {
+        textWithButtons.add(TextSpan(
+          text: segment,
+          style: TextStyle(
+            color: byMe ? Colors.white : Colors.blue,
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.underline,
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileDetailsScreen(
+                        username: segment.trim().replaceAll('@', '')),
+                  ));
+              print("Mention");
+            },
+        ));
+      } else if (hashtagRegex.hasMatch(segment)) {
+        textWithButtons.add(
+          TextSpan(
+            text: segment,
+            style: TextStyle(
+              color: byMe ? Colors.white : Colors.blue,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SearchScreen(
+                        hastag: segment.trim(),
+                        query: "",
+                      ),
+                    ));
+                print("Hashtag");
+              },
+          ),
+        );
+      } else {
+        textWithButtons.add(
+          TextSpan(
+            text:
+                segment, // Add space after each segment except the last one
+            style: const TextStyle(
+              height: 1.2,
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        );
+      }
+    }
+
+    return textWithButtons;
+  }
+
   @override
   Widget build(BuildContext context, ref) {
     // log(msg.text);
@@ -112,10 +191,6 @@ class MessageCard extends ConsumerWidget {
                                         ),
                                       );
                                     },
-                                    onLongPress: () {
-                                      print('hold');
-                                      longHold(msg);
-                                    },
                                     child: msg.byMe == false
                                         ? ClipOval(
                                             child: Image.network(
@@ -168,8 +243,8 @@ class MessageCard extends ConsumerWidget {
                               children: [
                                 if (msg.media != null &&
                                     msg.media!.type == 'video') ...[
-                                  IconButton(
-                                    onPressed: () {
+                                  GestureDetector(
+                                    onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -180,11 +255,15 @@ class MessageCard extends ConsumerWidget {
                                         ),
                                       );
                                     },
-                                    icon: const Icon(
+                                    onLongPress: () {
+                                      print('hold');
+                                      longHold(msg);
+                                    },
+                                    child: const Icon(
                                       Icons.play_circle_outlined,
-                                    size: 100,
+                                      size: 100,
                                     ),
-                                  )
+                                  ),
                                 ],
                                 msg.media != null
                                     ? (msg.media!.type == 'image'
@@ -200,6 +279,10 @@ class MessageCard extends ConsumerWidget {
                                                   ),
                                                 ),
                                               );
+                                            },
+                                            onLongPress: () {
+                                              print('hold');
+                                              longHold(msg);
                                             },
                                             child: Container(
                                               padding: const EdgeInsets.all(10),
@@ -281,20 +364,32 @@ class MessageCard extends ConsumerWidget {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             15),
-                                                    child: Text(
-                                                      msg.text,
-                                                      style: TextStyle(
-                                                          color: this
-                                                                      .msg
-                                                                      .name ==
-                                                                  user.username
-                                                              ? white
-                                                              : const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  232,
-                                                                  231,
-                                                                  231)),
+                                                    child: RichText(
+                                                      textAlign: Bidi.hasAnyRtl(
+                                                              msg.text)
+                                                          ? TextAlign.end
+                                                          : TextAlign.start,
+                                                      text: TextSpan(
+                                                        style: TextStyle(
+                                                            color: msg.name ==
+                                                                    user
+                                                                        .username
+                                                                ? white
+                                                                : const Color
+                                                                    .fromARGB(
+                                                                    255,
+                                                                    232,
+                                                                    231,
+                                                                    231)),
+                                                        children:
+                                                            buildTextWithButton(
+                                                          context,
+                                                          msg.text,
+                                                          msg.byMe,
+                                                        ),
+                                                      ),
+                                                      softWrap:
+                                                          true, // Allow text to wrap within the specified width
                                                     ),
                                                   ),
                                                 ],

@@ -244,7 +244,8 @@ class _ConversationInfoScreenState
                 height: 5,
               ),
             ],
-            InkWell(
+            if (widget.convo.isGroup) ...[
+              InkWell(
                 onTap: leave,
                 child: Container(
                   alignment: Alignment.centerLeft,
@@ -257,7 +258,9 @@ class _ConversationInfoScreenState
                       style: TextStyle(fontSize: 15, color: Colors.red),
                     ),
                   ),
-                ))
+                ),
+              ),
+            ]
           ],
         ),
       ),

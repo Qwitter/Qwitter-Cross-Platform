@@ -27,6 +27,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MessagingServices {
+  static AppUser user = AppUser();
+
+  static Map<String, String> cookies = {
+    'qwitter_jwt': 'Bearer ${user.getToken}',
+  };
   static const String _baseUrl = 'http://back.qwitter.cloudns.org:3000';
   static IO.Socket socket = IO.io(
     _baseUrl,
@@ -35,13 +40,17 @@ class MessagingServices {
 
   static Future<http.Response> getSingleConversationsRespone(
       String conversationId) async {
-    AppUser user = AppUser();
     final url = Uri.parse('$_baseUrl/api/v1/conversation/$conversationId');
-
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
     return response;
   }
@@ -69,11 +78,16 @@ class MessagingServices {
   static Future<http.Response> getConversationsRespone() async {
     AppUser user = AppUser();
     final url = Uri.parse('$_baseUrl/api/v1/conversation/?limit=100');
-
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'authorization': 'Bearer ${user.token}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
     print(user.token);
     return response;
@@ -103,6 +117,7 @@ class MessagingServices {
 
   static void initSocket() {
     socket.onConnect((data) => print("Connected"));
+    socket.onDisconnect((data) => print("socket Disconnected"));
   }
 
   static Future<http.StreamedResponse> requestMessageResponse(
@@ -117,12 +132,17 @@ class MessagingServices {
       'text': Message,
       'replyId': replyId,
     };
-
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final request = http.MultipartRequest('POST', url);
     request.headers.addAll({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'authorization': 'Bearer ${AppUser().getToken}',
+      'Cookie': cookies.entries
+          .map((entry) => '${entry.key}=${entry.value}')
+          .join('; '),
     });
     request.fields.addAll(fields);
     if (imageFile != null) {
@@ -159,7 +179,7 @@ class MessagingServices {
           replyId,
         ),
       );
-      print('replyId is '+replyId);
+      print('replyId is ' + replyId);
       if (response.statusCode == 201) {
         final jsonBody = jsonDecode(response.body);
         return jsonBody['createdMessage'];
@@ -176,13 +196,18 @@ class MessagingServices {
       String conversationId, int page) async {
     final url = Uri.parse(
         '$_baseUrl/api/v1/conversation/$conversationId?page=$page&limit=100');
-
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final response = await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'authorization': 'Bearer ${AppUser().getToken}',
+        'Cookie': cookies.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join('; '),
       },
     );
 
@@ -193,7 +218,7 @@ class MessagingServices {
       String converstaionID, int page) async {
     try {
       final response = await fetchMessagesResponse(converstaionID, page);
-
+      print('messages'+response.body);
       if (response.statusCode == 200) {
         final List<dynamic> jsonBody = jsonDecode(response.body)['messages'];
         // log(response.body);
@@ -225,12 +250,17 @@ class MessagingServices {
         Uri.parse('$_baseUrl/api/v1/conversation/$conversationId/message');
 
     Map<String, String> fields = {'message_id': messageId};
-
+    cookies = {
+      'qwitter_jwt': 'Bearer ${user.getToken}',
+    };
     final response = http.delete(url,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'authorization': 'Bearer ${AppUser().getToken}',
+          'Cookie': cookies.entries
+              .map((entry) => '${entry.key}=${entry.value}')
+              .join('; '),
         },
         body: jsonEncode(fields));
     return response;
@@ -254,8 +284,12 @@ class MessagingServices {
   }
 
   static void reConnect() {
-    socket.disconnect();
-    socket.connect();
+    if (!socket.connected) {
+      print('reconnecting');
+      socket.disconnect();
+      socket.connect();
+    } else
+      print('connected');
   }
 
   static void connectToConversation(String conversationId) {
