@@ -34,16 +34,28 @@ class _TweetFeedScreenState extends ConsumerState<TweetFeedScreen> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     _scrollControllerForYou.addListener(_scrollListenerForYou);
-    TweetsServices.getTimeline(page).then((list) {
-      print(list.length);
-      ref.read(timelineTweetsProvider.notifier).resetTimelineTweets(list);
-    }).onError((error, stackTrace) {
-      //print(error);
-    });
 
-    TweetsServices.getForYou(pageForYou).then((list) {
-      ref.read(forYouTweetsProvider.notifier).resetForYouTweets(list);
-    });
+    _init();
+  }
+
+  Future<void> _init() async {
+    try {
+      final timelineList = await TweetsServices.getTimeline(page);
+      ref
+          .read(timelineTweetsProvider.notifier)
+          .resetTimelineTweets(timelineList);
+    } catch (error) {
+      // Handle error
+    }
+
+    try {
+      final forYouList = await TweetsServices.getForYou(pageForYou);
+      ref.read(forYouTweetsProvider.notifier).resetForYouTweets(forYouList);
+    } catch (error) {
+      // Handle error
+    }
+
+    // You can place further actions that should occur after both operations here
   }
 
   void _incrementPage() {
