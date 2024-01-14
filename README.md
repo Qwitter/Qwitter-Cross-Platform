@@ -17,7 +17,7 @@ The primary objective was to develop a high-performance application. Here are so
 - **Sockets** for Notifications
     
 
-##Features List
+## Features List
 
 - **Authentication**
 - **Change Password/Username/Email**
